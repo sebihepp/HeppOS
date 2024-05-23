@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+*.elf
+
+# Images of cdrm / floppy / harddrive / etc.
+*.iso
+
