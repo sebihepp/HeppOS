@@ -6,13 +6,13 @@ CXX := "$${HOME}/opt/cross/bin/i686-elf-g++"
 AS := "$${HOME}/opt/cross/bin/i686-elf-as"
 LD := "$${HOME}/opt/cross/bin/i686-elf-ld"
 
-CFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti
+CFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions
 CXXFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti
 ASFLAGS := 
 LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -lgcc
 
 CXX_OBJECTS := 
-C_OBJECTS := 
+C_OBJECTS := main.o 
 ASM_OBJECTS := boot.o
 
 
