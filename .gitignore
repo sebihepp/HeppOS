@@ -38,5 +38,5 @@
 *.img
 
 # config file of vms
-bochsrc
+/bochsrc
 
