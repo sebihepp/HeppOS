@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "pmm.hpp"
+
 volatile uint16_t *videoMem = (uint16_t*)0xB8000;
 uint8_t col = 0;
 uint8_t row = 0;
@@ -35,12 +37,22 @@ extern "C" void kprint(const char *text) {
 extern "C" void kmain(uint32_t magic, void *mbi) {
 
 	kprint("HeppOS\n\n");
-	if (magic != 0x36D76289) {
-		kprint("Multiboot magic number - ERROR\n\n");
+	
+	kprint("Multiboot magic number - ");
+	if (magic == 0x36D76289) {
+		kprint("OK\n");
 	} else {
-		kprint("Multiboot magic number - OK\n\n");
+		kprint("ERROR\n");
+		return;
+	}
+	
+	kprint("PMM init - ");
+	if (PMM::init(mbi) == 0) {
+		kprint("OK\n");
+	} else {
+		kprint("ERROR\n");
+		return;
 	}
 	
 	return;
-
 }

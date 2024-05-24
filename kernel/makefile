@@ -11,7 +11,7 @@ CXXFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions -fno
 ASFLAGS := 
 LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -lgcc
 
-CXX_OBJECTS := main.o
+CXX_OBJECTS := main.o pmm.o
 C_OBJECTS :=  
 ASM_OBJECTS := boot.o
 

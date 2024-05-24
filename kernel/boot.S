@@ -55,4 +55,4 @@ stack_top:
 
 .section ".data"
 
-reboot_message: .string "You can now turn off the computer...\n"
+reboot_message: .string "\nYou can now turn off the computer...\n"
