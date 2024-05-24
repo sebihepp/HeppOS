@@ -32,6 +32,10 @@
 *.app
 *.elf
 
-# Images of cdrm / floppy / harddrive / etc.
+# Images of cdrom / floppy / harddrive / etc.
 *.iso
+*.bin
+*.img
 
+# config file of vms
+bochsrc

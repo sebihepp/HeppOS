@@ -11,24 +11,25 @@ CXXFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions -fno
 ASFLAGS := 
 LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -lgcc
 
-CXX_OBJECTS := 
-C_OBJECTS := main.o 
+CXX_OBJECTS := main.o
+C_OBJECTS :=  
 ASM_OBJECTS := boot.o
 
 
+.PHONY: clean
 
 all: kernel.elf
 
 clean: 
 	rm -f $(C_OBJECTS) $(CXX_OBJECTS) $(ASM_OBJECTS) kernel.elf
 
-kernel.elf: $(CPP_OBJECTS) $(C_OBJECTS) $(ASM_OBJECTS)
+kernel.elf: $(CXX_OBJECTS) $(C_OBJECTS) $(ASM_OBJECTS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.S
 	$(AS) $< -o $@ $(ASFLAGS)
 
-%.o: $.c
+%.o: %.c
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 %.o: %.cpp

@@ -7,7 +7,7 @@ volatile uint16_t *videoMem = (uint16_t*)0xB8000;
 uint8_t col = 0;
 uint8_t row = 0;
 
-void print(char *text) {
+extern "C" void kprint(const char *text) {
 	while (*text != 0) {
 
 		if (row > 24)
@@ -32,13 +32,15 @@ void print(char *text) {
 	}
 }
 
-void kmain(uint32_t magic, void *mbi) {
+extern "C" void kmain(uint32_t magic, void *mbi) {
 
-	print("HeppOS\n\nYou can now turn off the computer...\n");
-	
-	volatile uint16_t *test = (uint16_t*)0xB8000;
+	kprint("HeppOS\n\n");
+	if (magic != 0x36D76289) {
+		kprint("Multiboot magic number - ERROR\n\n");
+	} else {
+		kprint("Multiboot magic number - OK\n\n");
+	}
 	
 	return;
 
 }
-
