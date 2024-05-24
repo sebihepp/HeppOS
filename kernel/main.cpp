@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "retvals.h"
 #include "pmm.hpp"
 
 volatile uint16_t *videoMem = (uint16_t*)0xB8000;
@@ -47,7 +48,7 @@ extern "C" void kmain(uint32_t magic, void *mbi) {
 	}
 	
 	kprint("PMM init - ");
-	if (PMM::init(mbi) == 0) {
+	if (PMM::init(mbi) == RETVAL_OK) {
 		kprint("OK\n");
 	} else {
 		kprint("ERROR\n");
