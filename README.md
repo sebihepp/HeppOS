@@ -1,6 +1,4 @@
-# HeppOS
-A small Operating System for learning purposes
----
+# HeppOS 
 This is a hobby OS (Operating System) for learning and having fun programming at the lowest level. 
 ## Design choices
 ### Programming languages
@@ -26,13 +24,13 @@ initial drivers, supplied as modules via multiboot2.
 ## Stuff to remember and include in this readme later
 It should use multiboot2 standard and main languages are c and c++ with asm where necessary.  
 
-## PREREQUISITES
+### PREREQUISITES
 - cross compiler with binutils, gcc, g++ and libgcc as i686-elf and x86_64-elf (with mno-red-zone) in $HOME/opt/cross (binaries in 
 subdirectory bin)
 - BOCHS for testing (alternatives can be qemu, virtualbox, etc.) 
 
 
-## FAQ
+### FAQ
 
 Q: I cannot boot the created iso file  
 
