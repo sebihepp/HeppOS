@@ -16,7 +16,7 @@ C_OBJECTS :=
 ASM_OBJECTS := boot.o
 
 
-.PHONY: clean
+.PHONY: clean all
 
 all: kernel.elf
 
