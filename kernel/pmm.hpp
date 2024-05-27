@@ -1,15 +1,18 @@
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 
 #ifndef PMM_HEADER
 #define PMM_HEADER
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#define PMM_BITMAP_LOW_SIZE 8 //8x32bit = 256 Pages x 4K = 1MByte Memory
+
 class PMM {
 
 private:
-
+	static uint32_t bitmapLow[PMM_BITMAP_LOW_SIZE]; 
 
 
 public:

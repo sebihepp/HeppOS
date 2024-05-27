@@ -2,7 +2,14 @@
 #include "retvals.h"
 #include "pmm.hpp"
 
+uint32_t PMM::bitmapLow[PMM_BITMAP_LOW_SIZE];
+
 uint32_t PMM::init(void *mbi) {
+	
+	//Set all pages in use and later free only available pages
+	for (uint32_t i = 0; i < PMM_BITMAP_LOW_SIZE; i++) {
+		bitmapLow[i] = 1; 
+	}
 	
 	return RETVAL_ERROR;
 }
