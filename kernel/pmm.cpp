@@ -26,6 +26,18 @@ uint32_t PMM::allocPages(uint32_t numPages, void* &address) {
 	return RETVAL_ERROR;
 }
 	
+uint32_t PMM::allocLowPage(void* &address) {
+	
+	address = (void*)NULL;
+	return RETVAL_ERROR;
+}
+
+uint32_t PMM::allocLowPages(uint32_t numPages, void* &address) {
+
+	address = (void*)NULL;
+	return RETVAL_ERROR;
+}
+
 uint32_t PMM::freePage(void *address) {
 	
 	return RETVAL_ERROR;

@@ -22,6 +22,8 @@ public:
 	
 	static uint32_t allocPage(void* &address);
 	static uint32_t allocPages(uint32_t numPages, void* &address);
+	static uint32_t allocLowPage(void* &address);
+	static uint32_t allocLowPages(uint32_t numPages, void* &address);
 	
 	static uint32_t freePage(void *address);
 	static uint32_t freePages(void *address, uint32_t numPages);
