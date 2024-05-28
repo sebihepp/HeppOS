@@ -48,19 +48,19 @@ struct multiboot2_info_t {
 struct multiboot2_info_tag_t {
 	uint32_t type;
 	uint32_t size;
-};
+} __attribute__((packed));
 
 struct multiboot2_info_tag_cmdline_t {
 	uint32_t type;
 	uint32_t size;
 	char string[0];
-};
+} __attribute__((packed));
 
 struct multiboot2_info_tag_boot_loader_name_t {
 	uint32_t type;
 	uint32_t size;
 	char string[0];
-};
+} __attribute__((packed));
 
 struct multiboot2_info_tag_module_t {
 	uint32_t type;
@@ -68,14 +68,14 @@ struct multiboot2_info_tag_module_t {
 	uint32_t mod_start;
 	uint32_t mod_end;
 	char cmdline[0];
-};
+} __attribute__((packed));
 
 struct multiboot2_info_tag_basic_meminfo_t {
 	uint32_t type;
 	uint32_t size;
 	uint32_t mem_lower;
 	uint32_t mem_upper;
-};
+} __attribute__((packed));
 
 
 #endif
