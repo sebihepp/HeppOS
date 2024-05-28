@@ -1,27 +1,45 @@
 
 
+.set MULTIBOOT2_HEADER_MAGIC,					0xE85250D6
+
+.set MULTIBOOT2_ARCHITECTURE_I386,				0
+.set MULTIBOOT2_ARCHITECTURE_MIPS32,			4
+
+.set MULTIBOOT2_HEADER_TAG_END, 				0
+.set MULTIBOOT2_HEADER_TAG_INFORMATION_REQUEST,	1
+.set MULTIBOOT2_HEADER_TAG_ADDRESS,				2
+.set MULTIBOOT2_HEADER_TAG_ENTRY_ADDRESS,		3
+.set MULTIBOOT2_HEADER_TAG_CONSOLE_FLAGS,		4
+.set MULTIBOOT2_HEADER_TAG_FRAMEBUFFER,			5
+.set MULTIBOOT2_HEADER_TAG_MODULE_ALIGN,		6
+
+.set MULTIBOOT2_HEADER_TAG_OPTIONAL,			1
+.set MULTIBOOT2_HEADER_TAG_MANDATORY,			0
+
+.set STACK_SIZE,		(16*1024) # Stack of 16 KByte
+
 .section ".multiboot"
 .align 8
+_multiboot_header:
+	.long MULTIBOOT2_HEADER_MAGIC						# Multiboot magic number
+	.long MULTIBOOT2_ARCHITECTURE_I386					# Architecture (0 = i386)
+	.long _multiboot_header - _multiboot_header_end		# Size of Headers
+	.long -MULTIBOOT2_HEADER_MAGIC - MULTIBOOT2_ARCHITECTURE_I386 - (_multiboot_header - _multiboot_header_end)		# Checksum 
 
-_mb_start:
-	.long 0xE85250D6	# Multiboot magic number
-	.long 0x0		# Architecture (0 = i386)
-	.long _mb_end - _mb_start	# Size of Headers
-	.long -0xE85250D6 - 0x0 - (_mb_end - _mb_start)		# Checksum 
-
-	.short 6		# Type 6 = Modules must be page aligned
-	.short 0		# Flags
-	.long 8			# Size
+	.short MULTIBOOT2_HEADER_TAG_MODULE_ALIGN			# Type 6 = Modules must be page aligned
+	.short MULTIBOOT2_HEADER_TAG_MANDATORY				# Flags
+	.long 8												# Size
 	
-	.short 0		# Type 0 = end of tags
-	.short 0		# Flags
-	.long 8			# Size
-_mb_end:
+	.short MULTIBOOT2_HEADER_TAG_END					# Type 0 = end of tags
+	.short MULTIBOOT2_HEADER_TAG_MANDATORY				# Flags
+	.long 8												# Size
+_multiboot_header_end:
+
 
 .global _start
 .type _start, @function
 
-.section ".text"
+.text
 _start:
 	cli	
 	mov $stack_top, %esp
@@ -34,12 +52,12 @@ _start:
 	pop %ebx
 
 # Print reboot message
-print_reboot_message:
-	push %ecx
+_print_reboot_message:
+	push %eax
 	push $reboot_message
 	call kprint
-	pop %ecx
-	pop %ecx
+	pop %eax
+	pop %eax
 	
 # Loop forever so that the user can shutdown or restart the computer	
 	cli
@@ -49,10 +67,10 @@ _1:
 
 
 .section ".bss"
-stack_bottom:
-	.skip (1024*16)
+	.align 4096
+	.lcomm stack_bottom, STACK_SIZE
 stack_top:
 
-.section ".data"
+.data
 
 reboot_message: .string "\nYou can now turn off the computer...\n"
