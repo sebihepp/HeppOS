@@ -7,12 +7,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define PMM_BITMAP_LOW_SIZE 8 //8x32bit = 256 Pages x 4K = 1MByte Memory
+
+typedef uint32_t pmm_bitmap_type;
+#define PMM_PAGE_SIZE 4096
+#define PMM_BITMAP_LOW_SIZE ((1024*1024) / PMM_PAGE_SIZE / (sizeof(pmm_bitmap_type) * 8)) //1MB
 
 class PMM {
 
 private:
-	static uint32_t bitmapLow[PMM_BITMAP_LOW_SIZE]; 
+	static pmm_bitmap_type bitmapLow[PMM_BITMAP_LOW_SIZE]; 
 
 
 public:
@@ -27,7 +30,6 @@ public:
 	
 	static uint32_t freePage(void *address);
 	static uint32_t freePages(void *address, uint32_t numPages);
-	
 };
 
 #endif

@@ -37,6 +37,7 @@ extern "C" void kprint(const char *text) {
 
 extern "C" void kmain(uint32_t magic, void *mbi) {
 
+
 	kprint("HeppOS\n\n");
 	
 	kprint("Multiboot magic number - ");
@@ -55,5 +56,23 @@ extern "C" void kmain(uint32_t magic, void *mbi) {
 		return;
 	}
 	
+	void* _address = NULL;
+	kprint("Allocate low Page - ");
+	if (PMM::allocLowPage(_address) == RETVAL_OK) {
+		kprint("OK\n");		
+	} else {
+		kprint("ERROR\n");
+		return;
+	}
+
+	kprint("Free low Page - ");
+	if (PMM::freePage(_address) == RETVAL_OK) {
+		kprint("OK\n");
+	} else {
+		kprint("ERROR\n");
+		return;
+	}
+
+
 	return;
 }
