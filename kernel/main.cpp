@@ -4,7 +4,9 @@
 #include <stdint.h>
 
 #include "retvals.h"
+#include "multiboot2.hpp"
 #include "pmm.hpp"
+
 
 volatile uint16_t *videoMem = (uint16_t*)0xB8000;
 uint8_t col = 0;
@@ -34,8 +36,8 @@ extern "C" void kprint(const char *text) {
 		text++;
 	}
 }
-
-extern "C" void kmain(uint32_t magic, void *mbi) {
+ 
+extern "C" void kmain(uint32_t magic, multiboot2_info_t *mbi) {
 
 	kprint("HeppOS\n\n");
 	
