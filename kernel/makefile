@@ -26,7 +26,7 @@ clean:
 kernel.elf: $(CXX_OBJECTS) $(C_OBJECTS) $(ASM_OBJECTS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-%.o: %.S
+%.o: %.s
 	$(AS) $< -o $@ $(ASFLAGS)
 
 %.o: %.c
