@@ -1,6 +1,6 @@
 
 
-.include "multiboot2.s"
+.include "multiboot2_defines.s"
 
 .set STACK_SIZE,		(16*1024) # Stack of 16 KByte
 

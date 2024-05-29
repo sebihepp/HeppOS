@@ -36,8 +36,8 @@ extern "C" void kprint(const char *text) {
 		text++;
 	}
 }
-
-extern "C" void kmain(uint32_t magic, void *mbi) {
+ 
+extern "C" void kmain(uint32_t magic, multiboot2_info_t *mbi) {
 
 	kprint("HeppOS\n\n");
 	
