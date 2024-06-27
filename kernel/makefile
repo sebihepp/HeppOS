@@ -13,17 +13,18 @@ LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -lgcc
 
 CXX_OBJECTS := main.o pmm.o
 C_OBJECTS :=  
-ASM_OBJECTS := boot.o
+ASM_OBJECTS := 
+
+TARGET := kernel.elf
 
 
-.PHONY: clean all
+all: $(TARGET)
 
-all: kernel.elf
-
+.PHONY: clean
 clean: 
-	rm -f $(C_OBJECTS) $(CXX_OBJECTS) $(ASM_OBJECTS) kernel.elf
+	rm -f $(C_OBJECTS) $(CXX_OBJECTS) $(ASM_OBJECTS) $(TARGET)
 
-kernel.elf: $(CXX_OBJECTS) $(C_OBJECTS) $(ASM_OBJECTS)
+$(TARGET): $(CXX_OBJECTS) $(C_OBJECTS) $(ASM_OBJECTS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.s
