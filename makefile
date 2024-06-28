@@ -2,8 +2,8 @@
 .PHONY: all clean
 
 all:
-	cd kernel && $(MAKE) all
 	cd kloader && $(MAKE) all
+	cd kernel && $(MAKE) all
 	cp kloader/kloader.elf iso/boot/kloader.elf
 	cp kernel/kernel.elf iso/kernel.elf
 	grub-mkrescue -o HeppOS.iso iso

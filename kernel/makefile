@@ -1,15 +1,15 @@
 
 
 
-CC := "$${HOME}/opt/cross/bin/i686-elf-gcc"
-CXX := "$${HOME}/opt/cross/bin/i686-elf-g++"
-AS := "$${HOME}/opt/cross/bin/i686-elf-as"
-LD := "$${HOME}/opt/cross/bin/i686-elf-ld"
+CC := "$${HOME}/opt/cross/bin/x86_64-elf-gcc"
+CXX := "$${HOME}/opt/cross/bin/x86_64-elf-g++"
+AS := "$${HOME}/opt/cross/bin/x86_64-elf-as"
+LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
 
-CFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions
-CXXFLAGS := -ffreestanding -O2 -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions
+CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
 ASFLAGS := 
-LDFLAGS := -T linker.ld -ffreestanding -O2 -nostdlib -lgcc
+LDFLAGS := -T linker.ld -O2 -r -nostdlib -L "$$HOME/opt/cross/lib/gcc/x86_64-elf/14.1.0" -lgcc
 
 CXX_OBJECTS := main.o pmm.o
 C_OBJECTS :=  
@@ -25,7 +25,7 @@ clean:
 	rm -f $(C_OBJECTS) $(CXX_OBJECTS) $(ASM_OBJECTS) $(TARGET)
 
 $(TARGET): $(CXX_OBJECTS) $(C_OBJECTS) $(ASM_OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(LD) -o $@ $^ $(LDFLAGS)
 
 %.o: %.s
 	$(AS) $< -o $@ $(ASFLAGS)

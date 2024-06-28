@@ -15,9 +15,10 @@ _multiboot_header:
 	.short MULTIBOOT2_HEADER_TAG_FRAMEBUFFER			# Type 5 = Framebuffer request
 	.short MULTIBOOT2_HEADER_TAG_OPTIONAL				# Flags
 	.long 20											# Size
-	.long 1024											# Width
-	.long 768											# Heigth
+	.long 1280											# Width
+	.long 720											# Heigth
 	.long 32											# Depth
+	.long 0												# Padding for 8 Byte Alignment
 	
 	.short MULTIBOOT2_HEADER_TAG_MODULE_ALIGN			# Type 6 = Modules must be page aligned
 	.short MULTIBOOT2_HEADER_TAG_MANDATORY				# Flags
@@ -35,8 +36,67 @@ _multiboot_header_end:
 .section ".text"
 _start:
 	cli	
-	mov $stack_top, %esp
 	
+	# Setup stack
+	movl $stack_top, %esp
+	
+	# Save Multiboot2 tags and magic
+	pushl %ebx		# Tags
+	pushl %eax		# Magic
+	
+	# Try to toggle EFLAGS.ID
+	pushf
+	popl %eax
+	movl %eax, %edx				# Save original EFLAGS in EDX
+	xorl $0x02000000, %eax		# Bit toggle EFLAGS.ID (bit 21)
+	pushl %eax					# Try to write it to EFLAGS
+	popf
+	
+	pushf						# Read EFLAGS back
+	popl %eax
+	pushl %edx					# Restore original EFLAGS
+	popf
+	
+	andl $0x02000000, %eax		# Bit Mask EFLAGS.ID (bit 21)
+	andl $0x02000000, %eax
+	
+	cmp %eax, %edx				# Test if bit has changed
+	jne 2f						
+	movl $0x01, %eax			# Error, if not toggled
+	jmp _error
+2:
+
+	
+	# Check maximum CPUID
+	movl $0x0, %eax
+	cpuid
+	movl %eax, MaxCPUID
+
+	# Check maximum Exteded CPUID
+	movl $0x80000000, %eax
+	cpuid
+	movl %eax, MaxExtCPUID
+	cmpl $0x80000001, %eax
+	jae 3f
+	movl $2, %eax
+	jmp _error
+3:
+	
+	
+	# Check for 64Bit Capable
+	movl $0x80000001, %eax
+	cpuid
+	test $0x20000000, %edx
+	jnz 4f
+	movl $3, %eax
+	jmp _error
+4:
+
+	# continue with loading
+	movl $0xAA550000, %eax
+
+	
+_error:
 # Loop forever so that the user can shutdown or restart the computer	
 	cli
 1:
@@ -52,3 +112,8 @@ stack_top:
 
 .section ".data"
 
+MaxCPUID:
+	.long 0
+MaxExtCPUID:
+	.long 0
+	
