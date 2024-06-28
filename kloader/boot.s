@@ -44,29 +44,6 @@ _start:
 	pushl %ebx		# Tags
 	pushl %eax		# Magic
 	
-	# Try to toggle EFLAGS.ID
-	pushf
-	popl %eax
-	movl %eax, %edx				# Save original EFLAGS in EDX
-	xorl $0x02000000, %eax		# Bit toggle EFLAGS.ID (bit 21)
-	pushl %eax					# Try to write it to EFLAGS
-	popf
-	
-	pushf						# Read EFLAGS back
-	popl %eax
-	pushl %edx					# Restore original EFLAGS
-	popf
-	
-	andl $0x02000000, %eax		# Bit Mask EFLAGS.ID (bit 21)
-	andl $0x02000000, %eax
-	
-	cmp %eax, %edx				# Test if bit has changed
-	jne 2f						
-	movl $0x01, %eax			# Error, if not toggled
-	jmp _error
-2:
-
-	
 	# Check maximum CPUID
 	movl $0x0, %eax
 	cpuid
@@ -93,7 +70,7 @@ _start:
 4:
 
 	# continue with loading
-	movl $0xAA550000, %eax
+	call main
 
 	
 _error:
