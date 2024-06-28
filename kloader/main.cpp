@@ -29,7 +29,7 @@ static inline void cpuid(uint32_t code, cpuid_ret_s &retval)
 	);	
 }
 
-uint32_t main(uint32_t magic, void *mb2_info)
+extern "C" uint32_t main(uint32_t magic, void *mb2_info)
 {
 
 	cpuid_ret_s retval;
