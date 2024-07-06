@@ -3,7 +3,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#inlcude "multiboot2.hpp"
+#include "multiboot2.hpp"
+#include "video.hpp"
+
 
 uint32_t cpuid_max = 0;
 uint32_t cpuid_ext_max = 0;
@@ -34,8 +36,25 @@ static inline void cpuid(uint32_t code, cpuid_ret_s &retval)
 extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 {
 
+	uint32_t i = 0;
+	
+	if (magic != 0x36D76289) {
+		return 256;
+	}
+	
+	if ((i = Video::init(mb2_info)) == 0) {
+		return 257;
+	}
+	
+	Video::print_char(' ', 0, 0);
+	Video::print_char('!', 8, 0);
+	Video::print_char('"', 16, 0);
+	Video::print_char('#', 24, 0);
+	Video::print_char('%', 32, 0);
+	Video::print_char('$', 40, 0);
+	
 	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
-
+	
 	cpuid_ret_s retval;
 	
 	// Check maximum CPUID level
@@ -75,5 +94,5 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// call kmain of kernel
 	
 	
-	return 0xAA550000;
+	return i;
 }
