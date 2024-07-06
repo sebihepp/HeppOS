@@ -1,13 +1,24 @@
 # HeppOS 
 This is a hobby OS (Operating System) for learning and having fun programming at the lowest level. 
 ## Design choices
+### General
+- 64Bit OS
+- Multiboot2 compatible (using grub2)
+- Kernel and Drivers must be in relocatable elf format
+- Kernel and drivers are loaded as modules
 ### Programming languages
 - Assembler (only when necessary) 
 - C++ (main language) 
 - C (maybe some things are written in C) 
+### Kernel Loader
+- 32bit and multiboot2 compatible
+- Sets up Long Mode (64Bit)
+- Parses the reloc. elf modules
+- Passes multiboot2 info to kernel
+- Calls kmain in kernel.elf
 ### Kernel
-- The kernel must be in elf format and multiboot2 capable.
-- Kernel space is starting at 2GB virtual memory and must be mapped into every process.
+- The kernel itself must be in relocatable elf format.
+- Kernel space is the last 2GB and must be mapped into every process.
 - The kernel should be a monolith (all drivers run in kernel space). This may be changed to a microkernel later on, when possible. 
 - The kernel itself should only contain resource management, e.g. handling interrupts, physical and virtual memory management, 
 managing memory mapped i/o and ports and scheduling. 
