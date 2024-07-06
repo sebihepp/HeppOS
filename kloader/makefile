@@ -11,7 +11,7 @@ LDFLAGS := -T linker.ld -O2 -nostdlib -L "$$HOME/opt/cross/lib/gcc/i686-elf/14.1
 
 CXX_OBJECTS := main.o video.o
 C_OBJECTS := 
-AS_OBJECTS := boot.o font.o
+AS_OBJECTS := boot.o stdfont.o
 
 TARGET := kloader.elf
 

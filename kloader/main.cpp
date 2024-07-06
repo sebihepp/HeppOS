@@ -35,23 +35,26 @@ static inline void cpuid(uint32_t code, cpuid_ret_s &retval)
 
 extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 {
-
-	uint32_t i = 0;
 	
 	if (magic != 0x36D76289) {
 		return 256;
 	}
 	
-	if ((i = Video::init(mb2_info)) == 0) {
+	if (Video::init(mb2_info) == 0) {
 		return 257;
+	}
+	
+	for (uint32_t i = 0; i < 256; ++i) {
+		uint32_t linear = i * 8;
+		uint32_t x = linear % 1000;
+		uint32_t y = (linear / 1000) * 16;
+		Video::print_char(i, x, y);
 	}
 	
 	Video::print_char(' ', 0, 0);
 	Video::print_char('!', 8, 0);
-	Video::print_char('"', 16, 0);
-	Video::print_char('#', 24, 0);
-	Video::print_char('%', 32, 0);
-	Video::print_char('$', 40, 0);
+	Video::print_char('%', 16, 0);
+	
 	
 	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
 	
@@ -94,5 +97,5 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// call kmain of kernel
 	
 	
-	return i;
+	return 0xAA550000;
 }
