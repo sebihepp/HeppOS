@@ -17,7 +17,6 @@ ASM_OBJECTS :=
 
 TARGET := kernel.elf
 
-
 all: $(TARGET)
 
 .PHONY: clean
