@@ -11,7 +11,7 @@
 volatile uint16_t *videoMem = (uint16_t*)0xB8000;
 uint8_t col = 0;
 uint8_t row = 0;
-
+ 
 extern "C" void kprint(const char *text) {
 	while (*text != 0) {
 
