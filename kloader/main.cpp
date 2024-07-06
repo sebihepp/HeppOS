@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#inlcude "multiboot2.hpp"
+
 uint32_t cpuid_max = 0;
 uint32_t cpuid_ext_max = 0;
 bool longmode_avail = false;
@@ -29,8 +31,10 @@ static inline void cpuid(uint32_t code, cpuid_ret_s &retval)
 	);	
 }
 
-extern "C" uint32_t main(uint32_t magic, void *mb2_info)
+extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 {
+
+	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
 
 	cpuid_ret_s retval;
 	
@@ -62,9 +66,11 @@ extern "C" uint32_t main(uint32_t magic, void *mb2_info)
 	
 	// check how many address lines are implemented
 	
-	// setup initial 64bit paging
+	// setup initial 64bit paging (maybe map kernel space -2GB to the first 2GB in memory?)
 	
 	// enable long mode
+	
+	// enable SSE (maybe SSE2 is also standard for LongMode?)
 	
 	// call kmain of kernel
 	
