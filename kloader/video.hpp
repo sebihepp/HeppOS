@@ -23,11 +23,16 @@ class Video {
 private:
 	static void *framebuffer;
 	static uint32_t pitch;
+	static uint32_t width;
+	static uint32_t height;
 	
 public:	
 	static uint32_t init(multiboot2_info_t *mbi);
 	
 	static void print_char(uint8_t c, uint32_t x, uint32_t y);
+	
+	static uint32_t getWidth();
+	static uint32_t getHeight();
 	
 };
 

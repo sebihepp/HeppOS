@@ -46,14 +46,12 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	
 	for (uint32_t i = 0; i < 256; ++i) {
 		uint32_t linear = i * 8;
-		uint32_t x = linear % 1000;
-		uint32_t y = (linear / 1000) * 16;
+		uint32_t x = linear % Video::getWidth();
+		uint32_t y = (linear / Video::getWidth()) * 16;
+		if (y >= Video::getHeight())
+			break;
 		Video::print_char(i, x, y);
 	}
-	
-	Video::print_char(' ', 0, 0);
-	Video::print_char('!', 8, 0);
-	Video::print_char('%', 16, 0);
 	
 	
 	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)

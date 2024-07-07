@@ -1388,5 +1388,444 @@ stdfont:
 	.byte 0b00000000
 	.byte 0b00000000
 	
+# 69 - Capital E
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111110
+	.byte 0b01100110
+	.byte 0b01100010
+	.byte 0b01101000
+	.byte 0b01111000
+	.byte 0b01111000
 	
-.skip (255-68)*16, 0
+	.byte 0b01101000
+	.byte 0b01100010
+	.byte 0b01100110
+	.byte 0b11111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 70 - Capital F
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111110
+	.byte 0b01100110
+	.byte 0b01100010
+	.byte 0b01101000
+	.byte 0b01111000
+	.byte 0b01111000
+	
+	.byte 0b01101000
+	.byte 0b01100000
+	.byte 0b01100000
+	.byte 0b11110000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 71 - Capital G
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000000
+	.byte 0b11000000
+	.byte 0b11001110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 72 - Capital H
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11111110
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 73 - Capital I
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00111100
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 74 - Capital J
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00011110
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00001100
+	
+	.byte 0b00001100
+	.byte 0b11001100
+	.byte 0b11001100
+	.byte 0b01111000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 75 - Capital K
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01101100
+	.byte 0b01111000
+	.byte 0b01111000
+	
+	.byte 0b01101100
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b11100110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 76 - Capital L
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11110000
+	.byte 0b01100000
+	.byte 0b01100000
+	.byte 0b01100000
+	.byte 0b01100000
+	.byte 0b01100000
+	
+	.byte 0b01100000
+	.byte 0b01100010
+	.byte 0b01100110
+	.byte 0b11111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 77 - Capital M
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b10000010
+	.byte 0b11000110
+	.byte 0b11101110
+	.byte 0b11111110
+	.byte 0b11111110
+	.byte 0b11010110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 78 - Capital N
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b10000110
+	.byte 0b11000110
+	.byte 0b11100110
+	.byte 0b11110110
+	.byte 0b11111110
+	.byte 0b11011110
+	
+	.byte 0b11001110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 79 - Capital O
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 80 - Capital P
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111100
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b0111110
+	
+	.byte 0b01100000
+	.byte 0b01100000
+	.byte 0b01100000
+	.byte 0b11110000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 81 - Capital Q
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b11010110
+	.byte 0b11011110
+	.byte 0b01111100
+	
+	.byte 0b00000110
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 82 - Capital R
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111100
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01111100
+	
+	.byte 0b01101100
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b11100110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 83 - Capital S
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01100000
+	.byte 0b00111000
+	.byte 0b00001100
+	
+	.byte 0b00000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 84 - Capital T
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111110
+	.byte 0b01111110
+	.byte 0b01011010
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 85 - Capital U
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 86 - Capital V
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b01101100
+	.byte 0b00111000
+	.byte 0b00010000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 87 - Capital W
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11010110
+	
+	.byte 0b11111110
+	.byte 0b11101110
+	.byte 0b11000110
+	.byte 0b10000010
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 88 - Capital X
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01101100
+	.byte 0b01111100
+	.byte 0b00111000
+	.byte 0b00111000
+	
+	.byte 0b01111100
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 89 - Capital Y
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b00111100
+	.byte 0b00011000
+	
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 90 - Capital Z
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111110
+	.byte 0b11000110
+	.byte 0b10000110
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	
+	.byte 0b01100000
+	.byte 0b11000010
+	.byte 0b11000110
+	.byte 0b11111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+.skip (255-90)*16, 0

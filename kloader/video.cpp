@@ -5,6 +5,8 @@ extern "C" video_font_t stdfont;
 
 void *Video::framebuffer = NULL;
 uint32_t Video::pitch = 0;
+uint32_t Video::width = 0;
+uint32_t Video::height = 0;
 
 //For Testing purposes
 uint32_t fg_color = 0x0000FFFF;
@@ -44,6 +46,8 @@ uint32_t Video::init(multiboot2_info_t *mbi) {
 	
 	framebuffer = (void*)(_mbiFramebufferTag->framebuffer_addr & 0xFFFFFFFF);
 	pitch = _mbiFramebufferTag->framebuffer_pitch;
+	width = _mbiFramebufferTag->framebuffer_width;
+	height = _mbiFramebufferTag->framebuffer_height;
 	
 	return (uint32_t)framebuffer;
 }
@@ -62,4 +66,12 @@ void Video::print_char(uint8_t c, uint32_t x, uint32_t y) {
 			}
 		}
 	}
+}
+
+uint32_t Video::getWidth() {
+	return width;
+}
+
+uint32_t Video::getHeight() {
+	return height;
 }
