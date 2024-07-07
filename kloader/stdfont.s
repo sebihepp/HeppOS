@@ -808,7 +808,87 @@ stdfont:
 	.byte 0b00000000
 	.byte 0b00000000
 	
-# 40 - bracket open
+# 40 - round bracket open
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	.byte 0b00110000
+	.byte 0b00110000
+	.byte 0b00110000
+	
+	.byte 0b00110000
+	.byte 0b00110000
+	.byte 0b00011000
+	.byte 0b00001100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 41 - round bracket close
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00110000
+	.byte 0b00011000
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00001100
+	
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+# 42 - Star
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01100110
+	.byte 0b00111100
+	.byte 0b11111111
+	
+	.byte 0b00111100
+	.byte 0b01100110
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 43 - Plus sign
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b01111110
+	
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 44 - colon
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
@@ -820,6 +900,346 @@ stdfont:
 	
 	.byte 0b00000000
 	.byte 0b00000000
+	.byte 0b00110000
+	.byte 0b00110000
+	
+	.byte 0b00010000
+	.byte 0b00100000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 45 - hyfen
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 46 - full stop
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00110000
+	.byte 0b00110000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 47 - forward slash
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000010
+	.byte 0b00000110
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	
+	.byte 0b01100000
+	.byte 0b11000000
+	.byte 0b10000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 48 - Number zero
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11001110
+	.byte 0b11011110
+	.byte 0b11110110
+	
+	.byte 0b11100110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 49 - Number one
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00111000
+	.byte 0b01111000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b01111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 50 - Number two
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b00000110
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	
+	.byte 0b01100000
+	.byte 0b11000000
+	.byte 0b11000110
+	.byte 0b11111110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 51 - Number three
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b00000110
+	.byte 0b00000110
+	.byte 0b00111100
+	.byte 0b00000110
+	
+	.byte 0b00000110
+	.byte 0b00000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 52 - Number four
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00001100
+	.byte 0b00011100
+	.byte 0b00111100
+	.byte 0b01101100
+	.byte 0b11001100
+	.byte 0b11001100
+	
+	.byte 0b11111110
+	.byte 0b00001100
+	.byte 0b00001100
+	.byte 0b00011110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 53 - Number five
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111110
+	.byte 0b11000000
+	.byte 0b11000000
+	.byte 0b11000000
+	.byte 0b11111100
+	.byte 0b00000110
+	
+	.byte 0b00000110
+	.byte 0b00000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 54 - Number six
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000000
+	.byte 0b11000000
+	.byte 0b11111100
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 55 - Number seven
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111110
+	.byte 0b11000110
+	.byte 0b00000110
+	.byte 0b00000110
+	.byte 0b00001100
+	.byte 0b00011000
+	
+	.byte 0b00110000
+	.byte 0b00110000
+	.byte 0b00110000
+	.byte 0b00110000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 56 - Number eight
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	.byte 0b11000110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 57 - Number nine
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111110
+	
+	.byte 0b00000110
+	.byte 0b00000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 58 - Double point
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 59 - semicolon
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00011000
+	.byte 0b00001000
+	
+	.byte 0b00010000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 60 - less than sign
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000110
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	.byte 0b01100000
+	
+	.byte 0b00110000
+	.byte 0b00011000
+	.byte 0b00001100
+	.byte 0b00000110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 61 - equal sign
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111110
+	.byte 0b00000000
+	.byte 0b00000000
+	
+	.byte 0b01111110
+	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
 	
@@ -827,27 +1247,146 @@ stdfont:
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
+
+# 62 - greater than sign
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01100000
+	.byte 0b00110000
+	.byte 0b00011000
+	.byte 0b00001100
+	.byte 0b00000110
 	
-# 41 - bracket close
+	.byte 0b00001100
+	.byte 0b00011000
+	.byte 0b00110000
+	.byte 0b01100000
+	
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
+
+# 63 - question mark
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b00000110
+	.byte 0b00001100
+	.byte 0b00011000
+	
+	.byte 0b00011000
+	.byte 0b00000000
+	.byte 0b00011000
+	.byte 0b00011000
+	
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
+
+# 64 - at (@)
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00111100
+	.byte 0b01000010
+	.byte 0b10011101
+	.byte 0b10100101
+	.byte 0b10100101
+	
+	.byte 0b10101101
+	.byte 0b10110110
+	.byte 0b01000000
+	.byte 0b00111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 65 - Capital A
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00111000
+	.byte 0b01101100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11111110
+	
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000110
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 66 - Capital B
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111100
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01111100
+	.byte 0b01100110
+	
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b11111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 67 - Capital C
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b01111100
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b11000000
+	.byte 0b11000000
+	.byte 0b11000000
+	
+	.byte 0b11000000
+	.byte 0b11000110
+	.byte 0b11000110
+	.byte 0b01111100
+	
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b00000000
+
+# 68 - Capital D
+	.byte 0b00000000
+	.byte 0b00000000
+	.byte 0b11111100
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b01100110
+	.byte 0b11111100
 	
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
 	.byte 0b00000000
 	
-	.byte 0b00000000
-	.byte 0b00000000
-	.byte 0b00000000
-	.byte 0b00000000
 	
-	
-	
-.skip (255-41)*16, 0
+.skip (255-68)*16, 0
