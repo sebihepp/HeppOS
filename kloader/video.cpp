@@ -58,7 +58,14 @@ void Video::print_char(uint8_t c, uint32_t x, uint32_t y) {
 	
 	for (uint32_t row = 0; row < 16; row++) {
 		for (uint32_t col = 0; col < 8; col++) {
-			volatile uint32_t *target = _framebuffer + (y + row) * (pitch / 4) + (x + col);
+			uint32_t _x = x + col;
+			uint32_t _y = y + row;
+			if (_x >= width)
+				continue;
+			if (_y >= height)
+				continue;
+				
+			volatile uint32_t *target = _framebuffer + _y * (pitch / 4) + _x;
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
 				*target = fg_color;
 			} else {
