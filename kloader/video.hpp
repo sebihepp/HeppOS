@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 #include "multiboot2.hpp"
-
+#include "retvals.hpp"
 
 struct video_char_t {
 	uint8_t a[16];
@@ -27,7 +27,7 @@ private:
 	static uint32_t height;
 	
 public:	
-	static uint32_t init(multiboot2_info_t *mbi);
+	static retval_t init(multiboot2_info_t *mbi);
 	
 	static void print_char(uint8_t c, uint32_t x, uint32_t y);
 	

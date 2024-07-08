@@ -12,7 +12,7 @@ uint32_t Video::height = 0;
 uint32_t fg_color = 0x0000FFFF;
 uint32_t bg_color = 0x00000080;
 
-uint32_t Video::init(multiboot2_info_t *mbi) {
+retval_t Video::init(multiboot2_info_t *mbi) {
 
 	multiboot2_info_tag_t *_mbiCurrentTag = (multiboot2_info_tag_t *)((uintptr_t)mbi + 8);
 	multiboot2_info_tag_framebuffer_t *_mbiFramebufferTag = NULL;
@@ -23,7 +23,7 @@ uint32_t Video::init(multiboot2_info_t *mbi) {
 		
 		// Check for end of mbi tags
 		if ((_mbiCurrentTag->type == 0) && (_mbiCurrentTag->size = 8)) {
-			return 0;
+			return RETVAL_ERROR_NO_FRAMEBUFFER;
 		}
 		
 		//Found Framebuffer Tag
@@ -41,7 +41,7 @@ uint32_t Video::init(multiboot2_info_t *mbi) {
 	}
 	
 	if ((uintptr_t)_mbiCurrentTag >= ((uintptr_t)mbi + mbi->total_size)) {
-		return 0;
+		return RETVAL_ERROR_NO_FRAMEBUFFER;
 	}
 	
 	framebuffer = (void*)(_mbiFramebufferTag->framebuffer_addr & 0xFFFFFFFF);
@@ -49,7 +49,7 @@ uint32_t Video::init(multiboot2_info_t *mbi) {
 	width = _mbiFramebufferTag->framebuffer_width;
 	height = _mbiFramebufferTag->framebuffer_height;
 	
-	return (uint32_t)framebuffer;
+	return RETVAL_OK;
 }
 
 void Video::print_char(uint8_t c, uint32_t x, uint32_t y) {

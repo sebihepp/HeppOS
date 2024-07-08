@@ -5,13 +5,9 @@
 
 #include "multiboot2.hpp"
 #include "video.hpp"
+#include "retvals.hpp"
 
-
-uint32_t cpuid_max = 0;
-uint32_t cpuid_ext_max = 0;
-bool longmode_avail = false;
-
-union cpuid_ret_s
+union cpuid_retval_t
 {
 	uint32_t x[4];
 	struct 
@@ -23,7 +19,7 @@ union cpuid_ret_s
 	} __attribute__((packed));
 } __attribute__((packed));
 
-static inline void cpuid(uint32_t code, cpuid_ret_s &retval)
+static inline void cpuid(uint32_t code, cpuid_retval_t &retval)
 {
 	asm volatile 
 	(
@@ -35,13 +31,15 @@ static inline void cpuid(uint32_t code, cpuid_ret_s &retval)
 
 extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 {
+	retval_t retval;
 	
 	if (magic != 0x36D76289) {
-		return 256;
+		return RETVAL_ERROR_MB2_MAGIC;
 	}
 	
-	if (Video::init(mb2_info) == 0) {
-		return 257;
+	retval = Video::init(mb2_info);
+	if (retval != RETVAL_OK) {
+		return retval;
 	}
 	
 	for (uint32_t i = 0; i < 256; ++i) {
@@ -55,31 +53,18 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	
 	
 	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
-	
-	cpuid_ret_s retval;
-	
-	// Check maximum CPUID level
-	cpuid(0, retval);
-	cpuid_max = retval.a;
-	if (retval.a < 0x1) {
-		return 1;
-	}
 
-	
-	// Check maximum extended CPUID level
-	cpuid(0x80000000, retval);
-	cpuid_ext_max = retval.a;
-	if (retval.a < 0x1) {
-		return 2;
+	// Check maximum extended CPUID level	
+	cpuid_retval_t cpuid_retval;
+	cpuid(0x80000000, cpuid_retval);
+	if (cpuid_retval.a < 0x1) {
+		return RETVAL_ERROR_NO_LONGMODE;
 	}
-
 
 	//Check for support of long mode
-	cpuid(0x80000001, retval);
-	if (retval.d & 0x20000000) {
-		longmode_avail = true;
-	} else {
-		return 3;
+	cpuid(0x80000001, cpuid_retval);
+	if ((cpuid_retval.d & 0x20000000) == 0) {
+		return RETVAL_ERROR_NO_LONGMODE;
 	}
 	
 	// Parse modules (relocatable elf)
@@ -95,5 +80,5 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// call kmain of kernel
 	
 	
-	return 0xAA550000;
+	return RETVAL_OK;
 }
