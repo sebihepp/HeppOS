@@ -30,9 +30,10 @@ public:
 	static retval_t init(multiboot2_info_t *mbi);
 	
 	static void print_char(uint8_t c, uint32_t x, uint32_t y);
+	static void clear(uint32_t color = 0x00000000);
 	
-	static uint32_t getWidth();
-	static uint32_t getHeight();
+	static uint32_t getWidth(void);
+	static uint32_t getHeight(void);
 	
 };
 

@@ -42,6 +42,8 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 		return retval;
 	}
 	
+	Video::clear();
+	
 	for (uint32_t i = 0; i < 256; ++i) {
 		uint32_t linear = i * 8;
 		uint32_t x = linear % Video::getWidth();

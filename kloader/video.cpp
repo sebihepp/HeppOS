@@ -9,8 +9,8 @@ uint32_t Video::width = 0;
 uint32_t Video::height = 0;
 
 //For Testing purposes
-uint32_t fg_color = 0x0000FFFF;
-uint32_t bg_color = 0x00000080;
+uint32_t fg_color = 0x00C0C0C0;
+uint32_t bg_color = 0x00000000;
 
 retval_t Video::init(multiboot2_info_t *mbi) {
 
@@ -75,10 +75,21 @@ void Video::print_char(uint8_t c, uint32_t x, uint32_t y) {
 	}
 }
 
-uint32_t Video::getWidth() {
+uint32_t Video::getWidth(void) {
 	return width;
 }
 
-uint32_t Video::getHeight() {
+uint32_t Video::getHeight(void) {
 	return height;
+}
+
+void Video::clear(uint32_t color) {
+	uint32_t *_framebuffer = (uint32_t*)framebuffer;
+	
+	for (uint32_t y = 0; y < height; ++y) {
+		for (uint32_t x = 0; x < width; ++x) {
+			volatile uint32_t *target = _framebuffer + y * (pitch / 4) + x;
+			*target = color;
+		}
+	}
 }
