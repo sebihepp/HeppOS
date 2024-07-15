@@ -7,6 +7,18 @@ void *Console::Framebuffer = NULL;
 uint32_t Console::Pitch = 0;
 uint32_t Console::Width = 0;
 uint32_t Console::Height = 0;
+uint8_t Console::BPP = 0;
+	
+uint32_t Console::FGColor = 0x00AAAAAA;
+uint32_t Console::BGColor = 0x00000000;
+uint32_t Console::TitleFGColor = 0x0000FFFF;
+uint32_t Console::TitleBGColor = 0x000000AA;
+
+const char *Console::Title = "";
+const uint32_t Console::TitleHeight = 16;
+
+uint32_t Console::CursorX = 0;
+uint32_t Console::CursorY = Console::TitleHeight;
 
 retval_t Console::Init(const multiboot2_info_t *mbi) {
 
@@ -44,11 +56,18 @@ retval_t Console::Init(const multiboot2_info_t *mbi) {
 	Pitch = _mbiFramebufferTag->framebuffer_pitch;
 	Width = _mbiFramebufferTag->framebuffer_width;
 	Height = _mbiFramebufferTag->framebuffer_height;
+	if (_mbiFramebufferTag->framebuffer_type != MULTIBOOT2_FRAMEBUFFER_TYPE_COLOR) {
+		return RETVAL_ERROR_VIDEOMODE;
+	}
+	BPP = _mbiFramebufferTag->framebuffer_bpp;
+	if (BPP != 32) {
+		return RETVAL_ERROR_VIDEOMODE;
+	}
 	
 	return RETVAL_OK;
 }
 
-void Console::PrintChar(uint8_t c, uint32_t x, uint32_t y,
+void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 	uint32_t fg_color, uint32_t bg_color)
 {
 	
@@ -73,7 +92,7 @@ void Console::PrintChar(uint8_t c, uint32_t x, uint32_t y,
 	}
 }
 
-void Console::PrintCharAlpha(uint8_t c, uint32_t x, uint32_t y, 
+void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, 
 		uint32_t fg_color)
 {
 	uint32_t *_framebuffer = (uint32_t*)Framebuffer;
@@ -95,23 +114,27 @@ void Console::PrintCharAlpha(uint8_t c, uint32_t x, uint32_t y,
 	}
 }
 
-uint32_t Console::GetWidth(void) {
-	return Width;
-}
-
-uint32_t Console::GetHeight(void) {
-	return Height;
-}
-
-void Console::Clear(uint32_t color) {
-	uint32_t *_framebuffer = (uint32_t*)Framebuffer;
-	
-	for (uint32_t y = 0; y < Height; ++y) {
-		for (uint32_t x = 0; x < Width; ++x) {
-			volatile uint32_t *target = _framebuffer + y * (Pitch / 4) + x;
-			*target = color;
-		}
+void Console::PrintTitle(void) {
+	uint32_t i = 0;
+	uint32_t x = 8;
+	while (Title[i] != 0) {
+		PrintCharAlpha(Title[i], x, 0, TitleFGColor);
+		i++;
+		x += 8;
+		if (x > Width)
+			break;
 	}
+}
+	
+void Console::Clear(void) {	
+	// Clear all
+	Fill(0, 0, Width, Height, BGColor);
+	
+	// Background for Title
+	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	
+	// Draw Title
+	PrintTitle();	
 }
 
 void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) 
@@ -130,6 +153,75 @@ void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom,
 			volatile uint32_t *_target = _framebuffer + y * (Pitch / 4) + x;
 			*_target = color;
 		}
+	}
+	
+}
+
+void Console::SetFGColor(uint32_t color) {
+	FGColor = color;
+}
+
+void Console::SetBGColor(uint32_t color) {
+	BGColor = color;
+}
+
+void Console::SetTitleFGColor(uint32_t color) {
+	TitleFGColor = color;
+	
+	// Background for Title
+	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	
+	// Draw Title
+	PrintTitle();
+}
+
+void Console::SetTitleBGColor(uint32_t color) {
+	TitleBGColor = color;
+	
+	// Background for Title
+	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	
+	// Draw Title
+	PrintTitle();
+}
+
+void Console::SetTitleText(const char *text) {
+	Title = text;
+	
+	// Background for Title
+	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	
+	// Draw Title
+	PrintTitle();
+}
+
+void Console::Print(const char *text) {
+	size_t i = 0;
+	
+	while (text[i] != 0) {
+		
+		if (text[i] == '\n') {
+			CursorX = 0;
+			CursorY += 16;
+			if (CursorY >= Height) {
+				break;
+			} else {
+				i++;
+				continue;
+			}
+		} else {
+			PrintCharAlpha(text[i], CursorX, CursorY, FGColor);
+		}
+		
+		CursorX += 8;
+		if (CursorX >= Width) {
+			CursorX = 0;
+			CursorY += 16;
+		}
+		if (CursorY >= Height) {
+			break;
+		}
+		i++;
 	}
 	
 }

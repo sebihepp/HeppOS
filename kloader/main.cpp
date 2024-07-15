@@ -43,32 +43,28 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	}
 	
 	Console::Clear();
-	
-	for (uint32_t i = 0; i < 256; ++i) {
-		uint32_t linear = i * 8;
-		uint32_t x = linear % Console::GetWidth();
-		uint32_t y = (linear / Console::GetWidth()) * 16;
-		if (y >= Console::GetHeight())
-			break;
-		Console::PrintChar(i, x, y, 0x0000FFFF, 0x00000080);
-	}
-	
-	Console::Fill(200, 200, 400, 400, 0x00FFFFFF);
+	Console::SetTitleText("HeppOS - kloader");
 	
 	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
 
-	// Check maximum extended CPUID level	
+	
 	cpuid_retval_t cpuid_retval;
+	
+	Console::Print("Checking for LongMode - ");
+	// Check maximum extended CPUID level	
 	cpuid(0x80000000, cpuid_retval);
 	if (cpuid_retval.a < 0x1) {
+		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_LONGMODE;
 	}
 
 	//Check for support of long mode
 	cpuid(0x80000001, cpuid_retval);
 	if ((cpuid_retval.d & 0x20000000) == 0) {
+		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_LONGMODE;
 	}
+	Console::Print("OK\n");
 	
 	// Parse modules (relocatable elf)
 	
@@ -82,6 +78,6 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	
 	// call kmain of kernel
 	
-	
+	Console::Print("Finished!");
 	return RETVAL_OK;
 }

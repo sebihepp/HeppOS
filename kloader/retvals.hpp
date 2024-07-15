@@ -10,5 +10,6 @@ typedef uint32_t retval_t;
 #define RETVAL_ERROR_NO_LONGMODE		3
 #define RETVAL_ERROR_NO_FRAMEBUFFER		4
 #define RETVAL_ERROR_TEST				5
+#define RETVAL_ERROR_VIDEOMODE			6
 
 #endif
