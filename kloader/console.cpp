@@ -113,3 +113,23 @@ void Console::Clear(uint32_t color) {
 		}
 	}
 }
+
+void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) 
+{
+	uint32_t * _framebuffer = (uint32_t*)Framebuffer;
+	if (left > Width)
+		return;
+	if (top > Height)
+		return;	
+	for (uint32_t y = top; y < bottom; y++) {
+		for (uint32_t x = left; x < right; x++) {
+			if (x >= Width)
+				continue;
+			if (y >= Height)
+				continue;
+			volatile uint32_t *_target = _framebuffer + y * (Pitch / 4) + x;
+			*_target = color;
+		}
+	}
+	
+}

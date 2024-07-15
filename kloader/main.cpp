@@ -53,6 +53,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 		Console::PrintChar(i, x, y, 0x0000FFFF, 0x00000080);
 	}
 	
+	Console::Fill(200, 200, 400, 400, 0x00FFFFFF);
 	
 	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
 
