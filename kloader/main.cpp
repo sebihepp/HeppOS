@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "multiboot2.hpp"
-#include "video.hpp"
+#include "console.hpp"
 #include "retvals.hpp"
 
 union cpuid_retval_t
@@ -37,20 +37,20 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 		return RETVAL_ERROR_MB2_MAGIC;
 	}
 	
-	retval = Video::init(mb2_info);
+	retval = Console::Init(mb2_info);
 	if (retval != RETVAL_OK) {
 		return retval;
 	}
 	
-	Video::clear();
+	Console::Clear();
 	
 	for (uint32_t i = 0; i < 256; ++i) {
 		uint32_t linear = i * 8;
-		uint32_t x = linear % Video::getWidth();
-		uint32_t y = (linear / Video::getWidth()) * 16;
-		if (y >= Video::getHeight())
+		uint32_t x = linear % Console::GetWidth();
+		uint32_t y = (linear / Console::GetWidth()) * 16;
+		if (y >= Console::GetHeight())
 			break;
-		Video::print_char(i, x, y);
+		Console::PrintChar(i, x, y, 0x0000FFFF, 0x00000080);
 	}
 	
 	
