@@ -6,6 +6,7 @@
 #include "multiboot2.hpp"
 #include "console.hpp"
 #include "retvals.hpp"
+#include "gdt.hpp"
 
 union cpuid_retval_t
 {
@@ -88,6 +89,18 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	}
 	
 	// Setup GDT
+	Console::Print("Setup GDT - ");
+	retval = GDT::Init();
+	if (retval != RETVAL_OK) {
+		Console::Print("ERROR\n");
+		return retval;
+	}
+	Console::Print("OK\n");
+	
+	// Load GDT
+	Console::Print("Load GDT - ");
+	GDT::LoadGDT();
+	Console::Print("OK\n");
 	
 	// Parse modules (relocatable elf)
 	

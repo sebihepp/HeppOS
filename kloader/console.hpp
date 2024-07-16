@@ -45,6 +45,9 @@ private:
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
 	
+	Console();
+	~Console();
+	
 public:	
 	static retval_t Init(const multiboot2_info_t *mbi);
 	

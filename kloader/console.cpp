@@ -20,6 +20,13 @@ const uint32_t Console::TitleHeight = 16;
 uint32_t Console::CursorX = 0;
 uint32_t Console::CursorY = Console::TitleHeight;
 
+Console::Console() {
+}
+
+Console::~Console() {
+	
+}
+
 retval_t Console::Init(const multiboot2_info_t *mbi) {
 
 	multiboot2_info_tag_t *_mbiCurrentTag = (multiboot2_info_tag_t *)((uintptr_t)mbi + 8);
