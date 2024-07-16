@@ -45,11 +45,9 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	Console::Clear();
 	Console::SetTitleText("HeppOS - kloader");
 	
-	// Maybe implement some Text output for better diagnosis (check multiboot2 info for framebuffer + ASCII charset)
-
-	
 	cpuid_retval_t cpuid_retval;
 	
+	// Check for LongMode
 	Console::Print("Checking for LongMode - ");
 	// Check maximum extended CPUID level	
 	cpuid(0x80000000, cpuid_retval);
@@ -66,17 +64,40 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	}
 	Console::Print("OK\n");
 	
-	// Parse modules (relocatable elf)
+	// Check for PAE
+	Console::Print("Checking for PAE - ");	
+	cpuid(0x80000001, cpuid_retval);
+	if ((cpuid_retval.d & 0x00000040) == 0) {
+		Console::Print("ERROR\n");
+		return RETVAL_ERROR_NO_PAE;
+	}
+	Console::Print("OK\n");
 	
 	// check how many address lines are implemented
+	Console::Print("Supported virtual addresses - ");
+	cpuid(0x00000000, cpuid_retval);
+	if (cpuid_retval.a < 7) {
+		Console::Print("48bit\n");
+	} else {
+		cpuid(0x00000007, cpuid_retval);
+		if ((cpuid_retval.c & 0x00010000) == 0) {
+			Console::Print("48bit\n");
+		} else {
+			Console::Print("57bit\n");
+		}
+	}
+	
+	// Setup GDT
+	
+	// Parse modules (relocatable elf)
 	
 	// setup initial 64bit paging (maybe map kernel space -2GB to the first 2GB in memory?)
 	
-	// enable long mode
+	// enable long mode - 48bit
 	
 	// enable SSE (maybe SSE2 is also standard for LongMode?)
 	
-	// call kmain of kernel
+	// jump to kmain of kernel
 	
 	Console::Print("Finished!");
 	return RETVAL_OK;
