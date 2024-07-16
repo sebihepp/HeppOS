@@ -38,7 +38,7 @@
 #define GDT_ACCESS_DIRECTION_UP		0x00
 #define GDT_ACCESS_CONFORM			0x04
 #define GDT_ACCESS_RW				0x02
-#define GDT_ACCESS_ACCESS			0x01
+#define GDT_ACCESS_ACCESSED			0x01
 
 #define GDT_FLAGS_GRANULARITY		0x8
 #define GDT_FLAGS_32BIT				0x4
@@ -50,7 +50,7 @@
 struct GDTD_t {
 	uint16_t size;
 	uint32_t offset;
-}__attribute__((packed));
+}__attribute__((packed, aligned (8) ));
 
 struct GD_t {
 	uint16_t limit_l;
@@ -60,7 +60,7 @@ struct GD_t {
 	uint8_t limit_h:4;
 	uint8_t flags:4;
 	uint8_t base_h;
-}__attribute__((packed));
+}__attribute__((packed, aligned (8) ));
 
 
 class GDT {
