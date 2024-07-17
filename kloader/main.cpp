@@ -88,6 +88,35 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 		}
 	}
 	
+	// Check for SSE
+	Console::Print("Checking for SSE - ");	
+	cpuid(0x00000001, cpuid_retval);
+	if ((cpuid_retval.d & 0x02000000) == 0) {
+		Console::Print("ERROR\n");
+		return RETVAL_ERROR_NO_SSE;
+	}
+	Console::Print("OK\n");
+	
+	// Check for SSE2
+	Console::Print("Checking for SSE2 - ");	
+	cpuid(0x00000001, cpuid_retval);
+	if ((cpuid_retval.d & 0x04000000) == 0) {
+		Console::Print("ERROR\n");
+		return RETVAL_ERROR_NO_SSE2;
+	}
+	Console::Print("OK\n");
+
+	
+	// Check for FXSAVE/FXRSTOR
+	Console::Print("Checking for FXSAVE/FXRSTOR - ");	
+	cpuid(0x00000001, cpuid_retval);
+	if ((cpuid_retval.d & 0x01000000) == 0) {
+		Console::Print("ERROR\n");
+		return RETVAL_ERROR_NO_FXSAVE;
+	}
+	Console::Print("OK\n");
+	
+	
 	// Setup GDT
 	Console::Print("Setup GDT - ");
 	retval = GDT::Init();
@@ -102,13 +131,16 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	GDT::LoadGDT();
 	Console::Print("OK\n");
 	
-	// Parse modules (relocatable elf)
+	// enable SSE and SSE2 (standard for LongMode)
+	
 	
 	// setup initial 64bit paging (maybe map kernel space -2GB to the first 2GB in memory?)
 	
 	// enable long mode - 48bit
 	
-	// enable SSE (maybe SSE2 is also standard for LongMode?)
+	
+	
+	// Parse modules (relocatable elf)
 	
 	// jump to kmain of kernel
 	
