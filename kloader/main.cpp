@@ -131,7 +131,23 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	GDT::LoadGDT();
 	Console::Print("OK\n");
 	
+	
 	// enable SSE and SSE2 (standard for LongMode)
+	Console::Print("Enabling SSE and SSE2 - ");
+	asm volatile (
+		"movl %%cr0, %%eax;\n"
+		"andw $0xFFFB, %%ax;\n"		//clear EM bit
+		"orw $0x2, %%ax;\n"			//set MP bit
+		"movl %%eax, %%cr0;\n"
+		
+		"movl %%cr4, %%eax;\n"
+		"orw $0x0600, %%ax;\n"		//set OSFXSR and OSXMMEXCPT bits
+		"movl %%eax, %%cr4;\n"
+		:
+		:
+		: "eax"
+	);	
+	Console::Print("OK\n");
 	
 	
 	// setup initial 64bit paging (maybe map kernel space -2GB to the first 2GB in memory?)
