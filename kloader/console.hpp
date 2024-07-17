@@ -62,6 +62,8 @@ public:
 	
 	static void Clear(void);
 	
+	static void *GetFramebuffer(void);
+	
 };
 
 #endif

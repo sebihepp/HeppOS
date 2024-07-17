@@ -232,3 +232,7 @@ void Console::Print(const char *text) {
 	}
 	
 }
+
+void *Console::GetFramebuffer(void) {
+	return Framebuffer;
+}
