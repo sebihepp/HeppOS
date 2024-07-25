@@ -43,31 +43,6 @@ _start:
 	# Save Multiboot2 tags and magic
 	pushl %ebx		# Tags
 	pushl %eax		# Magic
-	
-	# Check maximum CPUID
-	movl $0x0, %eax
-	cpuid
-	movl %eax, MaxCPUID
-
-	# Check maximum Exteded CPUID
-	movl $0x80000000, %eax
-	cpuid
-	movl %eax, MaxExtCPUID
-	cmpl $0x80000001, %eax
-	jae 3f
-	movl $2, %eax
-	jmp _error
-3:
-	
-	
-	# Check for 64Bit Capable
-	movl $0x80000001, %eax
-	cpuid
-	test $0x20000000, %edx
-	jnz 4f
-	movl $3, %eax
-	jmp _error
-4:
 
 	# continue with loading
 	call main
@@ -82,15 +57,10 @@ _error:
 
 
 .section ".bss"
-	.align 4096
-	.lcomm stack_bottom, STACK_SIZE
+
+.align 4096
+.lcomm stack_bottom, STACK_SIZE
 stack_top:
 
 
 .section ".data"
-
-MaxCPUID:
-	.long 0
-MaxExtCPUID:
-	.long 0
-	
