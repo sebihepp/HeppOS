@@ -129,7 +129,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	
 	
 	// check for VA57 (57bit Paging)
-	Console::Print("Check for 5-level-paging - ");
+	Console::Print("Checking for 5-level-paging - ");
 	cpuid(0x00000000, cpuid_retval);
 	if (cpuid_retval.a < 7) {
 		Console::Print("NO\n");
@@ -143,7 +143,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	}
 	
 	// check for 1GB Pages (PG1G)
-	Console::Print("Check for 1GB pages - ");
+	Console::Print("Checking for 1GB pages - ");
 	cpuid(0x80000000, cpuid_retval);
 	if (cpuid_retval.a < 1) {
 		Console::Print("ERROR\n");
