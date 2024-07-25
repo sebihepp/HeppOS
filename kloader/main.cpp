@@ -9,28 +9,8 @@
 #include "gdt.hpp"
 #include "paging.hpp"
 #include "cxxstub.h"
+#include "cpuid.hpp"
 
-union cpuid_retval_t
-{
-	uint32_t x[4];
-	struct 
-	{
-		uint32_t a;
-		uint32_t b;
-		uint32_t c;
-		uint32_t d;
-	} __attribute__((packed));
-} __attribute__((packed));
-
-static inline void cpuid(uint32_t code, cpuid_retval_t &retval)
-{
-	asm volatile 
-	(
-		"cpuid" :
-		"=a" (retval.a), "=b" (retval.b), "=c" (retval.c), "=d" (retval.d) :
-		"a" (code) :
-	);	
-}
 
 char* itoa(int num, char* str, int base);
 
@@ -59,14 +39,14 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	Console::Print("Checking for LongMode - ");
 	// Check maximum extended CPUID level	
 	cpuid(0x80000000, cpuid_retval);
-	if (cpuid_retval.a < 0x1) {
+	if (cpuid_retval.eax < 0x1) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_LONGMODE;
 	}
 
 	//Check for support of long mode
 	cpuid(0x80000001, cpuid_retval);
-	if ((cpuid_retval.d & 0x20000000) == 0) {
+	if ((cpuid_retval.edx & 0x20000000) == 0) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_LONGMODE;
 	}
@@ -75,7 +55,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// Check for PAE
 	Console::Print("Checking for PAE - ");	
 	cpuid(0x80000001, cpuid_retval);
-	if ((cpuid_retval.d & 0x00000040) == 0) {
+	if ((cpuid_retval.edx & 0x00000040) == 0) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_PAE;
 	}
@@ -85,7 +65,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// Check for SSE
 	Console::Print("Checking for SSE - ");	
 	cpuid(0x00000001, cpuid_retval);
-	if ((cpuid_retval.d & 0x02000000) == 0) {
+	if ((cpuid_retval.edx & 0x02000000) == 0) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_SSE;
 	}
@@ -94,7 +74,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// Check for SSE2
 	Console::Print("Checking for SSE2 - ");	
 	cpuid(0x00000001, cpuid_retval);
-	if ((cpuid_retval.d & 0x04000000) == 0) {
+	if ((cpuid_retval.edx & 0x04000000) == 0) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_SSE2;
 	}
@@ -104,7 +84,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// Check for FXSAVE/FXRSTOR
 	Console::Print("Checking for FXSAVE/FXRSTOR - ");	
 	cpuid(0x00000001, cpuid_retval);
-	if ((cpuid_retval.d & 0x01000000) == 0) {
+	if ((cpuid_retval.edx & 0x01000000) == 0) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_NO_FXSAVE;
 	}
@@ -131,11 +111,11 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// check for VA57 (57bit Paging)
 	Console::Print("Checking for 5-level-paging - ");
 	cpuid(0x00000000, cpuid_retval);
-	if (cpuid_retval.a < 7) {
+	if (cpuid_retval.eax < 7) {
 		Console::Print("NO\n");
 	} else {
 		cpuid(0x00000007, cpuid_retval);
-		if ((cpuid_retval.c & 0x00010000) == 0) {
+		if ((cpuid_retval.ecx & 0x00010000) == 0) {
 			Console::Print("NO\n");
 		} else {
 			Console::Print("YES\n");
@@ -145,11 +125,11 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// check for 1GB Pages (PG1G)
 	Console::Print("Checking for 1GB pages - ");
 	cpuid(0x80000000, cpuid_retval);
-	if (cpuid_retval.a < 1) {
+	if (cpuid_retval.eax < 1) {
 		Console::Print("ERROR\n");
 	} else {
 		cpuid(0x80000001, cpuid_retval);
-		if ((cpuid_retval.d & 0x04000000) == 0) {
+		if ((cpuid_retval.edx & 0x04000000) == 0) {
 			Console::Print("ERROR\n");
 			return RETVAL_ERROR_NO_1GB_PAGES;
 		} else {
@@ -160,12 +140,12 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// check how many physical address lines are implemented
 	Console::Print("Supported physical addresses - ");
 	cpuid(0x80000000, cpuid_retval);
-	if (cpuid_retval.a < 8) {
+	if (cpuid_retval.eax < 8) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_GENERAL;
 	} else {
 		cpuid(0x80000008, cpuid_retval);
-		_padr_bits = cpuid_retval.a & 0xFF;
+		_padr_bits = cpuid_retval.eax & 0xFF;
 		if (_padr_bits < 32) {
 			Console::Print("ERROR\n");
 			return RETVAL_ERROR_GENERAL;
@@ -178,12 +158,12 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	// check how many virtual address lines are implemented
 	Console::Print("Supported virtual addresses - ");
 	cpuid(0x80000000, cpuid_retval);
-	if (cpuid_retval.a < 8) {
+	if (cpuid_retval.eax < 8) {
 		Console::Print("ERROR\n");
 		return RETVAL_ERROR_GENERAL;
 	} else {
 		cpuid(0x80000008, cpuid_retval);
-		_vadr_bits = (cpuid_retval.a >> 8) & 0xFF;
+		_vadr_bits = (cpuid_retval.eax >> 8) & 0xFF;
 		if (_vadr_bits < 32) {
 			Console::Print("ERROR\n");
 			return RETVAL_ERROR_GENERAL;
