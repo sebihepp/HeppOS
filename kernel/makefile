@@ -4,8 +4,8 @@ CXX := "$${HOME}/opt/cross/bin/x86_64-elf-g++"
 AS := "$${HOME}/opt/cross/bin/x86_64-elf-as"
 LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
 
-CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions
-CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel
+CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel
 ASFLAGS := 
 LDFLAGS := -T linker.ld -O2 -r -nostdlib -L "$$HOME/opt/cross/lib/gcc/x86_64-elf/14.1.0" -lgcc
 
