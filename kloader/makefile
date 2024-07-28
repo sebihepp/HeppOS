@@ -12,9 +12,16 @@ LDFLAGS := -T linker.ld -O2 -nostdlib -L "$$HOME/opt/cross/lib/gcc/i686-elf/14.1
 CXX_OBJECTS := $(patsubst %.cpp, %.o, $(wildcard *.cpp)) 
 C_OBJECTS := $(patsubst %.c, %.o, $(wildcard *.c))
 AS_OBJECTS := $(patsubst %.s, %.o, $(wildcard *.s))
+AS_OBJECTS_TMP := $(AS_OBJECTS)
+AS_OBJECTS := $(filter-out crti.o, $(AS_OBJECTS_TMP))
+AS_OBJECTS_TMP := $(AS_OBJECTS)
+AS_OBJECTS := $(filter-out crtn.o, $(AS_OBJECTS_TMP))
 
+
+CRTI_OBJECT := crti.o
 CRTBEGIN_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+CRTN_OBJECT := crtn.o
 
 TARGET := kloader.elf
 
@@ -25,7 +32,7 @@ all: $(TARGET)
 clean: 
 	rm -f $(C_OBJECTS) $(CXX_OBJECTS) $(AS_OBJECTS) $(TARGET)
 
-$(TARGET): $(AS_OBJECTS) $(CXX_OBJECTS) $(C_OBJECTS) $(CRTBEGIN_OBJECT) $(CRTEND_OBJECT)
+$(TARGET): $(CRTI_OBJECT) $(CRTBEGIN_OBJECT) $(AS_OBJECTS) $(CXX_OBJECTS) $(C_OBJECTS) $(CRTEND_OBJECT) $(CRTN_OBJECT)
 	$(LD) $(LDFLAGS) -o $@ $^ 
 
 %.o: %.s
