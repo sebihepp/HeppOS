@@ -40,6 +40,9 @@ _start:
 	# Setup stack
 	movl $stack_top, %esp
 	
+	# Call constructors
+	call _init
+	
 	# Save Multiboot2 tags and magic
 	pushl %ebx		# Tags
 	pushl %eax		# Magic
@@ -47,6 +50,8 @@ _start:
 	# continue with loading
 	call main
 
+	# Call deconstructors
+	call _fini
 	
 _error:
 # Loop forever so that the user can shutdown or restart the computer	
