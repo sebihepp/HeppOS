@@ -16,5 +16,7 @@ typedef uint32_t retval_t;
 #define RETVAL_ERROR_NO_SSE2			9
 #define RETVAL_ERROR_NO_FXSAVE			10
 #define RETVAL_ERROR_NO_1GB_PAGES		11
+#define RETVAL_ERROR_NO_GLOBAL_PAGES	12
+
 
 #endif

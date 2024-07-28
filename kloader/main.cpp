@@ -136,6 +136,21 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 			Console::Print("OK\n");
 		}
 	}
+
+	// check for global Pages (PGE)
+	Console::Print("Checking for global pages - ");
+	cpuid(0x00000000, cpuid_retval);
+	if (cpuid_retval.eax < 1) {
+		Console::Print("ERROR\n");
+	} else {
+		cpuid(0x00000001, cpuid_retval);
+		if ((cpuid_retval.edx & 0x00000080) == 0) {
+			Console::Print("ERROR\n");
+			return RETVAL_ERROR_NO_GLOBAL_PAGES;
+		} else {
+			Console::Print("OK\n");
+		}
+	}
 	
 	// check how many physical address lines are implemented
 	Console::Print("Supported physical addresses - ");
