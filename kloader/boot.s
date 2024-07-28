@@ -40,10 +40,11 @@ _start:
 	# Setup stack
 	movl $stack_top, %esp
 	
+	# ERROR - when this is enabled it somehow doesn't output anything anymore on screen
 	# Call constructors
 	call _init
 	
-	# Save Multiboot2 tags and magic
+	# Parameters Multiboot2 tags and magic
 	pushl %ebx		# Tags
 	pushl %eax		# Magic
 
