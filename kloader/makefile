@@ -13,6 +13,9 @@ CXX_OBJECTS := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 C_OBJECTS := $(patsubst %.c, %.o, $(wildcard *.c))
 AS_OBJECTS := $(patsubst %.s, %.o, $(wildcard *.s))
 
+CRTBEGIN_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+
 TARGET := kloader.elf
 
 
@@ -22,7 +25,7 @@ all: $(TARGET)
 clean: 
 	rm -f $(C_OBJECTS) $(CXX_OBJECTS) $(AS_OBJECTS) $(TARGET)
 
-$(TARGET): $(AS_OBJECTS) $(CXX_OBJECTS) $(C_OBJECTS)
+$(TARGET): $(AS_OBJECTS) $(CXX_OBJECTS) $(C_OBJECTS) $(CRTBEGIN_OBJECT) $(CRTEND_OBJECT)
 	$(LD) $(LDFLAGS) -o $@ $^ 
 
 %.o: %.s
