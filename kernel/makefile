@@ -4,10 +4,14 @@ CXX := "$${HOME}/opt/cross/bin/x86_64-elf-g++"
 AS := "$${HOME}/opt/cross/bin/x86_64-elf-as"
 LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
 
+# Get the correct libgcc path
+LGCCPATH := $(dir $(shell $(CC) -mno-red-zone -print-libgcc-file-name))
+
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel
 CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel
 ASFLAGS := 
-LDFLAGS := -T linker.ld -O2 -r -nostdlib -L "$$HOME/opt/cross/lib/gcc/x86_64-elf/14.1.0" -lgcc
+LDFLAGS := -T linker.ld -O2 -r -nostdlib -L "$(LGCCPATH)" -lgcc
+
 
 CXX_OBJECTS := $(patsubst %.cpp, %.o, $(wildcard *.cpp)) 
 C_OBJECTS := $(patsubst %.c, %.o, $(wildcard *.c))
