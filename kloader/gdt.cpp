@@ -93,13 +93,13 @@ void GDT::LoadGDT(void) {
 		"lgdt %0;"
 		"ljmp %1, $1f;"
 		"1:"
-		"movw %%ax, %%ds;"
-		"movw %%ax, %%es;"
-		"movw %%ax, %%fs;"
-		"movw %%ax, %%gs;"
-		"movw %%ax, %%ss;"
+		"mov %2, %%ds;"
+		"mov %2, %%es;"
+		"mov %2, %%fs;"
+		"mov %2, %%gs;"
+		"mov %2, %%ss;"
 		:  
-		: "m" (GlobalDescriptorTableDescriptor), "i" (GDT_CODE32_SEL), "ax" (GDT_DATA32_SEL)
+		: "m" (GlobalDescriptorTableDescriptor), "i" (GDT_CODE32_SEL), "r" (GDT_DATA32_SEL)
 		: 
 	);
 }
