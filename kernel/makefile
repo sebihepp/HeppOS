@@ -7,8 +7,8 @@ LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
 # Get the correct libgcc path
 LGCCPATH := $(dir $(shell $(CC) -mno-red-zone -print-libgcc-file-name))
 
-CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel
-CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone
+CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel -mno-red-zone
 ASFLAGS := 
 LDFLAGS := -T linker.ld -O2 -r -nostdlib -L "$(LGCCPATH)" -lgcc
 
