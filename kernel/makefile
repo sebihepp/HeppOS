@@ -1,4 +1,5 @@
 
+# These paths need to be adjusted to your machine
 CC := "$${HOME}/opt/cross/bin/x86_64-elf-gcc"
 CXX := "$${HOME}/opt/cross/bin/x86_64-elf-g++"
 AS := "$${HOME}/opt/cross/bin/x86_64-elf-as"
@@ -7,6 +8,7 @@ LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
 # Get the correct libgcc path
 LGCCPATH := $(dir $(shell $(CC) -mno-red-zone -print-libgcc-file-name))
 
+# Definition for flags
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone
 CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel -mno-red-zone
 ASFLAGS := 
@@ -18,16 +20,13 @@ C_OBJECTS := $(patsubst %.c, %.o, $(wildcard *.c))
 # All .s files should have .o files, except crti.s and crtn.s - they have to be treated specially
 AS_OBJECTS := $(filter-out crti.o crtn.o ,$(patsubst %.s, %.o, $(wildcard *.s)))
 
-
 # Needed for constructors and destructors
 CRTI_OBJECT := crti.o
 CRTBEGIN_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
 CRTN_OBJECT := crtn.o
 
-
 TARGET := kernel.elf
-
 
 all: $(TARGET)
 
