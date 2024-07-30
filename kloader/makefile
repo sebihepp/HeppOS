@@ -1,11 +1,14 @@
 
+# These paths need to be adjusted to your machine
 CC := "$${HOME}/opt/cross/bin/i686-elf-gcc"
 CXX := "$${HOME}/opt/cross/bin/i686-elf-g++"
 AS := "$${HOME}/opt/cross/bin/i686-elf-as"
 LD := "$${HOME}/opt/cross/bin/i686-elf-ld"
 
+# Get the correct libgcc path
 LGCCPATH := $(dir $(shell $(CC) -print-libgcc-file-name))
 
+# Definition for flags
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions
 CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
 ASFLAGS := 
@@ -13,13 +16,10 @@ LDFLAGS := -T linker.ld -O2 -nostdlib -L "$(LGCCPATH)" -lgcc
 
 CXX_OBJECTS := $(patsubst %.cpp, %.o, $(wildcard *.cpp)) 
 C_OBJECTS := $(patsubst %.c, %.o, $(wildcard *.c))
-AS_OBJECTS := $(patsubst %.s, %.o, $(wildcard *.s))
-AS_OBJECTS_TMP := $(AS_OBJECTS)
-AS_OBJECTS := $(filter-out crti.o, $(AS_OBJECTS_TMP))
-AS_OBJECTS_TMP := $(AS_OBJECTS)
-AS_OBJECTS := $(filter-out crtn.o, $(AS_OBJECTS_TMP))
+# All .s files should have .o files, except crti.s and crtn.s - they have to be treated specially
+AS_OBJECTS := $(filter-out crti.o crtn.o ,$(patsubst %.s, %.o, $(wildcard *.s)))
 
-
+# Needed for constructors and destructors
 CRTI_OBJECT := crti.o
 CRTBEGIN_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
