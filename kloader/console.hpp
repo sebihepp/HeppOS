@@ -21,6 +21,10 @@ struct video_font_t {
 class Console {
 
 private:
+
+	static Console *ConsoleBPC;
+	
+protected:
 	static void *Framebuffer;
 	static uint32_t Pitch;
 	static uint32_t Width;
@@ -44,6 +48,7 @@ private:
 	static void PrintChar(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor, uint32_t bgcolor);
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
+
 	
 	Console();
 	~Console();
@@ -63,6 +68,8 @@ public:
 	static void Clear(void);
 	
 	static void *GetFramebuffer(void);
+	
+	virtual void SetPixel(uint32_t x, uint32_t y, uint32_t color) = 0;
 	
 };
 

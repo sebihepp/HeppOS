@@ -37,6 +37,8 @@
 *.bin
 *.img
 
-# config file of vms
+# config files of virtual machines
 /bochsrc
+
+# Zone.Identifier files
 
