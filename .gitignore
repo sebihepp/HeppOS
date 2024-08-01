@@ -41,4 +41,4 @@
 /bochsrc
 
 # Zone.Identifier files
-
+*.Zone.Identifier
