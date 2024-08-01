@@ -10,7 +10,7 @@ LGCCPATH := $(dir $(shell $(CC) -print-libgcc-file-name))
 
 # Definition for flags
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions
-CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
+CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-use-cxa-atexit
 ASFLAGS := 
 LDFLAGS := -T linker.ld -O2 -nostdlib -L "$(LGCCPATH)" -lgcc
 

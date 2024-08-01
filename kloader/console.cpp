@@ -1,7 +1,15 @@
 
 #include "console.hpp"
+#include "console32.hpp"
+#include "console24.hpp"
+#include "console16.hpp"
+#include "console15.hpp"
+#include "console8.hpp"
+
 
 extern "C" video_font_t stdfont;
+
+Console *Console::ConsoleBPC = NULL;
 
 void *Console::Framebuffer = NULL;
 uint32_t Console::Pitch = 0;
@@ -19,6 +27,12 @@ const uint32_t Console::TitleHeight = 16;
 
 uint32_t Console::CursorX = 0;
 uint32_t Console::CursorY = Console::TitleHeight;
+
+static Console8 con8;
+static Console15 con15;
+static Console16 con16;
+static Console24 con24;
+static Console32 con32;
 
 Console::Console() {
 }
@@ -67,18 +81,32 @@ retval_t Console::Init(const multiboot2_info_t *mbi) {
 		return RETVAL_ERROR_VIDEOMODE;
 	}
 	BPP = _mbiFramebufferTag->framebuffer_bpp;
-	if (BPP != 32) {
-		return RETVAL_ERROR_VIDEOMODE;
-	}
-	
+	switch (BPP) {
+		case 32:
+			ConsoleBPC = &con32;
+			break;
+		case 24:
+			ConsoleBPC = &con24;
+			break;
+		case 16:
+			ConsoleBPC = &con16;
+			break;
+		case 15:
+			ConsoleBPC = &con15;
+			break;
+		case 8:
+			ConsoleBPC = &con8;
+			break;
+			
+		default:
+			return RETVAL_ERROR_VIDEOMODE;
+	}	
 	return RETVAL_OK;
 }
 
 void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 	uint32_t fg_color, uint32_t bg_color)
 {
-	
-	uint32_t *_framebuffer = (uint32_t*)Framebuffer;
 	
 	for (uint32_t row = 0; row < 16; row++) {
 		for (uint32_t col = 0; col < 8; col++) {
@@ -89,11 +117,10 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= Height)
 				continue;
 				
-			volatile uint32_t *target = _framebuffer + _y * (Pitch / 4) + _x;
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
-				*target = fg_color;
+				ConsoleBPC->SetPixel(_x, _y, fg_color);
 			} else {
-				*target = bg_color;
+				ConsoleBPC->SetPixel(_x, _y, bg_color);
 			}
 		}
 	}
@@ -102,7 +129,6 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, 
 		uint32_t fg_color)
 {
-	uint32_t *_framebuffer = (uint32_t*)Framebuffer;
 	
 	for (uint32_t row = 0; row < 16; row++) {
 		for (uint32_t col = 0; col < 8; col++) {
@@ -113,9 +139,8 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= Height)
 				continue;
 				
-			volatile uint32_t *target = _framebuffer + _y * (Pitch / 4) + _x;
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
-				*target = fg_color;
+				ConsoleBPC->SetPixel(_x, _y, fg_color);
 			}
 		}
 	}
@@ -146,19 +171,18 @@ void Console::Clear(void) {
 
 void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) 
 {
-	uint32_t * _framebuffer = (uint32_t*)Framebuffer;
 	if (left > Width)
 		return;
 	if (top > Height)
 		return;	
-	for (uint32_t y = top; y < bottom; y++) {
-		for (uint32_t x = left; x < right; x++) {
-			if (x >= Width)
+	for (uint32_t _y = top; _y < bottom; _y++) {
+		for (uint32_t _x = left; _x < right; _x++) {
+			if (_x >= Width)
 				continue;
-			if (y >= Height)
+			if (_y >= Height)
 				continue;
-			volatile uint32_t *_target = _framebuffer + y * (Pitch / 4) + x;
-			*_target = color;
+
+			ConsoleBPC->SetPixel(_x, _y, color);
 		}
 	}
 	

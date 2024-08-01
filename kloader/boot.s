@@ -15,8 +15,8 @@ _multiboot_header:
 	.short MULTIBOOT2_HEADER_TAG_FRAMEBUFFER			# Type 5 = Framebuffer request
 	.short MULTIBOOT2_HEADER_TAG_OPTIONAL				# Flags
 	.long 20											# Size
-	.long 1280											# Width
-	.long 720											# Heigth
+	.long 1920											# Width
+	.long 1080											# Heigth
 	.long 32											# Depth
 	.long 0												# Padding for 8 Byte Alignment
 	
