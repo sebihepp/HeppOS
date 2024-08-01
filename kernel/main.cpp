@@ -3,78 +3,31 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "retvals.h"
+#include "retvals.hpp"
 #include "multiboot2.hpp"
-#include "pmm.hpp"
+#include "console.hpp"
 
 
-volatile uint16_t *videoMem = (uint16_t*)0xB8000;
-uint8_t col = 0;
-uint8_t row = 0;
- 
-extern "C" void kprint(const char *text) {
-	while (*text != 0) {
-
-		if (row > 24)
-			return;
-		
-		uint16_t pos = row*80+col;
-		switch (*text) {
-			case '\n':
-				col = 0;
-				row++;
-				break;
-			default:
-				col++;
-				if (col > 79) {
-					col = 0;
-					row++;
-				}
-				videoMem[pos] = (videoMem[pos] & 0xFF00) | *text;
-		}
-
-		text++;
-	}
-}
- 
 extern "C" void kmain(uint32_t magic, multiboot2_info_t *mbi) {
 
-
-	kprint("HeppOS\n\n");
+	retval_t retval;
 	
-	kprint("Multiboot magic number - ");
-	if (magic == 0x36D76289) {
-		kprint("OK\n");
-	} else {
-		kprint("ERROR\n");
+	retval = Console::Init(mbi);
+	if (retval != RETVAL_OK) {
 		return;
 	}
 	
-	kprint("PMM init - ");
-	if (PMM::init(mbi) == RETVAL_OK) {
-		kprint("OK\n");
-	} else {
-		kprint("ERROR\n");
-		return;
-	}
+	Console::SetTitleText("HeppOS");
+	Console::Clear();
 	
-	void* _address = NULL;
-	kprint("Allocate low Page - ");
-	if (PMM::allocLowPage(_address) == RETVAL_OK) {
-		kprint("OK\n");		
-	} else {
-		kprint("ERROR\n");
-		return;
-	}
-
-	kprint("Free low Page - ");
-	if (PMM::freePage(_address) == RETVAL_OK) {
-		kprint("OK\n");
-	} else {
-		kprint("ERROR\n");
-		return;
-	}
-
-
+	
+	//Loop forever
+	asm volatile (
+		"cli;\n"
+		"1:"
+		"hlt;\n"
+		"jmp 1b;\n"
+	);
+	
 	return;
 }

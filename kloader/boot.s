@@ -15,8 +15,8 @@ _multiboot_header:
 	.short MULTIBOOT2_HEADER_TAG_FRAMEBUFFER			# Type 5 = Framebuffer request
 	.short MULTIBOOT2_HEADER_TAG_OPTIONAL				# Flags
 	.long 20											# Size
-	.long 1280											# Width
-	.long 720											# Heigth
+	.long 1920											# Width
+	.long 1080											# Heigth
 	.long 32											# Depth
 	.long 0												# Padding for 8 Byte Alignment
 	
@@ -40,13 +40,19 @@ _start:
 	# Setup stack
 	movl $stack_top, %esp
 	
-	# Save Multiboot2 tags and magic
+	# ERROR - when this is enabled it somehow doesn't output anything anymore on screen
+	# Call constructors
+	call _init
+	
+	# Parameters Multiboot2 tags and magic
 	pushl %ebx		# Tags
 	pushl %eax		# Magic
 
 	# continue with loading
 	call main
 
+	# Call deconstructors
+	call _fini
 	
 _error:
 # Loop forever so that the user can shutdown or restart the computer	
