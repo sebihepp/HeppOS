@@ -1,15 +1,9 @@
 
 #include "console.hpp"
-#include "console32.hpp"
-#include "console24.hpp"
-#include "console16.hpp"
-#include "console15.hpp"
-#include "console8.hpp"
-
 
 extern "C" video_font_t stdfont;
 
-Console *Console::ConsoleBPC = NULL;
+void (*Console::SetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
 
 void *Console::Framebuffer = NULL;
 uint32_t Console::Pitch = 0;
@@ -28,11 +22,6 @@ const uint32_t Console::TitleHeight = 16;
 uint32_t Console::CursorX = 0;
 uint32_t Console::CursorY = Console::TitleHeight;
 
-static Console8 con8;
-static Console15 con15;
-static Console16 con16;
-static Console24 con24;
-static Console32 con32;
 
 Console::Console() {
 }
@@ -83,22 +72,23 @@ retval_t Console::Init(const multiboot2_info_t *mbi) {
 	BPP = _mbiFramebufferTag->framebuffer_bpp;
 	switch (BPP) {
 		case 32:
-			ConsoleBPC = &con32;
+			SetPixel = &SetPixel32;
 			break;
 		case 24:
-			ConsoleBPC = &con24;
+			SetPixel = &SetPixel24;
 			break;
 		case 16:
-			ConsoleBPC = &con16;
+			SetPixel = &SetPixel16;
 			break;
 		case 15:
-			ConsoleBPC = &con15;
+			SetPixel = &SetPixel15;
 			break;
 		case 8:
-			ConsoleBPC = &con8;
+			SetPixel = &SetPixel8;
 			break;
 			
 		default:
+			SetPixel = NULL;
 			return RETVAL_ERROR_VIDEOMODE;
 	}	
 	return RETVAL_OK;
@@ -118,9 +108,9 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 				continue;
 				
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
-				ConsoleBPC->SetPixel(_x, _y, fg_color);
+				SetPixel(_x, _y, fg_color);
 			} else {
-				ConsoleBPC->SetPixel(_x, _y, bg_color);
+				SetPixel(_x, _y, bg_color);
 			}
 		}
 	}
@@ -140,7 +130,7 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 				continue;
 				
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
-				ConsoleBPC->SetPixel(_x, _y, fg_color);
+				SetPixel(_x, _y, fg_color);
 			}
 		}
 	}
@@ -182,7 +172,7 @@ void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom,
 			if (_y >= Height)
 				continue;
 
-			ConsoleBPC->SetPixel(_x, _y, color);
+			SetPixel(_x, _y, color);
 		}
 	}
 	
@@ -259,4 +249,124 @@ void Console::Print(const char *text) {
 
 void *Console::GetFramebuffer(void) {
 	return Framebuffer;
+}
+
+uint8_t Console::ConvertColor8(uint32_t color) {
+	uint8_t _red = (color >> 16) & 0xFF;
+	uint8_t _green = (color >> 8) & 0xFF;
+	uint8_t _blue = color & 0xFF;
+	
+	// Highest bits only
+	_red >>= 5;
+	_green >>= 5;
+	_blue >>= 6;
+	
+	uint8_t _result = 0;
+	_result = _blue;
+	_result |= _green << 2;
+	_result |= _red << 5;
+	
+	return _result;
+}
+
+uint16_t Console::ConvertColor15(uint32_t color) {
+	
+	uint8_t _red = (color >> 16) & 0xFF;
+	uint8_t _green = (color >> 8) & 0xFF;
+	uint8_t _blue = color & 0xFF;
+	
+	// Highest bits only
+	_red >>= 3;
+	_green >>= 3;
+	_blue >>= 3;
+	
+	uint16_t _result = 0;
+	_result |= _blue;
+	_result |= _green << 5;
+	_result |= _red  << 10;
+	
+	return _result;
+}
+
+uint16_t Console::ConvertColor16(uint32_t color) {
+	
+	uint8_t _red = (color >> 16) & 0xFF;
+	uint8_t _green = (color >> 8) & 0xFF;
+	uint8_t _blue = color & 0xFF;
+	
+	// Highest bits only
+	_red >>= 3;
+	_green >>= 2;
+	_blue >>= 3;
+	
+	uint16_t _result = 0;
+	_result |= _blue;
+	_result |= _green << 5;
+	_result |= _red  << 11;
+	
+	return _result;
+}
+
+uint32_t Console::ConvertColor24(uint32_t color) {	
+	return color & 0x00FFFFFF;
+}
+
+uint32_t Console::ConvertColor32(uint32_t color) {	
+	return color;
+}
+
+void Console::SetPixel8(uint32_t x, uint32_t y, uint32_t color) {
+	if (x >= Width)
+		return;
+	if (y >= Height)
+		return;
+		
+	volatile uint8_t *target = (uint8_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x));
+	*target = ConvertColor8(color);
+}
+
+void Console::SetPixel15(uint32_t x, uint32_t y, uint32_t color) {
+	if (x >= Width)
+		return;
+	if (y >= Height)
+		return;
+		
+	volatile uint16_t *target = (uint16_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 2));
+	*target = ConvertColor15(color);
+}
+
+void Console::SetPixel16(uint32_t x, uint32_t y, uint32_t color) {
+	if (x >= Width)
+		return;
+	if (y >= Height)
+		return;
+		
+	volatile uint16_t *target = (uint16_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 2));	
+	*target = ConvertColor16(color);
+}
+
+void Console::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
+	
+	if (x >= Width)
+		return;
+	if (y >= Height)
+		return;
+	
+	color = ConvertColor24(color);
+	
+	volatile uint32_t *target = (uint32_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 3));
+	color |= *target & 0xFF000000;
+	*target = color;
+}
+
+void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
+	if (x >= Width)
+		return;
+	if (y >= Height)
+		return;
+		
+	color = ConvertColor32(color);
+	
+	volatile uint32_t *target = (uint32_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 4));
+	*target = color;
 }
