@@ -27,6 +27,7 @@ CRTN_OBJECT := crtn.o
 
 TARGET := kloader.elf
 
+.PHONY: all
 all: $(TARGET)
 
 .PHONY: clean
