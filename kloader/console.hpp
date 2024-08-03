@@ -40,8 +40,6 @@ private:
 	
 	static const char *Title;
 	
-	static void Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
-
 	static void PrintChar(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor, uint32_t bgcolor);
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
@@ -58,7 +56,14 @@ private:
 	static void SetPixel24(uint32_t x, uint32_t y, uint32_t color);
 	static void SetPixel32(uint32_t x, uint32_t y, uint32_t color);
 	
+	static void Fill8(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill15(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill16(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	
 	static void (*SetPixel)(uint32_t x, uint32_t y, uint32_t color);
+	static void (*Fill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	
 	Console();
 	~Console();
