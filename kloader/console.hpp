@@ -82,7 +82,8 @@ public:
 	
 	static void Clear(void);
 	
-	static void *GetFramebuffer(void);
+	static void *GetFramebufferAddress(void);
+	static size_t GetFramebufferSize(void);
 	
 };
 

@@ -1,5 +1,5 @@
 
-#include "cxxstub.h"
+#include "cstub.h"
 
 void *memcpy(void *dest, const void *src, size_t length)
 {

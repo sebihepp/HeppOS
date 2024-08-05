@@ -1,5 +1,5 @@
 
-#include "cxxstub.h"
+#include "cstub.h"
 
 size_t strlen(const char *s)
 {

@@ -1,5 +1,5 @@
 
-#include "cxxstub.h"
+#include "cstub.h"
 
 void *memmove(void *dest, const void *source, size_t length)
 {

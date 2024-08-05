@@ -1,5 +1,5 @@
 
-#include "cxxstub.h"
+#include "cstub.h"
 
 void *memset(void *s, int value, size_t length)
 {

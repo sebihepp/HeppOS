@@ -8,7 +8,7 @@
 #include "retvals.hpp"
 #include "gdt.hpp"
 #include "paging.hpp"
-#include "cxxstub.h"
+#include "cstub.h"
 #include "cpuid.hpp"
 
 

@@ -1,5 +1,5 @@
 
-#include "cxxstub.h"
+#include "cstub.h"
 
 uint32_t memcmp(const void *a, const void *b, size_t length)
 {

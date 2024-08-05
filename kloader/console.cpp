@@ -234,8 +234,12 @@ void Console::Print(const char *text) {
 	
 }
 
-void *Console::GetFramebuffer(void) {
+void *Console::GetFramebufferAddress(void) {
 	return Framebuffer;
+}
+
+size_t Console::GetFramebufferSize(void) {
+	return Width * Pitch;
 }
 
 uint8_t Console::ConvertColor8(uint32_t color) {
