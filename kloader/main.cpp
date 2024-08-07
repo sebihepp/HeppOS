@@ -23,7 +23,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	char _temp_text[16];
 	memset(_temp_text, 0, 16);
 	
-	if (magic != 0x36D76289) {
+	if (magic != MULTIBOOT2_INFO_MAGIC) {
 		return RETVAL_ERROR_MB2_MAGIC;
 	}
 	
