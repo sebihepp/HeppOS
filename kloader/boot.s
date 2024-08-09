@@ -40,19 +40,24 @@ _start:
 	# Setup stack
 	movl $stack_top, %esp
 	
+	
+	# Save Parameters Multiboot2 tags and magic
+	pushl %ebx		# Tags
+	pushl %eax		# Magic
+
 	# ERROR - when this is enabled it somehow doesn't output anything anymore on screen
 	# Call constructors
 	call _init
 	
-	# Parameters Multiboot2 tags and magic
-	pushl %ebx		# Tags
-	pushl %eax		# Magic
-
-	# continue with loading
-	call main
+	# call kloader_main
+	# Parameters already pushed earlier
+	call kloader_main
 
 	# Call deconstructors
 	call _fini
+	
+	# Restore Parameters Multiboot2 tags and magic
+	addl $8, %esp
 	
 _error:
 # Loop forever so that the user can shutdown or restart the computer	
