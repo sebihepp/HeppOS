@@ -10,15 +10,15 @@
 #include "multiboot2.hpp"
 
 
-#define PAGE_SIZE 	(4096)
-#define MEM_MAX 	((uint32_t)2*1024*1024*1024) // 2GByte
-#define BITMAP_SIZE	(MEM_MAX / PAGE_SIZE / 8)
+#define PMM_PAGE_SIZE 	(4096)
+#define PMM_MEM_MAX 	((uint32_t)2*1024*1024*1024) // 2GByte
+#define PMM_BITMAP_SIZE	(PMM_MEM_MAX / PMM_PAGE_SIZE / 8)
 
 class PMM {
 
 private:
 
-	static uint8_t Bitmap[BITMAP_SIZE];
+	static uint8_t Bitmap[PMM_BITMAP_SIZE];
 	
 	PMM();
 	~PMM();

@@ -1,13 +1,13 @@
 
 #include "pmm.hpp"
 
-uint8_t PMM::Bitmap[BITMAP_SIZE];
+uint8_t PMM::Bitmap[PMM_BITMAP_SIZE];
 	
 
 retval_t PMM::Init(multiboot2_info_t *mbi) {
 
 	// First block every page
-	for (uint32_t i = 0; i < BITMAP_SIZE; i++) {
+	for (uint32_t i = 0; i < PMM_BITMAP_SIZE; i++) {
 		Bitmap[i] = 0xFF;
 	}
 	
