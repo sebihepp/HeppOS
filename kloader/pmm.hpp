@@ -10,9 +10,7 @@
 #include "multiboot2.hpp"
 
 
-#define PMM_PAGE_SIZE 	(4096)
-#define PMM_MEM_MAX 	((uint32_t)2*1024*1024*1024) // 2GByte
-#define PMM_BITMAP_SIZE	(PMM_MEM_MAX / PMM_PAGE_SIZE / 8)
+#define PMM_BITMAP_SIZE	(64*1024)	// one bit per page for the first 2GiB
 
 class PMM {
 
@@ -24,6 +22,9 @@ private:
 	~PMM();
 public:
 	static retval_t Init(multiboot2_info_t *mbi);
+	
+	static void *Allocate(void);
+	static void Free(void *pAddress);
 	
 };
 
