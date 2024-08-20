@@ -10,16 +10,22 @@
 #include "multiboot2.hpp"
 
 
-#define PMM_BITMAP_SIZE	(64*1024)	// one bit per page for the first 2GiB
+#define PMM_BITMAP_SIZE	(16*1024)	// one bit per page for the first 2GiB
 
 class PMM {
 
 private:
 
-	static uint8_t Bitmap[PMM_BITMAP_SIZE];
+	static uint32_t Bitmap[PMM_BITMAP_SIZE];
+	
+	static void SetUsed(void *Address);
+	static void SetUsedRange(void *Address, size_t size);
+	static void SetFree(void *Address);
+	static void SetFreeRange(void *Address, size_t size);
 	
 	PMM();
 	~PMM();
+	
 public:
 	static retval_t Init(multiboot2_info_t *mbi);
 	
