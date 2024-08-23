@@ -9,7 +9,7 @@
 #include "retvals.hpp"
 #include "multiboot2.hpp"
 
-
+#define PMM_MAX_ADDRESS (2*1024*1024*1024)
 #define PMM_BITMAP_SIZE	(16*1024)	// one bit per page for the first 2GiB
 
 class PMM {

@@ -1,5 +1,7 @@
 
 #include "pmm.hpp"
+#include "console.hpp"
+
 
 uint32_t PMM::Bitmap[PMM_BITMAP_SIZE];
 	
@@ -65,6 +67,25 @@ retval_t PMM::Init(multiboot2_info_t *mbi) {
 	
 	// Block additional pages not in MemoryMap (like framebuffer, BDA, EBDA, etc.)
 	
+	// Block RealMode IVT
+	SetUsedRange((void*)0x0, 1024);
+	//Block BDA
+	SetUsedRange((void*)0x400, 256);
+	//Block EBDA
+	uint16_t *_EBDAStartPointer = (uint16_t*)0x040E;
+	uint32_t _EBDAStart = (uint32_t)(*_EBDAStartPointer);
+	SetUsedRange((void*)_EBDAStart, 128*1024);
+	//Block Video Memory
+	SetUsedRange((void*)0xA0000, 128*1024);
+	//Block Video BIOS
+	SetUsedRange((void*)0xC0000, 32*1024);
+	//Block BIOS Expansions
+	SetUsedRange((void*)0xC8000, 160*1024);
+	//Block Motherboard BIOS
+	SetUsedRange((void*)0xF0000, 64*1024);
+	
+	//Block Framebuffer
+	SetUsedRange(Console::GetFramebufferAddress(), Console::GetFramebufferSize());
 	
 	return RETVAL_OK;
 }
