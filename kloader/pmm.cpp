@@ -59,6 +59,11 @@ retval_t PMM::Init(const multiboot2_info_t *pMBInfo) {
 		Bitmap[i] = 0xFFFFFFFF;
 	}
 	
+	multiboot2_info_tag_mmap_t *_mmap = (multiboot2_info_tag_mmap_t*)GetMultiboot2Tag(pMBInfo, MULTIBOOT2_TAG_TYPE_MMAP);
+	if (_mmap == NULL) {
+		return RETVAL_ERROR_GENERAL;
+	}
+	
 	// Free every page marked as free in MemoryMap
 	
 	
@@ -73,7 +78,7 @@ retval_t PMM::Init(const multiboot2_info_t *pMBInfo) {
 	SetUsedRange((void*)0x400, 256);
 	//Block EBDA
 	uint16_t *_EBDAStartPointer = (uint16_t*)0x040E;
-	uint32_t _EBDAStart = (uint32_t)(*_EBDAStartPointer);
+	uintptr_t _EBDAStart = ((uintptr_t)(*_EBDAStartPointer)) << 4;
 	SetUsedRange((void*)_EBDAStart, 128*1024);
 	//Block Video Memory
 	SetUsedRange((void*)0xA0000, 128*1024);
@@ -88,4 +93,12 @@ retval_t PMM::Init(const multiboot2_info_t *pMBInfo) {
 	SetUsedRange(Console::GetFramebufferAddress(), Console::GetFramebufferSize());
 	
 	return RETVAL_OK;
+}
+
+void *PMM::Allocate(void) {
+	return NULL;
+}
+
+void PMM::Free(const void * const pAddress) {
+	SetFree(pAddress);
 }
