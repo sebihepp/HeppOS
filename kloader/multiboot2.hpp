@@ -44,6 +44,8 @@
 #define MULTIBOOT2_FRAMEBUFFER_TYPE_TEXT		2
 
 
+typedef uint32_t multiboot2_tag_type_t;
+
 struct multiboot2_info_t {
 	uint32_t total_size;
 	uint32_t reserved;
@@ -264,6 +266,9 @@ struct multiboot2_info_load_base_addr_t {
 	
 	uint32_t load_base_addr;
 } __attribute__((packed));
+
+
+multiboot2_info_tag_t *GetMultiboot2Tag(multiboot2_info_t *MBInfo, multiboot2_tag_type_t Type);
 
 
 #endif
