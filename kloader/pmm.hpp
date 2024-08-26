@@ -18,19 +18,19 @@ private:
 
 	static uint32_t Bitmap[PMM_BITMAP_SIZE];
 	
-	static void SetUsed(void *Address);
-	static void SetUsedRange(void *Address, size_t size);
-	static void SetFree(void *Address);
-	static void SetFreeRange(void *Address, size_t size);
+	static void SetUsed(const void * const pAddress);
+	static void SetUsedRange(const void * const pAddress, const size_t pSize);
+	static void SetFree(const void * const Address);
+	static void SetFreeRange(const void * const pAddress, const size_t pSize);
 	
 	PMM();
 	~PMM();
 	
 public:
-	static retval_t Init(multiboot2_info_t *mbi);
+	static retval_t Init(const multiboot2_info_t *pMBInfo);
 	
 	static void *Allocate(void);
-	static void Free(void *pAddress);
+	static void Free(const void * const pAddress);
 	
 };
 

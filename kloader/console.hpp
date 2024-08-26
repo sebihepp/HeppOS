@@ -69,16 +69,16 @@ private:
 	~Console();
 	
 public:	
-	static retval_t Init(const multiboot2_info_t *mbi);
+	static retval_t Init(const multiboot2_info_t *pMBInfo);
 	
 	static void SetFGColor(uint32_t color);
 	static void SetBGColor(uint32_t color);
 
 	static void SetTitleFGColor(uint32_t color);
 	static void SetTitleBGColor(uint32_t color);	
-	static void SetTitleText(const char *text);
+	static void SetTitleText(const char *pText);
 	
-	static void Print(const char *text);
+	static void Print(const char *pText);
 	
 	static void Clear(void);
 	

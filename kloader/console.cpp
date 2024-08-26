@@ -24,20 +24,15 @@ uint32_t Console::CursorX = 0;
 uint32_t Console::CursorY = Console::TitleHeight;
 
 
-Console::Console() {
-}
+retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 
-Console::~Console() {
-	
-}
-
-retval_t Console::Init(const multiboot2_info_t *mbi) {
-
-	multiboot2_info_tag_t *_mbiCurrentTag = (multiboot2_info_tag_t *)((uintptr_t)mbi + 8);
-	multiboot2_info_tag_framebuffer_t *_mbiFramebufferTag = NULL;
+	multiboot2_info_tag_framebuffer_t *_mbiFramebufferTag = (multiboot2_info_tag_framebuffer_t*)GetMultiboot2Tag(pMBInfo, MULTIBOOT2_TAG_TYPE_FRAMEBUFFER);
+	if (_mbiFramebufferTag == NULL) {
+		return RETVAL_ERROR_NO_FRAMEBUFFER;
+	}
 	
 	
-	//search for Multiboot2 tag == framebuffer
+/* 	//search for Multiboot2 tag == framebuffer
 	while ((uintptr_t)_mbiCurrentTag < ((uintptr_t)mbi + mbi->total_size)) {
 		
 		// Check for end of mbi tags
@@ -61,7 +56,7 @@ retval_t Console::Init(const multiboot2_info_t *mbi) {
 	
 	if ((uintptr_t)_mbiCurrentTag >= ((uintptr_t)mbi + mbi->total_size)) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
-	}
+	} */
 	
 	Framebuffer = (void*)(_mbiFramebufferTag->framebuffer_addr & 0xFFFFFFFF);
 	Pitch = _mbiFramebufferTag->framebuffer_pitch;
@@ -193,8 +188,8 @@ void Console::SetTitleBGColor(uint32_t color) {
 	PrintTitle();
 }
 
-void Console::SetTitleText(const char *text) {
-	Title = text;
+void Console::SetTitleText(const char *pText) {
+	Title = pText;
 	
 	// Background for Title
 	Fill(0, 0, Width, TitleHeight, TitleBGColor);
@@ -203,12 +198,12 @@ void Console::SetTitleText(const char *text) {
 	PrintTitle();
 }
 
-void Console::Print(const char *text) {
+void Console::Print(const char *pText) {
 	size_t i = 0;
 	
-	while (text[i] != 0) {
+	while (pText[i] != 0) {
 		
-		if (text[i] == '\n') {
+		if (pText[i] == '\n') {
 			CursorX = 0;
 			CursorY += 16;
 			if (CursorY >= Height) {
@@ -218,7 +213,7 @@ void Console::Print(const char *text) {
 				continue;
 			}
 		} else {
-			PrintCharAlpha(text[i], CursorX, CursorY, FGColor);
+			PrintCharAlpha(pText[i], CursorX, CursorY, FGColor);
 		}
 		
 		CursorX += 8;

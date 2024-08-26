@@ -268,7 +268,7 @@ struct multiboot2_info_load_base_addr_t {
 } __attribute__((packed));
 
 
-multiboot2_info_tag_t *GetMultiboot2Tag(multiboot2_info_t *MBInfo, multiboot2_tag_type_t Type);
+multiboot2_info_tag_t *GetMultiboot2Tag(const multiboot2_info_t *pMBInfo, const multiboot2_tag_type_t pType);
 
 
 #endif

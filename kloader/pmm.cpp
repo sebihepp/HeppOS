@@ -6,53 +6,53 @@
 uint32_t PMM::Bitmap[PMM_BITMAP_SIZE];
 	
 
-void PMM::SetUsed(void *Address) {
-	uint32_t _Page = (uint32_t)Address / 4096;
+void PMM::SetUsed(const void * const pAddress) {
+	uint32_t _Page = (uint32_t)pAddress / 4096;
 	uint32_t _ArrayIndex = _Page / 32;
 	uint32_t _BitIndex = _Page % 32;
 	
 	Bitmap[_ArrayIndex] |= (1 << _BitIndex);
 }
 
-void PMM::SetUsedRange(void *Address, size_t size) {
+void PMM::SetUsedRange(const void * const pAddress, const size_t pSize) {
 	
-	uintptr_t _EndAddress = (uintptr_t)Address + size;
+	uintptr_t _EndAddress = (uintptr_t)pAddress + pSize;
 	
 	// Check for overflow
-	if (_EndAddress < (uintptr_t)Address) {
+	if (_EndAddress < (uintptr_t)pAddress) {
 		_EndAddress = 0xFFFFFFFF;
 	}
 	
-	for (uintptr_t i = (uintptr_t)Address; i <= _EndAddress; i += 4096) {
+	for (uintptr_t i = (uintptr_t)pAddress; i <= _EndAddress; i += 4096) {
 		SetUsed((void*)i);
 	}
 	
 }
 
-void PMM::SetFree(void *Address) {
-	uint32_t _Page = (uint32_t)Address / 4096;
+void PMM::SetFree(const void * const pAddress) {
+	uint32_t _Page = (uint32_t)pAddress / 4096;
 	uint32_t _ArrayIndex = _Page / 32;
 	uint32_t _BitIndex = _Page % 32;
 	
 	Bitmap[_ArrayIndex] &=  ~(1 << _BitIndex);
 }
 
-void PMM::SetFreeRange(void *Address, size_t size) {
+void PMM::SetFreeRange(const void * const pAddress, const size_t pSize) {
 	
-	uintptr_t _EndAddress = (uintptr_t)Address + size;
+	uintptr_t _EndAddress = (uintptr_t)pAddress + pSize;
 	
 	// Check for overflow
-	if (_EndAddress < (uintptr_t)Address) {
+	if (_EndAddress < (uintptr_t)pAddress) {
 		_EndAddress = 0xFFFFFFFF;
 	}
 	
-	for (uintptr_t i = (uintptr_t)Address; i <= _EndAddress; i += 4096) {
+	for (uintptr_t i = (uintptr_t)pAddress; i <= _EndAddress; i += 4096) {
 		SetFree((void*)i);
 	}
 	
 }
 	
-retval_t PMM::Init(multiboot2_info_t *mbi) {
+retval_t PMM::Init(const multiboot2_info_t *pMBInfo) {
 
 	// First block every page
 	for (uint32_t i = 0; i < PMM_BITMAP_SIZE; i++) {

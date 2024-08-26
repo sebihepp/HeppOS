@@ -15,7 +15,7 @@
 
 char* itoa(int num, char* str, int base);
  
-extern "C" uint32_t kloader_main(uint32_t magic, multiboot2_info_t *mb2_info)
+extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBInfo)
 {
 	retval_t retval;
 	cpuid_retval_t cpuid_retval;
@@ -25,12 +25,12 @@ extern "C" uint32_t kloader_main(uint32_t magic, multiboot2_info_t *mb2_info)
 	memset(_temp_text, 0, 16);
 	
 	// Check Multiboot2 magic number
-	if (magic != MULTIBOOT2_INFO_MAGIC) {
+	if (pMagic != MULTIBOOT2_INFO_MAGIC) {
 		return RETVAL_ERROR_MB2_MAGIC;
 	}
 	
 	// Init Console
-	retval = Console::Init(mb2_info);
+	retval = Console::Init(pMBInfo);
 	if (retval != RETVAL_OK) {
 		return retval;
 	}
@@ -40,7 +40,7 @@ extern "C" uint32_t kloader_main(uint32_t magic, multiboot2_info_t *mb2_info)
 
 	// Init PMM (Physical Memory Manager)
 	Console::Print("Initializing PMM - ");
-	retval = PMM::Init(mb2_info);
+	retval = PMM::Init(pMBInfo);
 	if (retval != RETVAL_OK) {
 		Console::Print("ERROR\n");
 		return retval;

@@ -1,12 +1,12 @@
 
 #include "multiboot2.hpp"
 
-multiboot2_info_tag_t *GetMultiboot2Tag(multiboot2_info_t *MBInfo, multiboot2_tag_type_t Type) {
+multiboot2_info_tag_t *GetMultiboot2Tag(const multiboot2_info_t *pMBInfo, const multiboot2_tag_type_t pType) {
 
-	multiboot2_info_tag_t *_mbiCurrentTag = (multiboot2_info_tag_t *)((uintptr_t)MBInfo + 8);
+	multiboot2_info_tag_t *_mbiCurrentTag = (multiboot2_info_tag_t *)((uintptr_t)pMBInfo + 8);
 	
 	//search for Multiboot2 tag type
-	while ((uintptr_t)_mbiCurrentTag < ((uintptr_t)MBInfo + MBInfo->total_size)) {
+	while ((uintptr_t)_mbiCurrentTag < ((uintptr_t)pMBInfo + pMBInfo->total_size)) {
 		
 		// Check for end of mbi tags
 		if ((_mbiCurrentTag->type == MULTIBOOT2_TAG_TYPE_END) && (_mbiCurrentTag->size = 8)) {
@@ -14,7 +14,7 @@ multiboot2_info_tag_t *GetMultiboot2Tag(multiboot2_info_t *MBInfo, multiboot2_ta
 		}
 		
 		//Found Framebuffer Tag
-		if (_mbiCurrentTag->type == Type) {
+		if (_mbiCurrentTag->type == pType) {
 			return _mbiCurrentTag;
 			break;
 		}

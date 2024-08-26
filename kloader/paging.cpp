@@ -152,6 +152,6 @@ retval_t Paging::Init(void) {
 	return RETVAL_OK;
 }
 
-void* Paging::GetPML4T(void) {
+const void* Paging::GetPML4T(void) {
 	return &PML4T;	
 }
