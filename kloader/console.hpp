@@ -27,7 +27,8 @@ private:
 	static uint32_t Width;
 	static uint32_t Height;
 	static uint8_t BPP;
-
+	static bool EGAMode;
+	
 	static uint32_t CursorX;
 	static uint32_t CursorY;
 	
@@ -36,7 +37,7 @@ private:
 	static uint32_t TitleFGColor;
 	static uint32_t TitleBGColor;
 
-	static const uint32_t TitleHeight;
+	static uint32_t TitleHeight;
 	
 	static const char *Title;
 	
@@ -44,6 +45,7 @@ private:
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
 
+	static uint8_t ConvertColorEGA(uint32_t color);
 	static uint8_t ConvertColor8(uint32_t color);
 	static uint16_t ConvertColor15(uint32_t color);
 	static uint16_t ConvertColor16(uint32_t color);
@@ -56,6 +58,7 @@ private:
 	static void SetPixel24(uint32_t x, uint32_t y, uint32_t color);
 	static void SetPixel32(uint32_t x, uint32_t y, uint32_t color);
 	
+	static void FillEGA(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	static void Fill8(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	static void Fill15(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	static void Fill16(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
