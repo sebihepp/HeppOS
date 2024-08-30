@@ -38,6 +38,19 @@ extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBIn
 	Console::Clear();
 	Console::SetTitleText("HeppOS - kloader");
 
+	// Print Video Mode
+	Console::Print("Video Format: ");
+	Console::Print(itoa(Console::GetWidth(), _temp_text, 10));
+	Console::Print("x");
+	Console::Print(itoa(Console::GetHeight(), _temp_text, 10));
+	Console::Print("x");
+	Console::Print(itoa(Console::GetBPC(), _temp_text, 10));
+	if (Console::IsTextMode()) {
+		Console::Print(" Text Mode\n");	
+	} else {
+		Console::Print(" Graphic Mode\n");	
+	}
+	
 	// Init PMM (Physical Memory Manager)
 	Console::Print("Initializing PMM - ");
 	retval = PMM::Init(pMBInfo);

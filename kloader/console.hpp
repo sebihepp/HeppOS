@@ -26,7 +26,7 @@ private:
 	static uint32_t Pitch;
 	static uint32_t Width;
 	static uint32_t Height;
-	static uint8_t BPP;
+	static uint8_t BPC;
 	static bool EGAMode;
 	
 	static uint32_t CursorX;
@@ -51,7 +51,8 @@ private:
 	static uint16_t ConvertColor16(uint32_t color);
 	static uint32_t ConvertColor24(uint32_t color);
 	static uint32_t ConvertColor32(uint32_t color);
-	
+
+	static void SetPixelEGA(uint32_t x, uint32_t y, uint32_t color);
 	static void SetPixel8(uint32_t x, uint32_t y, uint32_t color);
 	static void SetPixel15(uint32_t x, uint32_t y, uint32_t color);
 	static void SetPixel16(uint32_t x, uint32_t y, uint32_t color);
@@ -87,6 +88,11 @@ public:
 	
 	static void *GetFramebufferAddress(void);
 	static size_t GetFramebufferSize(void);
+	
+	static uint32_t GetWidth(void);
+	static uint32_t GetHeight(void);
+	static uint32_t GetBPC(void);
+	static bool IsTextMode(void);
 	
 };
 

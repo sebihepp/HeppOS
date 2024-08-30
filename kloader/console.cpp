@@ -10,7 +10,7 @@ void *Console::Framebuffer = NULL;
 uint32_t Console::Pitch = 0;
 uint32_t Console::Width = 0;
 uint32_t Console::Height = 0;
-uint8_t Console::BPP = 0;
+uint8_t Console::BPC = 0;
 bool Console::EGAMode = false;
 
 uint32_t Console::FGColor = 0x00AAAAAA;
@@ -36,13 +36,13 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 	Pitch = _mbiFramebufferTag->framebuffer_pitch;
 	Width = _mbiFramebufferTag->framebuffer_width;
 	Height = _mbiFramebufferTag->framebuffer_height;
-	BPP = _mbiFramebufferTag->framebuffer_bpp;
+	BPC = _mbiFramebufferTag->framebuffer_bpp;
 	
 	if (_mbiFramebufferTag->framebuffer_type == MULTIBOOT2_FRAMEBUFFER_TYPE_COLOR) {
 		
 		EGAMode = false;
 		TitleHeight = 16;
-		switch (BPP) {
+		switch (BPC) {
 			case 32:
 				SetPixel = &SetPixel32;
 				Fill = &Fill32;
@@ -80,6 +80,22 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 	}
 
 	return RETVAL_OK;
+}
+	
+uint32_t Console::GetWidth(void) {
+	return Width;
+}
+
+uint32_t Console::GetHeight(void) {
+	return Height;
+}
+
+uint32_t Console::GetBPC(void) {
+	return BPC;
+}
+	
+bool Console::IsTextMode(void) {
+	return EGAMode;	
 }
 
 void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
