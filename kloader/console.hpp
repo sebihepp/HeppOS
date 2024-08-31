@@ -66,14 +66,14 @@ private:
 	static void Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	static void Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	
-	static void (*SetPixel)(uint32_t x, uint32_t y, uint32_t color);
-	static void (*Fill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
-	
 	Console();
 	~Console();
 	
 public:	
 	static retval_t Init(const multiboot2_info_t *pMBInfo);
+
+	static void (*SetPixel)(uint32_t x, uint32_t y, uint32_t color);
+	static void (*Fill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	
 	static void SetFGColor(uint32_t color);
 	static void SetBGColor(uint32_t color);

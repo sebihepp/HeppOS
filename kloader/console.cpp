@@ -71,10 +71,16 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 		}	
 		
 	} else if (_mbiFramebufferTag->framebuffer_type == MULTIBOOT2_FRAMEBUFFER_TYPE_TEXT) {
+		if (BPC != 16) {
+			SetPixel = NULL;
+			Fill = NULL;
+			return RETVAL_ERROR_VIDEOMODE;
+		}
 		EGAMode = true;
-		SetPixel = NULL;
+		SetPixel = &SetPixelEGA;
 		Fill = &FillEGA;
 		TitleHeight = 1;
+		BPC = 4;
 	} else {
 		return RETVAL_ERROR_VIDEOMODE;
 	}
@@ -392,6 +398,18 @@ uint32_t Console::ConvertColor24(uint32_t color) {
 
 uint32_t Console::ConvertColor32(uint32_t color) {	
 	return color;
+}
+
+void Console::SetPixelEGA(uint32_t x, uint32_t y, uint32_t color) {
+	if (x >= Width)
+		return;
+	if (y >= Height)
+		return;
+		
+	uint8_t _EGAColor = ConvertColorEGA(color);
+	
+	volatile uint16_t *target = (uint16_t*)Console::Framebuffer;	
+	target[y * Width + x] = 0xDB | (_EGAColor << 8);
 }
 
 void Console::SetPixel8(uint32_t x, uint32_t y, uint32_t color) {

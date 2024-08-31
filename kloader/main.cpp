@@ -37,7 +37,7 @@ extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBIn
 	
 	Console::Clear();
 	Console::SetTitleText("HeppOS - kloader");
-
+	
 	// Print Video Mode
 	Console::Print("Video Format: ");
 	Console::Print(itoa(Console::GetWidth(), _temp_text, 10));
