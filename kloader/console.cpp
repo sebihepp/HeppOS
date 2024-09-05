@@ -3,28 +3,33 @@
 
 extern "C" video_font_t stdfont;
 
-void (*Console::SetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
-void (*Console::Fill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
+void *Console::mFramebuffer = NULL;
+uint32_t Console::mPitch = 0;
+uint32_t Console::mWidth = 0;
+uint32_t Console::mHeight = 0;
+uint8_t Console::mBPC = 0;
+bool Console::mEGAMode = false;
 
-void *Console::Framebuffer = NULL;
-uint32_t Console::Pitch = 0;
-uint32_t Console::Width = 0;
-uint32_t Console::Height = 0;
-uint8_t Console::BPC = 0;
-bool Console::EGAMode = false;
+uint32_t Console::mFGColor = 0x00AAAAAA;
+uint32_t Console::mBGColor = 0x00000000;
+uint32_t Console::mTitleFGColor = 0x0000FFFF;
+uint32_t Console::mTitleBGColor = 0x000000AA;
 
-uint32_t Console::FGColor = 0x00AAAAAA;
-uint32_t Console::BGColor = 0x00000000;
-uint32_t Console::TitleFGColor = 0x0000FFFF;
-uint32_t Console::TitleBGColor = 0x000000AA;
+const char *Console::mTitle = "";
+uint32_t Console::mTitleHeight = 1;
 
-const char *Console::Title = "";
-uint32_t Console::TitleHeight = 16;
-
-uint32_t Console::CursorX = 0;
-uint32_t Console::CursorY = Console::TitleHeight;
+uint32_t Console::mCursorX = 0;
+uint32_t Console::mCursorY = 0;
+uint32_t Console::mCursorWidth = 0;
+uint32_t Console::mCursorHeight = 0;
+uint32_t Console::mCursorMaxX = 0;
+uint32_t Console::mCursorMaxY = 0;
 
 
+void (*Console::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
+void (*Console::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
+	
+	
 retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 
 	multiboot2_info_tag_framebuffer_t *_mbiFramebufferTag = (multiboot2_info_tag_framebuffer_t*)GetMultiboot2Tag(pMBInfo, MULTIBOOT2_TAG_TYPE_FRAMEBUFFER);
@@ -32,55 +37,70 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
 	}
 	
-	Framebuffer = (void*)(_mbiFramebufferTag->framebuffer_addr & 0xFFFFFFFF);
-	Pitch = _mbiFramebufferTag->framebuffer_pitch;
-	Width = _mbiFramebufferTag->framebuffer_width;
-	Height = _mbiFramebufferTag->framebuffer_height;
-	BPC = _mbiFramebufferTag->framebuffer_bpp;
+	mFramebuffer = (void*)(_mbiFramebufferTag->framebuffer_addr & 0xFFFFFFFF);
+	mPitch = _mbiFramebufferTag->framebuffer_pitch;
+	mWidth = _mbiFramebufferTag->framebuffer_width;
+	mHeight = _mbiFramebufferTag->framebuffer_height;
+	mBPC = _mbiFramebufferTag->framebuffer_bpp;
 	
 	if (_mbiFramebufferTag->framebuffer_type == MULTIBOOT2_FRAMEBUFFER_TYPE_COLOR) {
 		
-		EGAMode = false;
-		TitleHeight = 16;
-		switch (BPC) {
+		mCursorX = 0;
+		mCursorY = 0;
+		mCursorWidth = 8;
+		mCursorHeight = 16;
+		mCursorMaxX = mWidth / mCursorWidth;
+		mCursorMaxY = mHeight / mCursorHeight;
+		
+		mEGAMode = false;
+		mTitleHeight = 1;
+		switch (mBPC) {
 			case 32:
-				SetPixel = &SetPixel32;
-				Fill = &Fill32;
+				mSetPixel = &SetPixel32;
+				mFill = &Fill32;
 				break;
 			case 24:
-				SetPixel = &SetPixel24;
-				Fill = &Fill24;
+				mSetPixel = &SetPixel24;
+				mFill = &Fill24;
 				break;
 			case 16:
-				SetPixel = &SetPixel16;
-				Fill = &Fill16;
+				mSetPixel = &SetPixel16;
+				mFill = &Fill16;
 				break;
 			case 15:
-				SetPixel = &SetPixel15;
-				Fill = &Fill15;
+				mSetPixel = &SetPixel15;
+				mFill = &Fill15;
 				break;
 			case 8:
-				SetPixel = &SetPixel8;
-				Fill = &Fill8;
+				mSetPixel = &SetPixel8;
+				mFill = &Fill8;
 				break;
 				
 			default:
-				SetPixel = NULL;
-				Fill = NULL;
+				mSetPixel = NULL;
+				mFill = NULL;
 				return RETVAL_ERROR_VIDEOMODE;
-		}	
+		}
 		
 	} else if (_mbiFramebufferTag->framebuffer_type == MULTIBOOT2_FRAMEBUFFER_TYPE_TEXT) {
-		if (BPC != 16) {
-			SetPixel = NULL;
-			Fill = NULL;
+		if (mBPC != 16) {
+			mSetPixel = NULL;
+			mFill = NULL;
 			return RETVAL_ERROR_VIDEOMODE;
 		}
-		EGAMode = true;
-		SetPixel = &SetPixelEGA;
-		Fill = &FillEGA;
-		TitleHeight = 1;
-		BPC = 4;
+		
+		mCursorX = 0;
+		mCursorY = 0;
+		mCursorWidth = 1;
+		mCursorHeight = 1;
+		mCursorMaxX = mWidth;
+		mCursorMaxY = mHeight;
+		
+		mEGAMode = true;
+		mSetPixel = &SetPixelEGA;
+		mFill = &FillEGA;
+		mTitleHeight = 1;
+		mBPC = 4;
 	} else {
 		return RETVAL_ERROR_VIDEOMODE;
 	}
@@ -89,30 +109,39 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 }
 	
 uint32_t Console::GetWidth(void) {
-	return Width;
+	return mWidth;
 }
 
 uint32_t Console::GetHeight(void) {
-	return Height;
+	return mHeight;
 }
 
 uint32_t Console::GetBPC(void) {
-	return BPC;
+	return mBPC;
 }
 	
 bool Console::IsTextMode(void) {
-	return EGAMode;	
+	return mEGAMode;	
 }
 
 void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 	uint32_t fg_color, uint32_t bg_color)
 {
 	
-	if (EGAMode) {
+	x *= mCursorWidth;
+	y *= mCursorHeight;
+	
+	if (mEGAMode) {
 		
+		if (x >= mWidth)
+			return;
+		if (y >= mHeight)
+			return;
+
+
 		uint8_t _color = ((ConvertColorEGA(bg_color) & 0x7) << 4) | ConvertColorEGA(fg_color);
-		volatile uint16_t *target = (uint16_t*)Framebuffer;
-		target[y * Width + x] = c | (_color << 8);
+		volatile uint16_t *target = (uint16_t*)mFramebuffer;
+		target[y * mPitch + x] = c | (_color << 8);
 		return;
 		
 	}
@@ -121,15 +150,15 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 		for (uint32_t col = 0; col < 8; col++) {
 			uint32_t _x = x + col;
 			uint32_t _y = y + row;
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 				
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
-				SetPixel(_x, _y, fg_color);
+				mSetPixel(_x, _y, fg_color);
 			} else {
-				SetPixel(_x, _y, bg_color);
+				mSetPixel(_x, _y, bg_color);
 			}
 		}
 	}
@@ -139,17 +168,25 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 		uint32_t fg_color)
 {
 	
+	x *= mCursorWidth;
+	y *= mCursorHeight;
 	
-	if (EGAMode) {
+	if (mEGAMode) {
+	
+		if (x >= mWidth)
+			return;
+		if (y >= mHeight)
+			return;
 		
-		volatile uint16_t *target = (uint16_t*)Framebuffer;
-		uint16_t _tmp = target[y * Pitch + x];
+		
+		volatile uint16_t *target = (uint16_t*)mFramebuffer;
+		uint16_t _tmp = target[y * mPitch + x];
 		
 		uint8_t _color = (ConvertColorEGA(fg_color)) | ((_tmp >> 8) & 0x70);
 
 		_tmp = c | (_color << 8);
 		
-		target[y * Width + x] = _tmp;
+		target[y * mWidth + x] = _tmp;
 		
 		return;
 		
@@ -159,9 +196,9 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 		for (uint32_t col = 0; col < 8; col++) {
 			uint32_t _x = x + col;
 			uint32_t _y = y + row;
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 				
 			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
@@ -173,15 +210,15 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 
 void Console::PrintTitle(void) {
 	
-	if (EGAMode) {
+	if (mEGAMode) {
 
 		uint32_t i = 0;
 		uint32_t x = 1;
-		while (Title[i] != 0) {
-			PrintCharAlpha(Title[i], x, 0, TitleFGColor);
+		while (mTitle[i] != 0) {
+			PrintCharAlpha(mTitle[i], x, 0, mTitleFGColor);
 			i++;
 			x += 1;
-			if (x > Width)
+			if (x > mWidth)
 				break;
 		}
 		
@@ -189,12 +226,12 @@ void Console::PrintTitle(void) {
 	}
 	
 	uint32_t i = 0;
-	uint32_t x = 8;
-	while (Title[i] != 0) {
-		PrintCharAlpha(Title[i], x, 0, TitleFGColor);
+	uint32_t x = 1;
+	while (mTitle[i] != 0) {
+		PrintCharAlpha(mTitle[i], x, 0, mTitleFGColor);
 		i++;
-		x += 8;
-		if (x > Width)
+		x += 1;
+		if (x > mWidth)
 			break;
 	}
 }
@@ -202,52 +239,52 @@ void Console::PrintTitle(void) {
 void Console::Clear(void) {	
 	
 	// Clear all
-	Fill(0, 0, Width, Height, BGColor);
+	Fill(0, 0, mWidth, mHeight, mBGColor);
 	
 	// Background for Title
-	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	Fill(0, 0, mWidth, mTitleHeight * mCursorHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
 
-	CursorX = 0;
-	CursorY = TitleHeight;
+	mCursorX = 0;
+	mCursorY = mTitleHeight;
 
 }
 
 void Console::SetFGColor(uint32_t color) {
-	FGColor = color;
+	mFGColor = color;
 }
 
 void Console::SetBGColor(uint32_t color) {
-	BGColor = color;
+	mBGColor = color;
 }
 
 void Console::SetTitleFGColor(uint32_t color) {
-	TitleFGColor = color;
+	mTitleFGColor = color;
 	
 	// Background for Title
-	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	Fill(0, 0, mWidth, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
 }
 
 void Console::SetTitleBGColor(uint32_t color) {
-	TitleBGColor = color;
+	mTitleBGColor = color;
 	
 	// Background for Title
-	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	Fill(0, 0, mWidth, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
 }
 
 void Console::SetTitleText(const char *pText) {
-	Title = pText;
+	mTitle = pText;
 	
 	// Background for Title
-	Fill(0, 0, Width, TitleHeight, TitleBGColor);
+	Fill(0, 0, mWidth, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -259,42 +296,26 @@ void Console::Print(const char *pText) {
 	while (pText[i] != 0) {
 		
 		if (pText[i] == '\n') {
-			if (EGAMode) {				
-				CursorX = 0;
-				CursorY += 1;
-			} else {
-				CursorX = 0;
-				CursorY += 16;				
-			}
+			mCursorX = 0;
+			mCursorY += 1;
 			
-			if (CursorY >= Height) {
+			if (mCursorY >= mCursorMaxY) {
 				break;
 			} else {
 				i++;
 				continue;
 			}
 		} else {
-			PrintCharAlpha(pText[i], CursorX, CursorY, FGColor);
+			PrintCharAlpha(pText[i], mCursorX, mCursorY, mFGColor);
 		}
 
-		if (EGAMode) {				
-			CursorX += 1;
-			if (CursorX >= Width) {
-				CursorX = 0;
-				CursorY += 1;
-			}
-			if (CursorY >= Height) {
-				break;
-			}
-		} else {
-			CursorX += 8;
-			if (CursorX >= Width) {
-				CursorX = 0;
-				CursorY += 16;
-			}
-			if (CursorY >= Height) {
-				break;
-			}
+		mCursorX += 1;
+		if (mCursorX >= mCursorMaxX) {
+			mCursorX = 0;
+			mCursorY += 1;
+		}
+		if (mCursorY >= mCursorMaxY) {
+			break;
 		}
 		
 		i++;
@@ -303,11 +324,11 @@ void Console::Print(const char *pText) {
 }
 
 void *Console::GetFramebufferAddress(void) {
-	return Framebuffer;
+	return mFramebuffer;
 }
 
 size_t Console::GetFramebufferSize(void) {
-	return Width * Pitch;
+	return mWidth * mPitch;
 }
 
 uint8_t Console::ConvertColorEGA(uint32_t color) {
@@ -401,180 +422,180 @@ uint32_t Console::ConvertColor32(uint32_t color) {
 }
 
 void Console::SetPixelEGA(uint32_t x, uint32_t y, uint32_t color) {
-	if (x >= Width)
+	if (x >= mWidth)
 		return;
-	if (y >= Height)
+	if (y >= mHeight)
 		return;
 		
 	uint8_t _EGAColor = ConvertColorEGA(color);
 	
-	volatile uint16_t *target = (uint16_t*)Console::Framebuffer;	
-	target[y * Width + x] = 0xDB | (_EGAColor << 8);
+	volatile uint16_t *target = (uint16_t*)mFramebuffer;	
+	target[y * mWidth + x] = 0xDB | (_EGAColor << 8);
 }
 
 void Console::SetPixel8(uint32_t x, uint32_t y, uint32_t color) {
-	if (x >= Width)
+	if (x >= mWidth)
 		return;
-	if (y >= Height)
+	if (y >= mHeight)
 		return;
 		
 	color = ConvertColor8(color);
 	
-	volatile uint8_t *target = (uint8_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x));
+	volatile uint8_t *target = (uint8_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x));
 	*target = color;
 }
 
 void Console::SetPixel15(uint32_t x, uint32_t y, uint32_t color) {
-	if (x >= Width)
+	if (x >= mWidth)
 		return;
-	if (y >= Height)
+	if (y >= mHeight)
 		return;
 		
 	color = ConvertColor15(color);
 	
-	volatile uint16_t *target = (uint16_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 2));
+	volatile uint16_t *target = (uint16_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 2));
 	*target = color;
 }
 
 void Console::SetPixel16(uint32_t x, uint32_t y, uint32_t color) {
-	if (x >= Width)
+	if (x >= mWidth)
 		return;
-	if (y >= Height)
+	if (y >= mHeight)
 		return;
 		
 	color = ConvertColor16(color);
 	
-	volatile uint16_t *target = (uint16_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 2));	
+	volatile uint16_t *target = (uint16_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 2));	
 	*target = color;
 }
 
 void Console::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
 	
-	if (x >= Width)
+	if (x >= mWidth)
 		return;
-	if (y >= Height)
+	if (y >= mHeight)
 		return;
 	
 	color = ConvertColor24(color);
 	
-	volatile uint32_t *target = (uint32_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 3));
+	volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 3));
 	uint32_t tmp = *target & 0xFF000000;
 	tmp |= color;
 	*target = color;
 }
 
 void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
-	if (x >= Width)
+	if (x >= mWidth)
 		return;
-	if (y >= Height)
+	if (y >= mHeight)
 		return;
 		
 	color = ConvertColor32(color);
 	
-	volatile uint32_t *target = (uint32_t*)(((uintptr_t)Console::Framebuffer) + (y * Pitch) + (x * 4));
+	volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 4));
 	*target = color;
 }
 
 void Console::FillEGA(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
-	if (left >= Width)
+	if (left >= mWidth)
 		return;
-	if (top >= Height)
+	if (top >= mHeight)
 		return;
 
 	color = (ConvertColorEGA(color) & 0x7) << 4;
 	
 	for (uint32_t _y = top; _y < bottom; _y++) {
 		for (uint32_t _x = left; _x < right; _x++) {
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 
-			volatile uint16_t *target = (uint16_t*)Console::Framebuffer;
-			target[_y * Width + _x] = ' ' | (color << 8);
+			volatile uint16_t *target = (uint16_t*)mFramebuffer;
+			target[_y * mWidth + _x] = ' ' | (color << 8);
 		}
 	}
 }
 
 void Console::Fill8(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
-	if (left >= Width)
+	if (left >= mWidth)
 		return;
-	if (top >= Height)
+	if (top >= mHeight)
 		return;	
 
 	color = ConvertColor8(color);
 	
 	for (uint32_t _y = top; _y < bottom; _y++) {
 		for (uint32_t _x = left; _x < right; _x++) {
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 
-			volatile uint8_t *target = (uint8_t*)(((uintptr_t)Console::Framebuffer) + (_y * Pitch) + (_x));
+			volatile uint8_t *target = (uint8_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x));
 			*target = color;
 		}
 	}
 }
 
 void Console::Fill15(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
-	if (left >= Width)
+	if (left >= mWidth)
 		return;
-	if (top >= Height)
+	if (top >= mHeight)
 		return;	
 
 	color = ConvertColor15(color);
 	
 	for (uint32_t _y = top; _y < bottom; _y++) {
 		for (uint32_t _x = left; _x < right; _x++) {
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 
-			volatile uint16_t *target = (uint16_t*)(((uintptr_t)Console::Framebuffer) + (_y * Pitch) + (_x * 2));
+			volatile uint16_t *target = (uint16_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 2));
 			*target = color;
 		}
 	}
 }
 
 void Console::Fill16(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
-	if (left >= Width)
+	if (left >= mWidth)
 		return;
-	if (top >= Height)
+	if (top >= mHeight)
 		return;	
 
 	color = ConvertColor16(color);
 	
 	for (uint32_t _y = top; _y < bottom; _y++) {
 		for (uint32_t _x = left; _x < right; _x++) {
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 
-			volatile uint16_t *target = (uint16_t*)(((uintptr_t)Console::Framebuffer) + (_y * Pitch) + (_x * 2));
+			volatile uint16_t *target = (uint16_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 2));
 			*target = color;
 		}
 	}
 }
 
 void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
-	if (left >= Width)
+	if (left >= mWidth)
 		return;
-	if (top >= Height)
+	if (top >= mHeight)
 		return;	
 
 	color = ConvertColor24(color);
 	
 	for (uint32_t _y = top; _y < bottom; _y++) {
 		for (uint32_t _x = left; _x < right; _x++) {
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 
-			volatile uint32_t *target = (uint32_t*)(((uintptr_t)Console::Framebuffer) + (_y * Pitch) + (_x * 3));
+			volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 3));
 			uint32_t tmp = *target & 0xFF000000;
 			tmp |= color;
 			*target = color;
@@ -583,22 +604,31 @@ void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 }
 
 void Console::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
-	if (left >= Width)
+	if (left >= mWidth)
 		return;
-	if (top >= Height)
+	if (top >= mHeight)
 		return;	
 
 	color = ConvertColor32(color);
 	
 	for (uint32_t _y = top; _y < bottom; _y++) {
 		for (uint32_t _x = left; _x < right; _x++) {
-			if (_x >= Width)
+			if (_x >= mWidth)
 				continue;
-			if (_y >= Height)
+			if (_y >= mHeight)
 				continue;
 
-			volatile uint32_t *target = (uint32_t*)(((uintptr_t)Console::Framebuffer) + (_y * Pitch) + (_x * 4));
+			volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 4));
 			*target = color;
 		}
 	}
 }
+
+void Console::SetPixel(uint32_t x, uint32_t y, uint32_t color) {
+	mSetPixel(x, y, color);
+}
+
+void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	mFill(left, top, right, bottom, color);
+}
+
