@@ -328,7 +328,7 @@ void *Console::GetFramebufferAddress(void) {
 }
 
 size_t Console::GetFramebufferSize(void) {
-	return mWidth * mPitch;
+	return mHeight * mPitch;
 }
 
 uint8_t Console::ConvertColorEGA(uint32_t color) {
