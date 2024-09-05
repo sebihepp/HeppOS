@@ -8,13 +8,14 @@
 #include "retvals.hpp"
 #include "gdt.hpp"
 #include "paging.hpp"
-#include "cxxstub.h"
+#include "cstub.h"
 #include "cpuid.hpp"
+#include "pmm.hpp"
 
 
 char* itoa(int num, char* str, int base);
-
-extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
+ 
+extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBInfo)
 {
 	retval_t retval;
 	cpuid_retval_t cpuid_retval;
@@ -23,17 +24,42 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	char _temp_text[16];
 	memset(_temp_text, 0, 16);
 	
-	if (magic != 0x36D76289) {
+	// Check Multiboot2 magic number
+	if (pMagic != MULTIBOOT2_INFO_MAGIC) {
 		return RETVAL_ERROR_MB2_MAGIC;
 	}
 	
-	retval = Console::Init(mb2_info);
+	// Init Console
+	retval = Console::Init(pMBInfo);
 	if (retval != RETVAL_OK) {
 		return retval;
 	}
 	
 	Console::Clear();
 	Console::SetTitleText("HeppOS - kloader");
+	
+	// Print Video Mode
+	Console::Print("Video Format: ");
+	Console::Print(itoa(Console::GetWidth(), _temp_text, 10));
+	Console::Print("x");
+	Console::Print(itoa(Console::GetHeight(), _temp_text, 10));
+	Console::Print("x");
+	Console::Print(itoa(Console::GetBPC(), _temp_text, 10));
+	if (Console::IsTextMode()) {
+		Console::Print(" Text Mode\n");	
+	} else {
+		Console::Print(" Graphic Mode\n");	
+	}
+	
+	// Init PMM (Physical Memory Manager)
+	Console::Print("Initializing PMM - ");
+	retval = PMM::Init(pMBInfo);
+	if (retval != RETVAL_OK) {
+		Console::Print("ERROR\n");
+		return retval;
+	}
+	Console::Print("OK\n");
+	
 	
 	// Check for LongMode
 	Console::Print("Checking for LongMode - ");
@@ -190,7 +216,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 	
 	
 	// setup initial 64bit paging (maybe map kernel space -2GB to the first 2GB in memory?)
-	Console::Print("Setup Paging - ");
+	Console::Print("Initializing Paging - ");
 	retval = Paging::Init();
 	if (retval != RETVAL_OK) {
 		Console::Print("ERROR!\n");	
@@ -200,7 +226,7 @@ extern "C" uint32_t main(uint32_t magic, multiboot2_info_t *mb2_info)
 
 	
 	// Setup GDT
-	Console::Print("Setup GDT - ");
+	Console::Print("Initializing GDT - ");
 	retval = GDT::Init();
 	if (retval != RETVAL_OK) {
 		Console::Print("ERROR\n");

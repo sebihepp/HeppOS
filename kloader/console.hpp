@@ -21,55 +21,87 @@ struct video_font_t {
 class Console {
 
 private:
-
-	static Console *ConsoleBPC;
 	
-protected:
-	static void *Framebuffer;
-	static uint32_t Pitch;
-	static uint32_t Width;
-	static uint32_t Height;
-	static uint8_t BPP;
-
-	static uint32_t CursorX;
-	static uint32_t CursorY;
+	static void *mFramebuffer;
+	static uint32_t mPitch;
+	static uint32_t mWidth;
+	static uint32_t mHeight;
+	static uint8_t mBPC;
+	static bool mEGAMode;
 	
-	static uint32_t FGColor;
-	static uint32_t BGColor;
-	static uint32_t TitleFGColor;
-	static uint32_t TitleBGColor;
+	static uint32_t mCursorX;
+	static uint32_t mCursorY;
+	static uint32_t mCursorWidth;
+	static uint32_t mCursorHeight;
+	static uint32_t mCursorMaxX;
+	static uint32_t mCursorMaxY;
 
-	static const uint32_t TitleHeight;
 	
-	static const char *Title;
-	
-	static void Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static uint32_t mFGColor;
+	static uint32_t mBGColor;
+	static uint32_t mTitleFGColor;
+	static uint32_t mTitleBGColor;
 
+	static uint32_t mTitleHeight;
+	
+	static const char *mTitle;
+	
 	static void PrintChar(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor, uint32_t bgcolor);
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
 
+	static uint8_t ConvertColorEGA(uint32_t color);
+	static uint8_t ConvertColor8(uint32_t color);
+	static uint16_t ConvertColor15(uint32_t color);
+	static uint16_t ConvertColor16(uint32_t color);
+	static uint32_t ConvertColor24(uint32_t color);
+	static uint32_t ConvertColor32(uint32_t color);
+
+	static void SetPixelEGA(uint32_t x, uint32_t y, uint32_t color);
+	static void SetPixel8(uint32_t x, uint32_t y, uint32_t color);
+	static void SetPixel15(uint32_t x, uint32_t y, uint32_t color);
+	static void SetPixel16(uint32_t x, uint32_t y, uint32_t color);
+	static void SetPixel24(uint32_t x, uint32_t y, uint32_t color);
+	static void SetPixel32(uint32_t x, uint32_t y, uint32_t color);
+	
+	static void FillEGA(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill8(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill15(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill16(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	static void Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	
+	static void (*mSetPixel)(uint32_t x, uint32_t y, uint32_t color);
+	static void (*mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
+	
 	
 	Console();
 	~Console();
 	
 public:	
-	static retval_t Init(const multiboot2_info_t *mbi);
+	static retval_t Init(const multiboot2_info_t *pMBInfo);
+
+	static void SetPixel(uint32_t x, uint32_t y, uint32_t color);
+	static void Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	
 	static void SetFGColor(uint32_t color);
 	static void SetBGColor(uint32_t color);
 
 	static void SetTitleFGColor(uint32_t color);
 	static void SetTitleBGColor(uint32_t color);	
-	static void SetTitleText(const char *text);
+	static void SetTitleText(const char *pText);
 	
-	static void Print(const char *text);
+	static void Print(const char *pText);
 	
 	static void Clear(void);
 	
-	static void *GetFramebuffer(void);
+	static void *GetFramebufferAddress(void);
+	static size_t GetFramebufferSize(void);
 	
-	virtual void SetPixel(uint32_t x, uint32_t y, uint32_t color) = 0;
+	static uint32_t GetWidth(void);
+	static uint32_t GetHeight(void);
+	static uint32_t GetBPC(void);
+	static bool IsTextMode(void);
 	
 };
 

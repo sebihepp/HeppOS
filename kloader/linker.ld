@@ -6,6 +6,8 @@ SECTIONS
 
 	. = 2M;
 
+	KLOADER_START = .;
+	
 	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.multiboot)
@@ -32,5 +34,7 @@ SECTIONS
 		*(.bss.*)
 	}
 
+	KLOADER_END = .;
+	
 }
 

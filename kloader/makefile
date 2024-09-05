@@ -1,5 +1,5 @@
 
-# These paths need to be adjusted to your machine
+# These paths need to be adjusted to your cross compiler
 CC := "$${HOME}/opt/cross/bin/i686-elf-gcc"
 CXX := "$${HOME}/opt/cross/bin/i686-elf-g++"
 AS := "$${HOME}/opt/cross/bin/i686-elf-as"
@@ -27,6 +27,7 @@ CRTN_OBJECT := crtn.o
 
 TARGET := kloader.elf
 
+.PHONY: all
 all: $(TARGET)
 
 .PHONY: clean

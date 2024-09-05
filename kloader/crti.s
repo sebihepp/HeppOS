@@ -6,8 +6,7 @@
 _init:
 	pushl %ebp
 	movl %esp, %ebp
-	pushal
-	pushfl
+
 	
 	
 .section .fini
@@ -17,6 +16,5 @@ _init:
 _fini:
 	pushl %ebp
 	movl %esp, %ebp
-	pushal
-	pushfl
+
 	

@@ -2,8 +2,8 @@
 .section ".data"
 .align 8
 
-.global stdfont
-stdfont:
+.global stdfont_old
+stdfont_old:
 	
 # 0 - NULL
 	.byte 0b00000000

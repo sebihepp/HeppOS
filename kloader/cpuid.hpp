@@ -17,13 +17,13 @@ union cpuid_retval_t
 	} __attribute__((packed));
 } __attribute__((packed));
 
-static inline void cpuid(uint32_t code, cpuid_retval_t &retval)
+static inline void cpuid(uint32_t pCode, cpuid_retval_t &pRetval)
 {
 	asm volatile 
 	(
 		"cpuid" :
-		"=a" (retval.eax), "=b" (retval.ebx), "=c" (retval.ecx), "=d" (retval.edx) :
-		"a" (code) :
+		"=a" (pRetval.eax), "=b" (pRetval.ebx), "=c" (pRetval.ecx), "=d" (pRetval.edx) :
+		"a" (pCode) :
 	);	
 }
 

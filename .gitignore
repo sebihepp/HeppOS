@@ -39,6 +39,7 @@
 
 # config files of virtual machines
 /bochsrc
+/qemu.sh
 
 # Zone.Identifier files
 *.Zone.Identifier

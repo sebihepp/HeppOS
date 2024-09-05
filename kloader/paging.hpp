@@ -81,7 +81,7 @@ private:
 public:
 	
 	static retval_t Init(void);
-	static void* GetPML4T(void);
+	static const void* GetPML4T(void);
 	
 };
 

@@ -1,6 +1,6 @@
 
 #include "paging.hpp"
-#include "cxxstub.h"
+#include "cstub.h"
 
 #include "console.hpp"
 
@@ -132,9 +132,9 @@ retval_t Paging::Init(void) {
 	
 	
 	// Setup Page Tables for Framebuffer
-	uint64_t _framebuffer = (uint64_t)Console::GetFramebuffer();
+	uint64_t _framebuffer = (uint64_t)Console::GetFramebufferAddress();
 	_framebuffer &= 0xFFFFFFFF;
-	uint32_t PML3Entry = (_framebuffer >> 30) & 0x1FF;	
+	uint32_t PML3Entry = (_framebuffer >> 30) & 0x1FF;
 	
 	PML3TLow.entry1GB[PML3Entry].present = 1;
 	PML3TLow.entry1GB[PML3Entry].write = 1;
@@ -152,6 +152,6 @@ retval_t Paging::Init(void) {
 	return RETVAL_OK;
 }
 
-void* Paging::GetPML4T(void) {
+const void* Paging::GetPML4T(void) {
 	return &PML4T;	
 }
