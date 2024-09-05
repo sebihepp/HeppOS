@@ -239,10 +239,10 @@ void Console::PrintTitle(void) {
 void Console::Clear(void) {	
 	
 	// Clear all
-	Fill(0, 0, mWidth, mHeight, mBGColor);
+	Fill(0, 0, mCursorMaxX, mCursorMaxY, mBGColor);
 	
 	// Background for Title
-	Fill(0, 0, mWidth, mTitleHeight * mCursorHeight, mTitleBGColor);
+	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -264,7 +264,7 @@ void Console::SetTitleFGColor(uint32_t color) {
 	mTitleFGColor = color;
 	
 	// Background for Title
-	Fill(0, 0, mWidth, mTitleHeight, mTitleBGColor);
+	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -274,7 +274,7 @@ void Console::SetTitleBGColor(uint32_t color) {
 	mTitleBGColor = color;
 	
 	// Background for Title
-	Fill(0, 0, mWidth, mTitleHeight, mTitleBGColor);
+	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -284,7 +284,7 @@ void Console::SetTitleText(const char *pText) {
 	mTitle = pText;
 	
 	// Background for Title
-	Fill(0, 0, mWidth, mTitleHeight, mTitleBGColor);
+	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -497,6 +497,12 @@ void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
 }
 
 void Console::FillEGA(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	
+	left *= mCursorWidth;
+	top *= mCursorHeight;
+	right *= mCursorWidth;
+	bottom *= mCursorHeight;
+	
 	if (left >= mWidth)
 		return;
 	if (top >= mHeight)
@@ -518,6 +524,12 @@ void Console::FillEGA(uint32_t left, uint32_t top, uint32_t right, uint32_t bott
 }
 
 void Console::Fill8(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	
+	left *= mCursorWidth;
+	top *= mCursorHeight;
+	right *= mCursorWidth;
+	bottom *= mCursorHeight;
+	
 	if (left >= mWidth)
 		return;
 	if (top >= mHeight)
@@ -539,6 +551,12 @@ void Console::Fill8(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom
 }
 
 void Console::Fill15(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	
+	left *= mCursorWidth;
+	top *= mCursorHeight;
+	right *= mCursorWidth;
+	bottom *= mCursorHeight;
+	
 	if (left >= mWidth)
 		return;
 	if (top >= mHeight)
@@ -560,6 +578,12 @@ void Console::Fill15(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 }
 
 void Console::Fill16(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	
+	left *= mCursorWidth;
+	top *= mCursorHeight;
+	right *= mCursorWidth;
+	bottom *= mCursorHeight;
+	
 	if (left >= mWidth)
 		return;
 	if (top >= mHeight)
@@ -581,6 +605,12 @@ void Console::Fill16(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 }
 
 void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	
+	left *= mCursorWidth;
+	top *= mCursorHeight;
+	right *= mCursorWidth;
+	bottom *= mCursorHeight;
+	
 	if (left >= mWidth)
 		return;
 	if (top >= mHeight)
@@ -604,6 +634,12 @@ void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 }
 
 void Console::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+	
+	left *= mCursorWidth;
+	top *= mCursorHeight;
+	right *= mCursorWidth;
+	bottom *= mCursorHeight;
+	
 	if (left >= mWidth)
 		return;
 	if (top >= mHeight)
