@@ -13,7 +13,7 @@
 #include "pmm.hpp"
 
 #define CPUID_MIN_LEVEL 1
-#define CPUID_MIN_EXT_LEVEL 1
+#define CPUID_MIN_EXT_LEVEL 8
 
 char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
