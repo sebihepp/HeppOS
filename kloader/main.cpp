@@ -12,8 +12,11 @@
 #include "cpuid.hpp"
 #include "pmm.hpp"
 
+#define CPUID_MIN_LEVEL 1
+#define CPUID_MIN_EXT_LEVEL 1
 
 char* itoa(int num, char* str, int base);
+char* utoa(unsigned num, char* str, int base);
  
 extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBInfo)
 {
@@ -61,16 +64,29 @@ extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBIn
 	Console::Print("OK\n");
 	
 	
+
+	Console::Print("Checking maximum CPUID level - 0x");
+	// Check maximum CPUID level
+	cpuid(0x00000000, cpuid_retval);
+	Console::Print(utoa(cpuid_retval.eax, _temp_text, 16));
+	if (cpuid_retval.eax < CPUID_MIN_LEVEL) {
+		Console::Print(" - ERROR\n");
+		return RETVAL_ERROR_CPUID_LEVEL;
+	}
+	Console::Print(" - OK\n");
+	
+	Console::Print("Checking maximum extended CPUID level - 0x");
+	// Check maximum extended CPUID level
+	cpuid(0x80000000, cpuid_retval);
+	Console::Print(utoa(cpuid_retval.eax, _temp_text, 16));
+	if (cpuid_retval.eax < CPUID_MIN_EXT_LEVEL) {
+		Console::Print(" - ERROR\n");
+		return RETVAL_ERROR_CPUID_EXT_LEVEL;
+	}
+	Console::Print(" - OK\n");
+	
 	// Check for LongMode
 	Console::Print("Checking for LongMode - ");
-	// Check maximum extended CPUID level	
-	cpuid(0x80000000, cpuid_retval);
-	if (cpuid_retval.eax < 0x1) {
-		Console::Print("ERROR\n");
-		return RETVAL_ERROR_NO_LONGMODE;
-	}
-
-	//Check for support of long mode
 	cpuid(0x80000001, cpuid_retval);
 	if ((cpuid_retval.edx & 0x20000000) == 0) {
 		Console::Print("ERROR\n");
@@ -352,6 +368,36 @@ char* itoa(int num, char* str, int base)
 	return str;
 }
 
-
- 
-
+char *utoa (unsigned value, char *str, int base) {
+  const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+  int i, j;
+  unsigned remainder;
+  char c;
+  
+  /* Check base is supported. */
+  if ((base < 2) || (base > 36))
+    { 
+      str[0] = '\0';
+      return NULL;
+    }  
+    
+  /* Convert to string. Digits are in reverse order.  */
+  i = 0;
+  do 
+    {
+      remainder = value % base;
+      str[i++] = digits[remainder];
+      value = value / base;
+    } while (value != 0);  
+  str[i] = '\0'; 
+  
+  /* Reverse string.  */
+  for (j = 0, i--; j < i; j++, i--)
+    {
+      c = str[j];
+      str[j] = str[i];
+      str[i] = c; 
+    }       
+  
+  return str;
+}
