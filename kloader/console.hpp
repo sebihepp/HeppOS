@@ -92,7 +92,7 @@ public:
 	static void SetTitleText(const char *pText);
 	
 	static void Print(const char *pText);
-	
+	static void ScrollDown(const uint32_t pLines);
 	static void Clear(void);
 	
 	static void *GetFramebufferAddress(void);

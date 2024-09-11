@@ -1,5 +1,6 @@
 
 #include "console.hpp"
+#include "cstub.h"
 
 extern "C" video_font_t stdfont;
 
@@ -100,7 +101,7 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 		mSetPixel = &SetPixelEGA;
 		mFill = &FillEGA;
 		mTitleHeight = 1;
-		mBPC = 4;
+		mBPC = 4; 
 	} else {
 		return RETVAL_ERROR_VIDEOMODE;
 	}
@@ -319,6 +320,37 @@ void Console::Print(const char *pText) {
 		}
 		
 		i++;
+	}
+	
+}
+
+void Console::ScrollDown(const uint32_t pLines) {
+	
+	if (pLines == 0)
+		return;
+	if (pLines >= (mCursorMaxY - mTitleHeight)) {
+		Clear();
+		return;
+	}
+	
+	uintptr_t _SrcAddress = (uintptr_t)GetFramebufferAddress();
+	uintptr_t _DestAddress = (uintptr_t)GetFramebufferAddress();
+	size_t _Size = GetFramebufferSize();
+	
+	
+	_SrcAddress += mPitch * (pLines + mTitleHeight) * mCursorHeight;
+	_DestAddress += mPitch * mTitleHeight * mCursorHeight;
+	_Size -= (_SrcAddress - (uintptr_t)(GetFramebufferAddress()));		
+
+	
+	memmove((void*)_DestAddress, (void*)_SrcAddress, _Size);
+	
+	Fill(0, mCursorMaxY - pLines, mCursorMaxX, mCursorMaxY, mBGColor);
+	
+	if (pLines >= mCursorY) {
+			mCursorY = 1;
+	} else {
+		mCursorY -= pLines;
 	}
 	
 }
