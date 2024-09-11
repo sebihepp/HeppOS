@@ -301,11 +301,11 @@ void Console::Print(const char *pText) {
 			mCursorY += 1;
 			
 			if (mCursorY >= mCursorMaxY) {
-				break;
-			} else {
-				i++;
-				continue;
+				ScrollDown(1);
+				
 			}
+			i++;
+			continue;
 		} else {
 			PrintCharAlpha(pText[i], mCursorX, mCursorY, mFGColor);
 		}
@@ -316,8 +316,7 @@ void Console::Print(const char *pText) {
 			mCursorY += 1;
 		}
 		if (mCursorY >= mCursorMaxY) {
-			//ScrollDown(1);
-			break;
+			ScrollDown(1);
 		}
 		
 		i++;
@@ -346,7 +345,7 @@ void Console::ScrollDown(const uint32_t pLines) {
 	
 	memmove((void*)_DestAddress, (void*)_SrcAddress, _Size);
 	
-	Fill(0, mCursorMaxY - pLines, mCursorMaxX, mCursorMaxY, mBGColor);
+	Fill(0, mCursorMaxY - pLines + 1, mCursorMaxX, mCursorMaxY, mBGColor);
 	
 	if (pLines >= mCursorY) {
 			mCursorY = 1;

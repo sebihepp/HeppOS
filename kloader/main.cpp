@@ -314,7 +314,7 @@ extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBIn
 	);
 	Console::Print("OK\n");
 	
-
+	
 	// Parse modules (relocatable elf)
 	
 	// jump to kmain of kernel
