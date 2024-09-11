@@ -316,6 +316,7 @@ void Console::Print(const char *pText) {
 			mCursorY += 1;
 		}
 		if (mCursorY >= mCursorMaxY) {
+			//ScrollDown(1);
 			break;
 		}
 		

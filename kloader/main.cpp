@@ -103,6 +103,15 @@ extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBIn
 	}
 	Console::Print("OK\n");
 		
+	// Check for PAT (Page Attribute Table
+	Console::Print("Checking for PAT - ");	
+	cpuid(0x00000001, cpuid_retval);
+	if ((cpuid_retval.edx & 0x00000100) == 0) {
+		Console::Print("ERROR\n");
+		return RETVAL_ERROR_NO_PAT;
+	}
+	Console::Print("OK\n");
+	
 	
 	// Check for SSE
 	Console::Print("Checking for SSE - ");	

@@ -19,6 +19,7 @@ typedef uint32_t retval_t;
 #define RETVAL_ERROR_NO_GLOBAL_PAGES	12
 #define RETVAL_ERROR_CPUID_LEVEL		12
 #define RETVAL_ERROR_CPUID_EXT_LEVEL	12
+#define RETVAL_ERROR_NO_PAT				12
 
 
 #endif
