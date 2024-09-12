@@ -101,6 +101,7 @@ public:
 	static uint32_t GetWidth(void);
 	static uint32_t GetHeight(void);
 	static uint32_t GetBPC(void);
+	static size_t GetPitch(void);
 	static bool IsTextMode(void);
 	
 };

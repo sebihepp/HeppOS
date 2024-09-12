@@ -125,6 +125,10 @@ bool Console::IsTextMode(void) {
 	return mEGAMode;	
 }
 
+size_t Console::GetPitch(void) {
+	return mPitch;
+}
+
 void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 	uint32_t fg_color, uint32_t bg_color)
 {
