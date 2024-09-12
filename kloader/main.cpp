@@ -49,10 +49,13 @@ extern "C" uint32_t kloader_main(uint32_t pMagic, const multiboot2_info_t *pMBIn
 	Console::Print("x");
 	Console::Print(itoa(Console::GetBPC(), _temp_text, 10));
 	if (Console::IsTextMode()) {
-		Console::Print(" Text Mode\n");	
+		Console::Print(" Text Mode");	
 	} else {
-		Console::Print(" Graphic Mode\n");	
+		Console::Print(" Graphic Mode");	
 	}
+	Console::Print(" (Pitch=");
+	Console::Print(itoa(Console::GetPitch(), _temp_text, 10));
+	Console::Print(")\n");
 	
 	// Init PMM (Physical Memory Manager)
 	Console::Print("Initializing PMM - ");
