@@ -1,14 +1,26 @@
 
 
-
 # These paths need to be adjusted to your machine
 LIMINE_PATH := "$${HOME}/opt/limine"
 LIMINE := "$(LIMINE_PATH)/bin/limine"
 
 
 .PHONY: all
-all:
+all: kernel iso img
+
+.PHONY: clean
+clean:
+	rm -f HeppOS.iso
+	rm -rf iso
+	rm -f HeppOS.img
+	cd kernel && $(MAKE) clean
+
+.PHONY: kernel
+kernel:
 	cd kernel && $(MAKE) all
+	
+.PHONY: iso
+iso:
 	mkdir -p iso
 	mkdir -p iso/boot
 	mkdir -p iso/boot/limine
@@ -25,6 +37,9 @@ all:
 		--efi-boot boot/limine/limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label \
 		iso -o HeppOS.iso
 	$(LIMINE) bios-install HeppOS.iso
+	
+.PHONY: img
+img:
 	dd if=/dev/zero bs=1M count=0 seek=64 of=HeppOS.img
 	sgdisk HeppOS.img -n 1:2048 -t 1:ef00
 	$(LIMINE) bios-install HeppOS.img
@@ -35,10 +50,3 @@ all:
 	mcopy -i HeppOS.img@@1M "$(LIMINE_PATH)/share/limine/limine-bios.sys" ::/boot/limine
 	mcopy -i HeppOS.img@@1M "$(LIMINE_PATH)/share/limine/BOOTIA32.EFI" ::/EFI/BOOT
 	mcopy -i HeppOS.img@@1M "$(LIMINE_PATH)/share/limine/BOOTX64.EFI" ::/EFI/BOOT
-	
-.PHONY: clean
-clean:
-	rm -f HeppOS.iso
-	rm -rf iso
-	rm -f HeppOS.img
-	cd kernel && $(MAKE) clean

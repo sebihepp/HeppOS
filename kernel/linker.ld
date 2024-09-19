@@ -1,6 +1,6 @@
 
 OUTPUT_FORMAT(elf64-x86-64)
-ENTRY(kmain)
+ENTRY(_kstart)
 
 PHDRS
 {
@@ -21,7 +21,7 @@ SECTIONS
 		*(.text)
 		*(.text.*)
 	} :text
-
+	
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		*(.rodata)
