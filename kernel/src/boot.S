@@ -6,7 +6,7 @@
 .section ".text"
 _kstart:
 	
-	call _init
+	#call _init
 	call kmain
 _error:
 	cli
