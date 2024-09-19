@@ -1,5 +1,6 @@
 
 #include "console.hpp"
+#include "cstub.h"
 
 extern "C" video_font_t stdfont;
 
@@ -100,7 +101,7 @@ retval_t Console::Init(const multiboot2_info_t *pMBInfo) {
 		mSetPixel = &SetPixelEGA;
 		mFill = &FillEGA;
 		mTitleHeight = 1;
-		mBPC = 4;
+		mBPC = 4; 
 	} else {
 		return RETVAL_ERROR_VIDEOMODE;
 	}
@@ -122,6 +123,10 @@ uint32_t Console::GetBPC(void) {
 	
 bool Console::IsTextMode(void) {
 	return mEGAMode;	
+}
+
+size_t Console::GetPitch(void) {
+	return mPitch;
 }
 
 void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
@@ -300,11 +305,11 @@ void Console::Print(const char *pText) {
 			mCursorY += 1;
 			
 			if (mCursorY >= mCursorMaxY) {
-				break;
-			} else {
-				i++;
-				continue;
+				ScrollDown(1);
+				
 			}
+			i++;
+			continue;
 		} else {
 			PrintCharAlpha(pText[i], mCursorX, mCursorY, mFGColor);
 		}
@@ -315,10 +320,41 @@ void Console::Print(const char *pText) {
 			mCursorY += 1;
 		}
 		if (mCursorY >= mCursorMaxY) {
-			break;
+			ScrollDown(1);
 		}
 		
 		i++;
+	}
+	
+}
+
+void Console::ScrollDown(const uint32_t pLines) {
+	
+	if (pLines == 0)
+		return;
+	if (pLines >= (mCursorMaxY - mTitleHeight)) {
+		Clear();
+		return;
+	}
+	
+	uintptr_t _SrcAddress = (uintptr_t)GetFramebufferAddress();
+	uintptr_t _DestAddress = (uintptr_t)GetFramebufferAddress();
+	size_t _Size = GetFramebufferSize();
+	
+	
+	_SrcAddress += mPitch * (pLines + mTitleHeight) * mCursorHeight;
+	_DestAddress += mPitch * mTitleHeight * mCursorHeight;
+	_Size -= (_SrcAddress - (uintptr_t)(GetFramebufferAddress()));		
+
+	
+	memmove((void*)_DestAddress, (void*)_SrcAddress, _Size);
+	
+	Fill(0, mCursorMaxY - pLines + 1, mCursorMaxX, mCursorMaxY, mBGColor);
+	
+	if (pLines >= mCursorY) {
+			mCursorY = 1;
+	} else {
+		mCursorY -= pLines;
 	}
 	
 }

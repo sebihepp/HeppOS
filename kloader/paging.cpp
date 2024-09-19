@@ -3,6 +3,7 @@
 #include "cstub.h"
 
 #include "console.hpp"
+#include "msr.hpp"
 
 union cpuid_retval_t
 {
@@ -54,6 +55,8 @@ retval_t Paging::Init(void) {
 		}
 	}
 	
+	// Setup the PAT (Page Attribute Table)
+	WriteMSR(MSR_PAT, 0x00000100, 0x07060504);
 	
 	// Clear all Paging structures
 	memset(&PML4T, 0, 4096);
@@ -84,11 +87,11 @@ retval_t Paging::Init(void) {
 	PML3TLow.entry1GB[0].write = 1;
 	PML3TLow.entry1GB[0].user = 0;
 	PML3TLow.entry1GB[0].write_through = 0;
-	PML3TLow.entry1GB[0].cache_disable = 0;
+	PML3TLow.entry1GB[0].cache_disable = 1;
 	PML3TLow.entry1GB[0].accessed = 0;
 	PML3TLow.entry1GB[0].size = 1;
 	PML3TLow.entry1GB[0].global = 0;
-	PML3TLow.entry1GB[0].page_attribute_table = 0;
+	PML3TLow.entry1GB[0].page_attribute_table = 1;
 	PML3TLow.entry1GB[0].base = (uint64_t)0x0;
 	PML3TLow.entry1GB[0].execute_disable = 0;
 	
@@ -96,11 +99,11 @@ retval_t Paging::Init(void) {
 	PML3TLow.entry1GB[1].write = 1;
 	PML3TLow.entry1GB[1].user = 0;
 	PML3TLow.entry1GB[1].write_through = 0;
-	PML3TLow.entry1GB[1].cache_disable = 0;
+	PML3TLow.entry1GB[1].cache_disable = 1;
 	PML3TLow.entry1GB[1].accessed = 0;
 	PML3TLow.entry1GB[1].size = 1;
 	PML3TLow.entry1GB[1].global = 0;
-	PML3TLow.entry1GB[1].page_attribute_table = 0;
+	PML3TLow.entry1GB[1].page_attribute_table = 1;
 	PML3TLow.entry1GB[1].base = ((uint64_t)1024*1024*1024) >> 30;
 	PML3TLow.entry1GB[1].execute_disable = 0;
 	
@@ -110,11 +113,11 @@ retval_t Paging::Init(void) {
 	PML3THigh.entry1GB[510].write = 1;
 	PML3THigh.entry1GB[510].user = 0;
 	PML3THigh.entry1GB[510].write_through = 0;
-	PML3THigh.entry1GB[510].cache_disable = 0;
+	PML3THigh.entry1GB[510].cache_disable = 1;
 	PML3THigh.entry1GB[510].accessed = 0;
 	PML3THigh.entry1GB[510].size = 1;
 	PML3THigh.entry1GB[510].global = 0;
-	PML3THigh.entry1GB[510].page_attribute_table = 0;
+	PML3THigh.entry1GB[510].page_attribute_table = 1;
 	PML3THigh.entry1GB[510].base = (uint64_t)0x0;
 	PML3THigh.entry1GB[510].execute_disable = 0;
 
@@ -122,11 +125,11 @@ retval_t Paging::Init(void) {
 	PML3THigh.entry1GB[511].write = 1;
 	PML3THigh.entry1GB[511].user = 0;
 	PML3THigh.entry1GB[511].write_through = 0;
-	PML3THigh.entry1GB[511].cache_disable = 0;
+	PML3THigh.entry1GB[511].cache_disable = 1;
 	PML3THigh.entry1GB[511].accessed = 0;
 	PML3THigh.entry1GB[511].size = 1;
 	PML3THigh.entry1GB[511].global = 0;
-	PML3THigh.entry1GB[511].page_attribute_table = 0;
+	PML3THigh.entry1GB[511].page_attribute_table = 1;
 	PML3THigh.entry1GB[511].base = ((uint64_t)1024*1024*1024) >> 30;
 	PML3THigh.entry1GB[511].execute_disable = 0;
 	

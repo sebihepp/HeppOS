@@ -92,7 +92,7 @@ public:
 	static void SetTitleText(const char *pText);
 	
 	static void Print(const char *pText);
-	
+	static void ScrollDown(const uint32_t pLines);
 	static void Clear(void);
 	
 	static void *GetFramebufferAddress(void);
@@ -101,6 +101,7 @@ public:
 	static uint32_t GetWidth(void);
 	static uint32_t GetHeight(void);
 	static uint32_t GetBPC(void);
+	static size_t GetPitch(void);
 	static bool IsTextMode(void);
 	
 };

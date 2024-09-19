@@ -1,7 +1,7 @@
 
 #include "cstub.h"
 
-uint32_t memcmp(const void *a, const void *b, size_t length)
+int32_t memcmp(const void *a, const void *b, size_t length)
 {
 	const uint8_t *_a = (const uint8_t*)a;
 	const uint8_t *_b = (const uint8_t*)b;
