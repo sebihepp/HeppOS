@@ -4,15 +4,18 @@ CC := "$${HOME}/opt/cross/bin/x86_64-elf-gcc"
 CXX := "$${HOME}/opt/cross/bin/x86_64-elf-g++"
 AS := "$${HOME}/opt/cross/bin/x86_64-elf-as"
 LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
+LIMINE_PATH := "$${HOME}/opt/limine"
+LIMINE := "$(LIMINE_PATH)/bin/limine"
+
 
 # Get the correct libgcc path
 LGCCPATH := $(dir $(shell $(CC) -mno-red-zone -print-libgcc-file-name))
 
 # Definition for flags
-CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone -mno-80387 -mno-sse -mno-sse2 -mno-mmx -I src
-CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel -mno-red-zone -mno-80387 -mno-sse -mno-sse2 -mno-mmx -I src
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone -mno-80387 -mno-sse -mno-sse2 -mno-mmx -I src -I "$(LIMINE_PATH)/include"
+CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -mcmodel=kernel -mno-red-zone -mno-80387 -mno-sse -mno-sse2 -mno-mmx -I src -I "$(LIMINE_PATH)/include"
 ASFLAGS := 
-LDFLAGS := -T linker.ld -O2 -r -nostdlib -L "$(LGCCPATH)" -lgcc
+LDFLAGS := -T linker.ld -O2 -nostdlib -L "$(LGCCPATH)" -lgcc
 
 
 CXX_FILES := $(shell cd src && find -L * -type f -name '*.cpp' | LC_ALL=C sort) 
@@ -26,7 +29,7 @@ OBJ_FILES := obj/crti.S.o $(OBJ_FILES) obj/crtn.S.o
 CRTBEGIN_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJECT := $(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
 
-TARGET := kernel.elf
+TARGET := HeppOS.elf
 
 .PHONY: all
 all: bin/$(TARGET)

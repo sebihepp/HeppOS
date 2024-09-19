@@ -25,6 +25,8 @@ initial drivers, supplied as modules.
 ### PREREQUISITES
 - cross compiler with binutils, gcc, g++ and libgcc as x86_64-elf (with mno-red-zone) in $HOME/opt/cross (binaries in 
 subdirectory bin)
+- limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd 
+and installed into $HOME/opt/limine  (by using --prefix=$HOME/opt/limine )
 - BOCHS for testing
 - QEMU for testing
 

@@ -1,4 +1,5 @@
 
+OUTPUT_FORMAT(elf64-x86-64)
 ENTRY(kmain)
 
 PHDRS
@@ -31,6 +32,11 @@ SECTIONS
 	{
 		*(.data)
 		*(.data.*)
+		
+		KEEP(*(.requests_start_marker))
+		KEEP(*(.requests))
+		KEEP(*(.requests_end_marker))
+		
 	} :data
 
 	.bss BLOCK(4K) : ALIGN(4K)
