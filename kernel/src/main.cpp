@@ -1,33 +1,13 @@
 
-#include <stdbool.h>
+
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
-#include "retvals.hpp"
-#include "multiboot2.hpp"
-#include "console.hpp"
+void kmain(void) {
 
 
-extern "C" void kmain(uint32_t magic, multiboot2_info_t *mbi) {
-
-	retval_t retval;
-	
-	retval = Console::Init(mbi);
-	if (retval != RETVAL_OK) {
-		return;
+	while (true) {
+		asm volatile ("hlt;\n");
 	}
-	
-	Console::SetTitleText("HeppOS");
-	Console::Clear();
-	
-	
-	//Loop forever
-	asm volatile (
-		"cli;\n"
-		"1:"
-		"hlt;\n"
-		"jmp 1b;\n"
-	);
-	
-	return;
 }
