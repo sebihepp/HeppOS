@@ -23,7 +23,7 @@ initial drivers, supplied as modules.
 - Drivers will be loaded into kernel space. 
 
 ### PREREQUISITES
-- cross compiler with binutils, gcc, g++ and libgcc as x86_64-elf (with mno-red-zone) in $HOME/opt/cross (binaries in 
+- cross compiler with binutils, gcc, g++ and libgcc as x86_64-elf (with mno-red-zone and mcmodel=kernel) in $HOME/opt/cross (binaries in 
 subdirectory bin)
 - limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd 
 and installed into $HOME/opt/limine  (by using --prefix=$HOME/opt/limine )
@@ -36,4 +36,7 @@ and installed into $HOME/opt/limine  (by using --prefix=$HOME/opt/limine )
 Q: I cannot boot the created iso file  
 
 A: If you use the windows subsystem linux (wsl) for creating the cdrom image, you need to install the grub binaries via "sudo apt-get install grub-pc-bin"  
- 
+---
+Q: When compiling the kernel I get errors like "relocation truncated to fit" 
+
+A: You need to use a libgcc build with -mno-red-zone and -mcmodel=kernel 
