@@ -40,7 +40,7 @@ iso:
 	
 .PHONY: img
 img:
-	dd if=/dev/zero bs=1M count=0 seek=64 of=HeppOS.img
+	dd if=/dev/zero bs=1M count=64 of=HeppOS.img
 	sgdisk HeppOS.img -n 1:2048 -t 1:ef00
 	$(LIMINE) bios-install HeppOS.img
 	mformat -i HeppOS.img@@1M

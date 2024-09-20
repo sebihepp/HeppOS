@@ -6,6 +6,7 @@ PHDRS
 {
 	text		PT_LOAD;
 	rodata		PT_LOAD;
+	eh_frame	PT_LOAD;
 	data		PT_LOAD;
 	dynamic		PT_DYNAMIC;
 }
@@ -28,6 +29,11 @@ SECTIONS
 		*(.rodata.*)
 	} :rodata
 
+	.eh_frame BLOCK (4K) : ALIGN (4K)
+	{
+		*(.eh_frame*)
+	} :eh_frame
+	
 	.data BLOCK(4K) : ALIGN(4K)
 	{
 		*(.data)
@@ -48,7 +54,6 @@ SECTIONS
 
 	/DISCARD/ :
 	{
-		*(.eh_frame*)
 		*(.note .note.*)
 	}
 	
