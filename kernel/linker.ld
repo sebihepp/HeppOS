@@ -14,7 +14,6 @@ PHDRS
 SECTIONS
 {
 
-
 	. = 0xFFFFFFFF80000000;
 	
 	.text BLOCK(4K) : ALIGN(4K)

@@ -4,40 +4,28 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <limine.h>
+#include <liminestub.h>
 #include <cstub.h>
 
 #include <retvals.h>
 #include <console.h>
-
-
-__attribute__((used, section(".requests"))) static volatile LIMINE_BASE_REVISION(2);
-__attribute__((used, section(".requests"))) static volatile limine_framebuffer_request FramebufferRequest = {
-	.id = LIMINE_FRAMEBUFFER_REQUEST,
-	.revision = 0,
-	.response = NULL
-};
-__attribute__((used, section(".requests"))) static volatile limine_memmap_request MemoryMapRequest = {
-	.id = LIMINE_MEMMAP_REQUEST,
-	.revision = 0,
-	.response = NULL
-};
-__attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_REQUESTS_START_MARKER;
-__attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
+#include <gdt.h>
 
 char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
+char *htoa(uint64_t num, char* str);
 
 extern "C" uint32_t kmain(void) {
 
-	char _TempText[16];
+	char _TempText[24];
 	retval_t _RetVal = RETVAL_OK;
 	
-	if (LIMINE_BASE_REVISION_SUPPORTED == false) {
-		return RETVAL_ERROR_LIMINE_REV;
+	_RetVal = Limine::Init();
+	if (_RetVal != RETVAL_OK) {
+		return _RetVal;
 	}
-	
-	_RetVal = Console::Init(FramebufferRequest.response);
+		
+	_RetVal = Console::Init(Limine::GetFramebufferResponse());
 	if (_RetVal != RETVAL_OK) {
 		return _RetVal;
 	}
@@ -60,6 +48,32 @@ extern "C" uint32_t kmain(void) {
 	Console::Print(itoa(Console::GetPitch(), _TempText, 10));
 	Console::Print(")\n");
 	
+	
+	// Print HHDM offset
+	Console::Print("HHDM offset=0x");
+	Console::Print(htoa(Limine::GetHHDMResponse()->offset, _TempText));
+	Console::Print("\n");
+	
+	
+	// Print Framebuffer Address
+	Console::Print("Framebuffer Address=0x");
+	Console::Print(htoa((uint64_t)Limine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
+	Console::Print("\n");
+	
+	
+	
+	Console::Print("Initializing GDT.........................");
+	_RetVal = GDT::Init(Limine::GetHHDMResponse());
+	if (_RetVal != RETVAL_OK) {
+		Console::Print("ERROR!\n");
+		return _RetVal;
+	}
+	Console::Print("...OK!\n");
+	
+	//Console::Print("Loading..................................");
+	//GDT::LoadGDT();
+	//Console::Print("...OK!\n");
+
 	
 	return RETVAL_OK;
 }
@@ -150,4 +164,16 @@ char *utoa (unsigned value, char *str, int base) {
     }       
   
   return str;
+}
+
+char *htoa(uint64_t num, char* str) {
+	
+	const char digits[] = "0123456789abcdef";
+	
+	for (uint8_t i = 0; i < 16; i++) {
+		uint32_t _val = (num >> (60 - (i * 4))) & 0xF;
+		str[i] = digits[_val];
+	}
+	str [16] = '\0';
+	return str;
 }
