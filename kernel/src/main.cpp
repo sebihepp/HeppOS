@@ -10,6 +10,9 @@
 #include <retvals.h>
 #include <console.h>
 #include <gdt.h>
+#include <paging.h>
+
+
 
 char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
@@ -60,7 +63,10 @@ extern "C" uint32_t kmain(void) {
 	Console::Print(htoa((uint64_t)Limine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
 	Console::Print("\n");
 	
-	
+	// Print CR3 Address
+	Console::Print("CR3=0x");
+	Console::Print(htoa((uint64_t)Paging::GetPhysicalAddress(NULL), _TempText));
+	Console::Print("\n");
 	
 	Console::Print("Initializing GDT.........................");
 	_RetVal = GDT::Init(Limine::GetHHDMResponse());
