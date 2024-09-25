@@ -69,16 +69,16 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("\n");
 	
 	Console::Print("Initializing GDT.........................");
-	_RetVal = GDT::Init(Limine::GetHHDMResponse());
+	_RetVal = GDT::Init();
 	if (_RetVal != RETVAL_OK) {
 		Console::Print("ERROR!\n");
 		return _RetVal;
 	}
 	Console::Print("...OK!\n");
 	
-	//Console::Print("Loading..................................");
-	//GDT::LoadGDT();
-	//Console::Print("...OK!\n");
+	Console::Print("Loading..................................");
+	GDT::LoadGDT();
+	Console::Print("...OK!\n");
 
 	
 	return RETVAL_OK;

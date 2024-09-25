@@ -41,8 +41,8 @@
 #define GDT_ENTRY_SIZE		0x8
 
 struct GDTD_t {
-	uint16_t size;
-	uint64_t offset;
+	uint16_t limit;
+	uint64_t base;
 }__attribute__((packed, aligned (8) ));
 
 struct GD_t {
@@ -65,7 +65,7 @@ private:
 	static GD_t mGlobalDescriptorTable[GDT_COUNT];
 	
 public:	
-	static retval_t Init(limine_hhdm_response *pHHDMResponse);
+	static retval_t Init(void);
 	
 	static void LoadGDT(void);
 	

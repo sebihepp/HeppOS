@@ -15,11 +15,8 @@ GDT::~GDT() {
 	
 }
 
-retval_t GDT::Init(limine_hhdm_response *pHHDMResponse) {
+retval_t GDT::Init(void) {
 
-	if (pHHDMResponse == NULL) {
-		return RETVAL_ERROR_NO_HHDM;
-	}
 	
 	// NULL descriptor
 	mGlobalDescriptorTable[GDT_NULL].limit_l = 0;
@@ -52,9 +49,8 @@ retval_t GDT::Init(limine_hhdm_response *pHHDMResponse) {
 	mGlobalDescriptorTable[GDT_DATA64].base_h = 0;	
 	
 	// GDTD
-	mGlobalDescriptorTableDescriptor.offset = (uint64_t)mGlobalDescriptorTable;
-	mGlobalDescriptorTableDescriptor.offset -= pHHDMResponse->offset;
-	mGlobalDescriptorTableDescriptor.size = GDT_COUNT * GDT_ENTRY_SIZE - 1;
+	mGlobalDescriptorTableDescriptor.base = (uint64_t)mGlobalDescriptorTable;
+	mGlobalDescriptorTableDescriptor.limit = GDT_COUNT * GDT_ENTRY_SIZE - 1;
 	
 	
 	return RETVAL_OK; 
@@ -63,19 +59,26 @@ retval_t GDT::Init(limine_hhdm_response *pHHDMResponse) {
 void GDT::LoadGDT(void) {
 	
 	asm volatile (
-"xchgw %%bx, %%bx;\n"
+		//"xchgw %%bx, %%bx;\n"
 		"lgdt %0;\n"
-		"pushq %1;\n"
-		"pushq $1f;\n"
-		"retfq\n"
-		"1:\n"
-		"mov %2, %%ds;\n"
-		"mov %2, %%es;\n"
-		"mov %2, %%fs;\n"
-		"mov %2, %%gs;\n"
-		"mov %2, %%ss;\n"
+		"movq %%rsp, %%rbx;\n"		//Save RSP
+		"movq %2, %%rax;\n" 			
+		"pushq %%rax;\n"			//Return SS
+		"pushq %%rbx;\n" 			//Restore Return RSP
+		"movq %1, %%rax;\n"
+		"pushq %%rax;\n"			//Return CS
+		"movq $_ReloadCS, %%rax;\n"
+		"pushq %%rax;\n"			//Return RIP
+		"lretq\n"
+		"_ReloadCS:;\n"
+		"movq %2, %%rbx;\n"
+		"mov %%bx, %%ds;\n"
+		"mov %%bx, %%es;\n"
+		"mov %%bx, %%fs;\n"
+		"mov %%bx, %%gs;\n"
+		"mov %%bx, %%ss;\n"
 		:  
-		: "m" (mGlobalDescriptorTableDescriptor), "i" (GDT_CODE64_SEL), "r" (GDT_DATA64_SEL)
-		: "ebx"
+		: "m" (mGlobalDescriptorTableDescriptor), "i" (GDT_CODE64_SEL), "i" (GDT_DATA64_SEL)
+		: "rbx", "rax"
 	);
 }
