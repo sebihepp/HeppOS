@@ -27,7 +27,7 @@ iso:
 	mkdir -p iso/EFI
 	mkdir -p iso/EFI/BOOT
 	cp -v kernel/bin/HeppOS.elf iso/
-	cp -v kernel/limine.conf iso/boot/limine/
+	cp -v kernel/limine.conf iso/
 	cp -v "$(LIMINE_PATH)/share/limine/limine-bios.sys" iso/boot/limine/
 	cp -v "$(LIMINE_PATH)/share/limine/limine-bios-cd.bin" iso/boot/limine/
 	cp -v "$(LIMINE_PATH)/share/limine/limine-uefi-cd.bin" iso/boot/limine/
@@ -40,13 +40,16 @@ iso:
 	
 .PHONY: img
 img:
-	dd if=/dev/zero bs=1M count=64 of=HeppOS.img
-	sgdisk HeppOS.img -n 1:2048 -t 1:ef00
+	dd if=/dev/zero bs=1M count=128 of=HeppOS.img
+	sgdisk HeppOS.img -n 1:2048:131071 -t 1:ef00 -c 1:EFI
+	sgdisk HeppOS.img -n 2:131072 -t 2:0700 -c 2:FAT32
 	$(LIMINE) bios-install HeppOS.img
 	mformat -i HeppOS.img@@1M
 	mmd -i HeppOS.img@@1M ::/EFI ::/EFI/BOOT ::/boot ::/boot/limine
-	mcopy -i HeppOS.img@@1M kernel/bin/HeppOS.elf ::/
-	mcopy -i HeppOS.img@@1M kernel/limine.conf ::/boot/limine
 	mcopy -i HeppOS.img@@1M "$(LIMINE_PATH)/share/limine/limine-bios.sys" ::/boot/limine
 	mcopy -i HeppOS.img@@1M "$(LIMINE_PATH)/share/limine/BOOTIA32.EFI" ::/EFI/BOOT
 	mcopy -i HeppOS.img@@1M "$(LIMINE_PATH)/share/limine/BOOTX64.EFI" ::/EFI/BOOT
+	mformat -i HeppOS.img@@64M
+	mmd -i HeppOS.img@@64M ::/limine
+	mcopy -i HeppOS.img@@64M kernel/bin/HeppOS.elf ::/
+	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/limine
