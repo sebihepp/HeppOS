@@ -25,6 +25,23 @@ __attribute__((used, section(".requests"))) static volatile limine_paging_mode_r
 	.max_mode = LIMINE_PAGING_MODE_X86_64_4LVL,
 	.min_mode = LIMINE_PAGING_MODE_X86_64_4LVL
 };
+__attribute__((used, section(".requests"))) static volatile limine_module_request ModuleRequest = {
+	.id = LIMINE_MODULE_REQUEST,
+	.revision = 0,
+	.response = NULL,
+	.internal_module_count = 0,
+	.internal_modules = NULL
+};
+__attribute__((used, section(".requests"))) static volatile limine_kernel_address_request KernelAddressRequest = {
+	.id = LIMINE_KERNEL_ADDRESS_REQUEST,
+	.revision = 0,
+	.response = NULL
+};
+__attribute__((used, section(".requests"))) static volatile limine_kernel_file_request KernelFileRequest = {
+	.id = LIMINE_KERNEL_FILE_REQUEST,
+	.revision = 0,
+	.response = NULL
+};
 __attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_REQUESTS_START_MARKER;
 __attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
 
@@ -50,4 +67,16 @@ limine_hhdm_response *Limine::GetHHDMResponse(void) {
 
 limine_paging_mode_response *Limine::GetPagingModeResponse(void) {
 	return PagingModeRequest.response;
+}
+
+limine_module_response *Limine::GetModuleResponse(void) {
+	return ModuleRequest.response;
+}
+
+limine_kernel_address_response *Limine::GetKernelAddressResponse(void) {
+	return KernelAddressRequest.response;
+}
+
+limine_kernel_file_response *Limine::GetKernelFileResponse(void) {
+	return KernelFileRequest.response;
 }

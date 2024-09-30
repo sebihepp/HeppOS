@@ -23,6 +23,10 @@ public:
 	static limine_memmap_response *GetMemoryMapResponse(void);
 	static limine_hhdm_response *GetHHDMResponse(void);
 	static limine_paging_mode_response *GetPagingModeResponse(void);
+	static limine_module_response *GetModuleResponse(void);
+	static limine_kernel_address_response *GetKernelAddressResponse(void);
+	static limine_kernel_file_response *GetKernelFileResponse(void);
+	
 };
 
 
