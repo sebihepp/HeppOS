@@ -1,5 +1,5 @@
 
-#include <paging.h>
+#include <memory/paging.h>
 
 static uint64_t GetCR3(void) {
 	uint64_t _val = 0;

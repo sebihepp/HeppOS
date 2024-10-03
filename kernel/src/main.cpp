@@ -8,9 +8,9 @@
 #include <cstub.h>
 
 #include <retvals.h>
-#include <console.h>
-#include <gdt.h>
-#include <paging.h>
+#include <video/console.h>
+#include <cpu/gdt.h>
+#include <memory/paging.h>
 
 
 
@@ -68,6 +68,11 @@ extern "C" uint32_t kmain(void) {
 	Console::Print(htoa((uint64_t)Paging::GetPhysicalAddress(NULL), _TempText));
 	Console::Print("\n");
 	
+	// Print TSS Address
+	Console::Print("TSS=0x");
+	Console::Print(htoa((uint64_t)GDT::GetTSS(), _TempText));
+	Console::Print("\n");
+	
 	Console::Print("Initializing GDT.........................");
 	_RetVal = GDT::Init();
 	if (_RetVal != RETVAL_OK) {
@@ -76,10 +81,13 @@ extern "C" uint32_t kmain(void) {
 	}
 	Console::Print("...OK!\n");
 	
-	Console::Print("Loading..................................");
+	Console::Print("Loading GDT..............................");
 	GDT::LoadGDT();
 	Console::Print("...OK!\n");
 
+	Console::Print("Loading TSS..............................");
+	GDT::LoadTSS();
+	Console::Print("...OK!\n");
 	
 	return RETVAL_OK;
 }

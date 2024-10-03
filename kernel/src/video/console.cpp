@@ -1,5 +1,5 @@
 
-#include <console.h>
+#include <video/console.h>
 #include <cstub.h>
 
 extern "C" video_font_t stdfont;
