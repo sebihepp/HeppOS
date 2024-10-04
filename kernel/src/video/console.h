@@ -45,6 +45,8 @@ private:
 	
 	static const char *mTitle;
 	
+	static uint32_t mTabSize;
+	
 	static void PrintChar(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor, uint32_t bgcolor);
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
@@ -89,6 +91,9 @@ public:
 	static uint32_t GetHeight(void);
 	static uint32_t GetBPP(void);
 	static size_t GetPitch(void);
+	
+	static uint32_t GetTabSize(void);
+	static void SetTabSize(uint32_t pTabSize);
 	
 };
 

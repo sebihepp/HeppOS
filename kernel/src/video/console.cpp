@@ -25,6 +25,8 @@ uint32_t Console::mCursorHeight = 0;
 uint32_t Console::mCursorMaxX = 0;
 uint32_t Console::mCursorMaxY = 0;
 
+uint32_t Console::mTabSize = 4;
+
 
 void (*Console::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
 void (*Console::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
@@ -213,6 +215,8 @@ void Console::Print(const char *pText) {
 			mCursorY += 1;
 		} else if (pText[i] == '\r') {
 			mCursorX = 0;
+		} else if (pText[i] == '\t') {
+			mCursorX = (mCursorX + mTabSize) & ~(mTabSize - 1);
 		} else {
 			PrintChar(pText[i], mCursorX, mCursorY, mFGColor, mBGColor);
 			mCursorX += 1;
@@ -369,3 +373,12 @@ void Console::SetPixel(uint32_t x, uint32_t y, uint32_t color) {
 void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
 	mFill(left, top, right, bottom, color);
 }
+
+uint32_t Console::GetTabSize(void) {
+	return mTabSize;
+}
+
+void Console::SetTabSize(uint32_t pTabSize) {
+	mTabSize = pTabSize;
+}
+

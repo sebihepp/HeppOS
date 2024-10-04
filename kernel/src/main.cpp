@@ -97,6 +97,8 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("Testing Carriage Return..................ERROR!");
 	Console::Print("\rTesting Carriage Return.....................OK!\n");
 	
+	// Testing tabulator
+Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n");
 	
 	return RETVAL_OK;
 }
