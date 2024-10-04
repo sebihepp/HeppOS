@@ -93,6 +93,11 @@ extern "C" uint32_t kmain(void) {
 	GDT::LoadTSS();
 	Console::Print("...OK!\n");
 	
+	// Testing Cariage Return
+	Console::Print("Testing Carriage Return..................ERROR!");
+	Console::Print("\rTesting Carriage Return.....................OK!\n");
+	
+	
 	return RETVAL_OK;
 }
 

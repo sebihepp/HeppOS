@@ -211,18 +211,14 @@ void Console::Print(const char *pText) {
 		if (pText[i] == '\n') {
 			mCursorX = 0;
 			mCursorY += 1;
-			
-			if (mCursorY >= mCursorMaxY) {
-				ScrollDown(1);
-				
-			}
-			i++;
-			continue;
+		} else if (pText[i] == '\r') {
+			mCursorX = 0;
 		} else {
-			PrintCharAlpha(pText[i], mCursorX, mCursorY, mFGColor);
+			PrintChar(pText[i], mCursorX, mCursorY, mFGColor, mBGColor);
+			mCursorX += 1;
 		}
 
-		mCursorX += 1;
+		
 		if (mCursorX >= mCursorMaxX) {
 			mCursorX = 0;
 			mCursorY += 1;
