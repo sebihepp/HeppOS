@@ -51,7 +51,9 @@ extern "C" uint32_t kmain(void) {
 	Console::Print(itoa(Console::GetPitch(), _TempText, 10));
 	Console::Print(")\n");
 	
+	//Debug Output
 	
+	/*
 	// Print HHDM offset
 	Console::Print("HHDM offset=0x");
 	Console::Print(htoa(Limine::GetHHDMResponse()->offset, _TempText));
@@ -72,6 +74,8 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("TSS=0x");
 	Console::Print(htoa((uint64_t)GDT::GetTSS(), _TempText));
 	Console::Print("\n");
+	*/
+	
 	
 	Console::Print("Initializing GDT.........................");
 	_RetVal = GDT::Init();
