@@ -1,12 +1,12 @@
 
 .section .init
 
-	popl %ebp
+	popq %rbp
 	ret
 	
 	
 .section .fini
 
-	popl %ebp
+	popq %rbp
 	ret
 	

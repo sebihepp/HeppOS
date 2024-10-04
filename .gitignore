@@ -37,9 +37,13 @@
 *.bin
 *.img
 
+# ignore created cdrom structure
+iso/*
+
 # config files of virtual machines
 /bochsrc
 /qemu.sh
+/qemu_uefi.sh
 
 # Zone.Identifier files
 *.Zone.Identifier

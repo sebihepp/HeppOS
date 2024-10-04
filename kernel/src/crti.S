@@ -4,8 +4,8 @@
 .type _init, @function
 
 _init:
-	pushl %ebp
-	movl %esp, %ebp
+	pushq %rbp
+	movq %rsp, %rbp
 
 	
 	
@@ -14,7 +14,5 @@ _init:
 .type _fini, @function
 
 _fini:
-	pushl %ebp
-	movl %esp, %ebp
-
-	
+	pushq %rbp
+	movq %rsp, %rbp

@@ -5,16 +5,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-union cpuid_retval_t
+struct cpuid_retval_t
 {
-	uint32_t reg[4];
-	struct 
-	{
-		uint32_t eax;
-		uint32_t ebx;
-		uint32_t ecx;
-		uint32_t edx;
-	} __attribute__((packed));
+	uint32_t eax;
+	uint32_t ebx;
+	uint32_t ecx;
+	uint32_t edx;
 } __attribute__((packed));
 
 static inline void cpuid(uint32_t pCode, cpuid_retval_t &pRetval)
