@@ -114,3 +114,7 @@ void GDT::LoadTSS(void) {
 TSS_t *GDT::GetTSS(void) {
 	return &mTaskStateSegment;
 }
+
+uint16_t GDT::GetSelector(uint64_t pSelector) {
+	return pSelector;
+}

@@ -10,6 +10,7 @@
 #include <retvals.h>
 #include <video/console.h>
 #include <cpu/gdt.h>
+#include <cpu/idt.h>
 #include <memory/paging.h>
 
 
@@ -93,12 +94,33 @@ extern "C" uint32_t kmain(void) {
 	GDT::LoadTSS();
 	Console::Print("...OK!\n");
 	
+	Console::Print("Initializing >IDT.........................");
+	_RetVal = IDT::Init();
+	if (_RetVal != RETVAL_OK) {
+		Console::Print("ERROR!\n");
+		return _RetVal;
+	}
+	Console::Print("...OK!\n");
+
+	Console::Print("Loading IDT..............................");
+	IDT::LoadIDT();
+	Console::Print("...OK!\n");
+
+
 	// Testing Cariage Return
 	Console::Print("Testing Carriage Return..................ERROR!");
 	Console::Print("\rTesting Carriage Return.....................OK!\n");
 	
 	// Testing tabulator
-Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n");
+	Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n");
+	
+	
+	// Testing Exception
+	Console::Print("Testing Exception 0......................");
+	asm volatile (
+		"int $0x0;\n"
+	);
+	Console::Print("...OK!\n");
 	
 	return RETVAL_OK;
 }

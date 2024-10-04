@@ -113,6 +113,7 @@ public:
 	
 	static TSS_t *GetTSS(void);
 	
+	static uint16_t GetSelector(uint64_t pSelector);
 };
 
 #endif
