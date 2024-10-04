@@ -1,9 +1,9 @@
 
 # These paths need to be adjusted to your machine
-CC := "$${HOME}/opt/cross/bin/x86_64-elf-gcc"
-CXX := "$${HOME}/opt/cross/bin/x86_64-elf-g++"
-AS := "$${HOME}/opt/cross/bin/x86_64-elf-as"
-LD := "$${HOME}/opt/cross/bin/x86_64-elf-ld"
+CC := x86_64-elf-gcc
+CXX := x86_64-elf-g++
+AS := x86_64-elf-as
+LD := x86_64-elf-ld
 LIMINE_PATH := "$${HOME}/opt/limine"
 LIMINE := "$(LIMINE_PATH)/bin/limine"
 
