@@ -15,8 +15,8 @@ extern "C" void isr_wrapper(void);
 extern "C" void isr_wrapper_128(void);
 extern "C" void exception_wrapper_error(void);
 extern "C" void exception_wrapper(void);
-extern "C" void isr_handler(uint64_t pInt, uint64_t *pState);
-extern "C" void exception_handler(uint64_t pInt, uint64_t *pState);
+extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState);
+extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState);
 
 extern "C" ISRHandler_t gISRHandlerAddressTable[256];
 
@@ -113,7 +113,7 @@ void Interrupt::RegisterException(uint8_t pIndex, ISRHandler_t pHandler) {
 	mIDT[pIndex].offset_h = (((uint64_t)pHandler) >> 32) & 0xFFFFFFFF;
 }
 
-extern "C" void isr_handler(uint64_t pInt, uint64_t *pState) {
+extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 
 	char _TempString[16];
 	Console::Print("Interrupt ");
@@ -122,23 +122,119 @@ extern "C" void isr_handler(uint64_t pInt, uint64_t *pState) {
 	
 }
 
-extern "C" void exception_handler(uint64_t pInt, uint64_t *pState) {
+extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
 	
-	char _TempString[16];
+	char _TempString[32];
+	uint64_t _cr2 = 0;
+	
+	asm volatile (
+		"mov %%cr2, %0;\n"
+		: "=r" (_cr2)
+	);
+	
 	Console::SetTitleText("HeppOS - Exception Handler");
 	Console::SetBGColor(0x000000AA);
 	Console::SetFGColor(0x0000FFFF);
+	
 	Console::Clear();
-	Console::Print("ERROR - Exception ");
+	Console::Print("\n");
+	Console::Print("ERROR - Exception 0x");
+	Console::Print(utoa(pInt, _TempString, 16));
+	Console::Print(" (");
 	Console::Print(utoa(pInt, _TempString, 10));
-	Console::Print(" occured!\n");
+	Console::Print(") occured!\n");
+	Console::Print("\n");
+	Console::Print("\n");
+	
+	
+	Console::Print("Error code=0x");
+	Console::Print(utoa(pState->error_code, _TempString, 16));
+	Console::Print(" (");
+	Console::Print(utoa(pState->error_code, _TempString, 10));
+	Console::Print(")\n");
+	Console::Print("\n");
+	
+	Console::Print("RFLAGS=0x");
+	Console::Print(htoa(pState->rflags, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+	
+	
+	Console::Print("RAX=0x");
+	Console::Print(htoa(pState->rax, _TempString));
+	Console::Print(" \tRBX=0x");
+	Console::Print(htoa(pState->rbx, _TempString));
+	Console::Print("\n");
+	
+	Console::Print("RCX=0x");
+	Console::Print(htoa(pState->rcx, _TempString));
+	Console::Print(" \tRDX=0x");
+	Console::Print(htoa(pState->rdx, _TempString));
+	Console::Print("\n");
+	
+	Console::Print("RSI=0x");
+	Console::Print(htoa(pState->rsi, _TempString));
+	Console::Print(" \tRDI=0x");
+	Console::Print(htoa(pState->rdi, _TempString));
+	Console::Print("\n");
+	
+	Console::Print("RSP=0x");
+	Console::Print(htoa(pState->rsp, _TempString));
+	Console::Print(" \tRBP=0x");
+	Console::Print(htoa(pState->rbp, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
 
+
+
+	Console::Print("R8 =0x");
+	Console::Print(htoa(pState->r8, _TempString));
+	Console::Print(" \tR9 =0x");
+	Console::Print(htoa(pState->r9, _TempString));
+	Console::Print("\n");
 	
-	asm volatile (
-		"cli;\n"
-		"1:\n"
-		"hlt;\n"
-		"jmp 1b;\n"
-	);
+	Console::Print("R10=0x");
+	Console::Print(htoa(pState->r10, _TempString));
+	Console::Print(" \tR11=0x");
+	Console::Print(htoa(pState->r11, _TempString));
+	Console::Print("\n");
 	
+	Console::Print("R12=0x");
+	Console::Print(htoa(pState->r12, _TempString));
+	Console::Print(" \tR13=0x");
+	Console::Print(htoa(pState->r13, _TempString));
+	Console::Print("\n");
+	
+	Console::Print("R14=0x");
+	Console::Print(htoa(pState->r14, _TempString));
+	Console::Print(" \tR15=0x");
+	Console::Print(htoa(pState->r15, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+	
+	
+	Console::Print("RIP=0x");
+	Console::Print(htoa(pState->rip, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+	
+	Console::Print("CS =0x");
+	Console::Print(htoa(pState->cs, _TempString));
+	Console::Print("\n");
+	Console::Print("SS =0x");
+	Console::Print(htoa(pState->ss, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+
+	Console::Print("CR2=0x");
+	Console::Print(htoa(_cr2, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+	
+	
+	// Loop forever because of Exception
+	asm volatile ("cli;\n");
+	for (;;) {
+		asm volatile ("hlt;\n");
+	}
 }

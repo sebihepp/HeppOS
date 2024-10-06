@@ -123,11 +123,10 @@ extern "C" uint32_t kmain(void) {
 	);
 	Console::Print("...OK!\n");
 
-	// Testing Exception
-	Console::Print("Testing Exception 0........................");
-	asm volatile (
-		"int $0x0;\n"
-	);
+	// Testing Page Fault Exception
+	Console::Print("Testing Page Fault Exception.............");
+	volatile uint64_t *_test = (uint64_t*)0x123;
+	uint64_t _test2 = *_test;
 	Console::Print("...OK!\n");
 	
 	return RETVAL_OK;

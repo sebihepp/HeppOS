@@ -5,6 +5,8 @@
 .type isr_wrapper_\number , @function
 isr_wrapper_\number :
 	
+	pushq $0
+	
 	pushq %rax
 	pushq %rbx
 	pushq %rcx
@@ -51,6 +53,7 @@ isr_wrapper_\number :
 	popq %rbx
 	popq %rax
 	
+	addq $8, %rsp
 	iretq
 .endm
 
@@ -58,6 +61,8 @@ isr_wrapper_\number :
 .global exception_wrapper_\number
 .type exception_wrapper_error_\number , @function
 exception_wrapper_\number :
+	
+	pushq $0
 	
 	pushq %rax
 	pushq %rbx
@@ -105,6 +110,7 @@ exception_wrapper_\number :
 	popq %rbx
 	popq %rax
 	
+	addq $8, %rsp
 	iretq
 .endm
 
@@ -162,7 +168,6 @@ exception_wrapper_error_\number :
 	popq %rax
 	
 	addq $8, %rsp
-
 	iretq
 .endm
 
