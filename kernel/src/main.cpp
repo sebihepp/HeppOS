@@ -10,14 +10,15 @@
 #include <retvals.h>
 #include <video/console.h>
 #include <cpu/gdt.h>
-#include <cpu/idt.h>
+#include <cpu/interrupt.h>
 #include <memory/paging.h>
 
 
-
+// For quick testing - needs to be put in a string.h or something similar
 char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
+
 
 extern "C" uint32_t kmain(void) {
 
@@ -43,13 +44,13 @@ extern "C" uint32_t kmain(void) {
 	
 	// Print Video Mode
 	Console::Print("Video Format: ");
-	Console::Print(itoa(Console::GetWidth(), _TempText, 10));
+	Console::Print(utoa(Console::GetWidth(), _TempText, 10));
 	Console::Print("x");
-	Console::Print(itoa(Console::GetHeight(), _TempText, 10));
+	Console::Print(utoa(Console::GetHeight(), _TempText, 10));
 	Console::Print("x");
-	Console::Print(itoa(Console::GetBPP(), _TempText, 10));
+	Console::Print(utoa(Console::GetBPP(), _TempText, 10));
 	Console::Print(" (Pitch=");
-	Console::Print(itoa(Console::GetPitch(), _TempText, 10));
+	Console::Print(utoa(Console::GetPitch(), _TempText, 10));
 	Console::Print(")\n");
 	
 	//Debug Output
@@ -95,7 +96,7 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("...OK!\n");
 	
 	Console::Print("Initializing >IDT.........................");
-	_RetVal = IDT::Init();
+	_RetVal = Interrupt::Init();
 	if (_RetVal != RETVAL_OK) {
 		Console::Print("ERROR!\n");
 		return _RetVal;
@@ -103,7 +104,7 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("...OK!\n");
 
 	Console::Print("Loading IDT..............................");
-	IDT::LoadIDT();
+	Interrupt::LoadIDT();
 	Console::Print("...OK!\n");
 
 
@@ -115,8 +116,15 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n");
 	
 	
+	// Testing Handler
+	Console::Print("Testing Handler 128......................");
+	asm volatile (
+		"int $0x80;\n"
+	);
+	Console::Print("...OK!\n");
+
 	// Testing Exception
-	Console::Print("Testing Exception 0......................");
+	Console::Print("Testing Exception 0........................");
 	asm volatile (
 		"int $0x0;\n"
 	);

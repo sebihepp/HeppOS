@@ -1,6 +1,6 @@
 
-#ifndef HEADER_IDT
-#define HEADER_IDT
+#ifndef HEADER_INTERRUPT
+#define HEADER_INTERRUPT
 
 #include <stddef.h>
 #include <stdint.h>
@@ -44,10 +44,10 @@ struct IDTD_t {
 } __attribute__((packed)); 
 
 
-class IDT {
+class Interrupt {
 private:
-	IDT();
-	~IDT();
+	Interrupt();
+	~Interrupt();
 
 	static IDTEntry_t mIDT[256];
 	static IDTD_t mIDTD;
