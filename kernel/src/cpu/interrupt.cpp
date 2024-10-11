@@ -4,6 +4,8 @@
 #include <video/console.h>
 #include <cpu/gdt.h>
 #include <cstub.h>
+#include <cpu/io.h>
+
 
 // For quick testing - needs to be put in a string.h or something similar
 char* itoa(int num, char* str, int base);
