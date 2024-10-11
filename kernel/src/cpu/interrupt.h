@@ -21,9 +21,6 @@
 #define IDT_NOT_PRESENT	(0x0)
 
 
-typedef void (*ISRHandler_t)(void);
-
-
 struct IDTEntry_t {
 	uint64_t offset_l:16;
 	uint64_t segment:16;
@@ -72,6 +69,9 @@ struct CPUState_t {
 } __attribute__((packed));
 
 
+
+typedef void (*ISRHandler_t)(uint64_t pInt, CPUState_t *pState);
+
 class Interrupt {
 private:
 	Interrupt();
@@ -80,14 +80,17 @@ private:
 	static IDTEntry_t mIDT[256];
 	static IDTD_t mIDTD;
 	
-	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler);
-	static void RegisterException(uint8_t pIndex, ISRHandler_t pHandler);
+	static void SetIDTEntry(uint8_t pIndex, void *pAddress, uint8_t pType);
 	
 public:
 	static retval_t Init(void);
 	
 	static void LoadIDT(void);
 	
+	static void EnableInterrupts(void);
+	static void DisableInterrupts(void);
+	
+	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler);	
 };
 
 #endif

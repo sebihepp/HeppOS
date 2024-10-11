@@ -11,14 +11,14 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
-extern "C" void isr_wrapper(void);
-extern "C" void isr_wrapper_128(void);
-extern "C" void exception_wrapper_error(void);
-extern "C" void exception_wrapper(void);
+//extern "C" void isr_wrapper(void);
+//extern "C" void isr_wrapper_128(void);
+//extern "C" void exception_wrapper_error(void);
+//extern "C" void exception_wrapper(void);
 extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState);
 extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState);
 
-extern "C" ISRHandler_t gISRHandlerAddressTable[256];
+extern "C" void *gISRHandlerAddressTable[256];
 
 
 IDTEntry_t Interrupt::mIDT[256];
@@ -30,53 +30,19 @@ retval_t Interrupt::Init(void) {
 	memset(&mIDTD, 0, sizeof(mIDTD));
 	
 	
-	
 	// Exceptions
 	for (uint64_t i = 0; i < 32; i++) {
 		if (gISRHandlerAddressTable[i] != NULL) {
-			RegisterException(i, gISRHandlerAddressTable[i]);
+			SetIDTEntry(i, gISRHandlerAddressTable[i], IDT_TYPE_TRAP);
 		}
 	}
-
-/* 	RegisterException(0, &exception_wrapper);
-	RegisterException(1, &exception_wrapper);
-	RegisterException(2, &exception_wrapper);
-	RegisterException(3, &exception_wrapper);
-	RegisterException(4, &exception_wrapper);
-	RegisterException(5, &exception_wrapper);
-	RegisterException(6, &exception_wrapper);
-	RegisterException(7, &exception_wrapper);
-	RegisterException(8, &exception_wrapper_error);
-	RegisterException(9, &exception_wrapper);
-	RegisterException(10, &exception_wrapper_error);
-	RegisterException(11, &exception_wrapper_error);
-	RegisterException(12, &exception_wrapper_error);
-	RegisterException(13, &exception_wrapper_error);
-	RegisterException(14, &exception_wrapper_error);
-	RegisterException(15, &exception_wrapper);
-	RegisterException(16, &exception_wrapper);
-	RegisterException(17, &exception_wrapper_error);
-	RegisterException(18, &exception_wrapper);
-	RegisterException(19, &exception_wrapper);
-	RegisterException(20, &exception_wrapper);
-	RegisterException(21, &exception_wrapper);
-	RegisterException(22, &exception_wrapper);
-	RegisterException(23, &exception_wrapper);
-	RegisterException(24, &exception_wrapper);
-	RegisterException(25, &exception_wrapper);
-	RegisterException(26, &exception_wrapper);
-	RegisterException(27, &exception_wrapper);
-	RegisterException(28, &exception_wrapper);
-	RegisterException(29, &exception_wrapper);
-	RegisterException(30, &exception_wrapper_error);
-	RegisterException(31, &exception_wrapper); */
 	
-	RegisterHandler(128, gISRHandlerAddressTable[128]);
+	SetIDTEntry(128, gISRHandlerAddressTable[128], IDT_TYPE_GATE);
 	
 	
 	// IDTD
 	mIDTD.size = sizeof(mIDT) - 1;
-	mIDTD.offset = (uint64_t)&mIDT;
+	mIDTD.offset = reinterpret_cast<uint64_t>(&mIDT);
 	
 	return RETVAL_OK;
 }
@@ -91,26 +57,27 @@ void Interrupt::LoadIDT(void) {
 	);
 }
 
-void Interrupt::RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler) {
-	mIDT[pIndex].offset_l = (((uint64_t)pHandler) >> 0) & 0xFFFF;
-	mIDT[pIndex].segment = GDT::GetSelector(GDT_CODE64_SEL);
-	mIDT[pIndex].ist = 0x0;
-	mIDT[pIndex].type = IDT_TYPE_GATE;
-	mIDT[pIndex].dpl = IDT_DPL0;
-	mIDT[pIndex].present = IDT_PRESENT;
-	mIDT[pIndex].offset_m = (((uint64_t)pHandler) >> 16) & 0xFFFF;
-	mIDT[pIndex].offset_h = (((uint64_t)pHandler) >> 32) & 0xFFFFFFFF;
+void Interrupt::EnableInterrupts(void) {
+	asm volatile ("sti;\n");
 }
 
-void Interrupt::RegisterException(uint8_t pIndex, ISRHandler_t pHandler) {
-	mIDT[pIndex].offset_l = (((uint64_t)pHandler) >> 0) & 0xFFFF;
+void Interrupt::DisableInterrupts(void) {
+	asm volatile ("cli;\n");
+}
+
+void Interrupt::RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler) {
+	// ToDo: Implement
+}
+
+void Interrupt::SetIDTEntry(uint8_t pIndex, void *pHandler, uint8_t pType) {
+	mIDT[pIndex].offset_l = (reinterpret_cast<uint64_t>(pHandler) >> 0) & 0xFFFF;
 	mIDT[pIndex].segment = GDT::GetSelector(GDT_CODE64_SEL);
 	mIDT[pIndex].ist = 0x0;
-	mIDT[pIndex].type = IDT_TYPE_TRAP;
+	mIDT[pIndex].type = pType;
 	mIDT[pIndex].dpl = IDT_DPL0;
 	mIDT[pIndex].present = IDT_PRESENT;
-	mIDT[pIndex].offset_m = (((uint64_t)pHandler) >> 16) & 0xFFFF;
-	mIDT[pIndex].offset_h = (((uint64_t)pHandler) >> 32) & 0xFFFFFFFF;
+	mIDT[pIndex].offset_m = (reinterpret_cast<uint64_t>(pHandler) >> 16) & 0xFFFF;
+	mIDT[pIndex].offset_h = (reinterpret_cast<uint64_t>(pHandler) >> 32) & 0xFFFFFFFF;
 }
 
 extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {

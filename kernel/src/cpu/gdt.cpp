@@ -55,17 +55,17 @@ retval_t GDT::Init(void) {
 	
 	// TSS
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->limit_l = sizeof(mTaskStateSegment) & 0xFFFF;
-	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_l = ((uint64_t)&mTaskStateSegment) & 0xFFFF;
-	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_m = (((uint64_t)&mTaskStateSegment) >> 16) & 0xFF;
+	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_l = reinterpret_cast<uint64_t>(&mTaskStateSegment) & 0xFFFF;
+	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_m = (reinterpret_cast<uint64_t>(&mTaskStateSegment) >> 16) & 0xFF;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->access = GDT_ACCESS_PRESENT | GDT_ACCESS_DPL0 | GDT_ACCESS_TSS_SEGMENT | GDT_ACCESS_TSS_TYPE64;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->limit_h = sizeof(mTaskStateSegment) >> 16 & 0xF;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->flags = GDT_FLAGS_GRANULARITY | GDT_FLAGS_64BIT;
-	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_h = (((uint64_t)&mTaskStateSegment) >> 24) & 0xFF;
-	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_vh = (((uint64_t)&mTaskStateSegment) >> 32) & 0xFFFFFFFF;
+	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_h = (reinterpret_cast<uint64_t>(&mTaskStateSegment) >> 24) & 0xFF;
+	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_vh = (reinterpret_cast<uint64_t>(&mTaskStateSegment) >> 32) & 0xFFFFFFFF;
 	
 	
 	// GDTD
-	mGlobalDescriptorTableDescriptor.base = (uint64_t)mGlobalDescriptorTable;
+	mGlobalDescriptorTableDescriptor.base = reinterpret_cast<uint64_t>(mGlobalDescriptorTable);
 	mGlobalDescriptorTableDescriptor.limit = (GDT_TOTAL_COUNT * GDT_ENTRY_SIZE) - 1;
 	
 	

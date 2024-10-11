@@ -42,7 +42,7 @@ retval_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
 	}
 	
-	mFramebuffer = (void*)_LimineLFB->address;
+	mFramebuffer = static_cast<void*>(_LimineLFB->address);
 	mPitch = _LimineLFB->pitch;
 	mWidth = _LimineLFB->width;
 	mHeight = _LimineLFB->height;
@@ -245,17 +245,17 @@ void Console::ScrollDown(const uint32_t pLines) {
 		return;
 	}
 	
-	uintptr_t _SrcAddress = (uintptr_t)GetFramebufferAddress();
-	uintptr_t _DestAddress = (uintptr_t)GetFramebufferAddress();
+	uintptr_t _SrcAddress = reinterpret_cast<uintptr_t>(GetFramebufferAddress());
+	uintptr_t _DestAddress = reinterpret_cast<uintptr_t>(GetFramebufferAddress());
 	size_t _Size = GetFramebufferSize();
 	
 	
 	_SrcAddress += mPitch * (pLines + mTitleHeight) * mCursorHeight;
 	_DestAddress += mPitch * mTitleHeight * mCursorHeight;
-	_Size -= (_SrcAddress - (uintptr_t)(GetFramebufferAddress()));		
+	_Size -= (_SrcAddress - reinterpret_cast<uintptr_t>(GetFramebufferAddress()));		
 
 	
-	memmove((void*)_DestAddress, (void*)_SrcAddress, _Size);
+	memmove(reinterpret_cast<void*>(_DestAddress), reinterpret_cast<void*>(_SrcAddress), _Size);
 	
 	Fill(0, mCursorMaxY - pLines + 1, mCursorMaxX, mCursorMaxY, mBGColor);
 	
@@ -292,7 +292,7 @@ void Console::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
 	
 	color = ConvertColor24(color);
 	
-	volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 3));
+	volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (y * mPitch) + (x * 3));
 	uint32_t tmp = *target & 0xFF000000;
 	tmp |= color;
 	*target = color;
@@ -306,7 +306,7 @@ void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
 		
 	color = ConvertColor32(color);
 	
-	volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 4));
+	volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (y * mPitch) + (x * 4));
 	*target = color;
 }
 
@@ -331,7 +331,7 @@ void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 			if (_y >= mHeight)
 				continue;
 
-			volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 3));
+			volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (_y * mPitch) + (_x * 3));
 			uint32_t tmp = *target & 0xFF000000;
 			tmp |= color;
 			*target = color;
@@ -360,7 +360,7 @@ void Console::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 			if (_y >= mHeight)
 				continue;
 
-			volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 4));
+			volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (_y * mPitch) + (_x * 4));
 			*target = color;
 		}
 	}
