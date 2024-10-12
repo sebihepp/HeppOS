@@ -111,6 +111,8 @@ extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
 		: "=r" (_cr2)
 	);
 	
+	Interrupt::mInterruptCount[pInt] += 1;
+	
 	Console::SetTitleText("HeppOS - Exception Handler");
 	Console::SetBGColor(0x000000AA);
 	Console::SetFGColor(0x0000FFFF);
