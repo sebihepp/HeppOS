@@ -87,6 +87,10 @@ void Interrupt::SetIDTEntry(uint8_t pIndex, void *pHandler, uint8_t pType) {
 	mIDT[pIndex].offset_h = (reinterpret_cast<uint64_t>(pHandler) >> 32) & 0xFFFFFFFF;
 }
 
+uint64_t Interrupt::GetInterruptCount(uint8_t pInt) {
+	return mInterruptCount[pInt];
+}
+
 extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 
 	char _TempString[16];

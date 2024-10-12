@@ -101,6 +101,9 @@ public:
 	static void DisableInterrupts(void);
 	
 	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler);	
+	
+	static uint64_t GetInterruptCount(uint8_t pInt);
+	
 };
 
 #endif
