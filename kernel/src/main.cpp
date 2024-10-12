@@ -95,7 +95,7 @@ extern "C" uint32_t kmain(void) {
 	GDT::LoadTSS();
 	Console::Print("...OK!\n");
 	
-	Console::Print("Initializing >IDT.........................");
+	Console::Print("Initializing IDT.........................");
 	_RetVal = Interrupt::Init();
 	if (_RetVal != RETVAL_OK) {
 		Console::Print("ERROR!\n");
@@ -117,17 +117,22 @@ extern "C" uint32_t kmain(void) {
 	
 	
 	// Testing Handler
-	Console::Print("Testing Handler 128......................");
+	for (uint64_t i = 0; i < 5; i++) {
+		Console::Print("Testing Handler 128...\n");
+		asm volatile (
+			"int $0x80;\n"
+		);
+	}
+	Console::Print("Testing Handler 39...\n");
 	asm volatile (
-		"int $0x80;\n"
+		"int $0x27;\n"
 	);
-	Console::Print("...OK!\n");
-
+	
 	// Testing Page Fault Exception
-	Console::Print("Testing Page Fault Exception.............");
+/* 	Console::Print("Testing Page Fault Exception.............");
 	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
 	uint64_t _test2 = *_test;
-	Console::Print("...OK!\n");
+	Console::Print("...OK!\n"); */
 	
 	return RETVAL_OK;
 }

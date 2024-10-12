@@ -8,6 +8,7 @@
 
 #include <retvals.h>
 
+#define INTERRUPT_MAX_COUNT (256)
 
 #define IDT_TYPE_GATE	(0xE)
 #define IDT_TYPE_TRAP	(0xF)
@@ -72,15 +73,24 @@ struct CPUState_t {
 
 typedef void (*ISRHandler_t)(uint64_t pInt, CPUState_t *pState);
 
+extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState);
+extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState);
+
+
 class Interrupt {
 private:
 	Interrupt();
 	~Interrupt();
 
-	static IDTEntry_t mIDT[256];
+	static IDTEntry_t mIDT[INTERRUPT_MAX_COUNT];
 	static IDTD_t mIDTD;
 	
+	static uint64_t mInterruptCount[INTERRUPT_MAX_COUNT];
+	
 	static void SetIDTEntry(uint8_t pIndex, void *pAddress, uint8_t pType);
+	
+	friend void isr_handler(uint64_t pInt, CPUState_t *pState);
+	friend void exception_handler(uint64_t pInt, CPUState_t *pState);
 	
 public:
 	static retval_t Init(void);

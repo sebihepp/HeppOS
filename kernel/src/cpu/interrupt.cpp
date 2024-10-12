@@ -13,23 +13,19 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
-//extern "C" void isr_wrapper(void);
-//extern "C" void isr_wrapper_128(void);
-//extern "C" void exception_wrapper_error(void);
-//extern "C" void exception_wrapper(void);
-extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState);
-extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState);
-
-extern "C" void *gISRHandlerAddressTable[256];
+extern "C" void *gISRHandlerAddressTable[INTERRUPT_MAX_COUNT];
 
 
-IDTEntry_t Interrupt::mIDT[256];
+IDTEntry_t Interrupt::mIDT[INTERRUPT_MAX_COUNT];
 IDTD_t Interrupt::mIDTD;
-	
+
+uint64_t Interrupt::mInterruptCount[INTERRUPT_MAX_COUNT];
+
 retval_t Interrupt::Init(void) {
 
 	memset(mIDT, 0, sizeof(mIDT));
 	memset(&mIDTD, 0, sizeof(mIDTD));
+	memset(mInterruptCount, 0, sizeof(mInterruptCount));
 	
 	
 	// Exceptions
@@ -39,6 +35,15 @@ retval_t Interrupt::Init(void) {
 		}
 	}
 	
+	// PIC
+	for (uint64_t i = 32; i < 48; i++) {
+		if (gISRHandlerAddressTable[i] != NULL) {
+			SetIDTEntry(i, gISRHandlerAddressTable[i], IDT_TYPE_GATE);
+		}
+	}
+	
+	
+	// SysCall
 	SetIDTEntry(128, gISRHandlerAddressTable[128], IDT_TYPE_GATE);
 	
 	
@@ -85,9 +90,14 @@ void Interrupt::SetIDTEntry(uint8_t pIndex, void *pHandler, uint8_t pType) {
 extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 
 	char _TempString[16];
+	
+	Interrupt::mInterruptCount[pInt] += 1;
+	
 	Console::Print("Interrupt ");
 	Console::Print(utoa(pInt, _TempString, 10));
-	Console::Print(" occured!");
+	Console::Print(" occured ");
+	Console::Print(utoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
+	Console::Print(" times!\n");
 	
 }
 

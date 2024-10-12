@@ -208,6 +208,25 @@ exception_wrapper_stub 29
 exception_wrapper_error_stub 30
 exception_wrapper_stub 31
 
+isr_wrapper_stub 32 
+isr_wrapper_stub 33 
+isr_wrapper_stub 34 
+isr_wrapper_stub 35 
+isr_wrapper_stub 36 
+isr_wrapper_stub 37 
+isr_wrapper_stub 38 
+isr_wrapper_stub 39 
+
+isr_wrapper_stub 40
+isr_wrapper_stub 41
+isr_wrapper_stub 42
+isr_wrapper_stub 43
+isr_wrapper_stub 44
+isr_wrapper_stub 45
+isr_wrapper_stub 46
+isr_wrapper_stub 47
+
+
 isr_wrapper_stub 128 
 
 
@@ -251,7 +270,26 @@ gISRHandlerAddressTable:
 	.quad exception_wrapper_error_30
 	.quad exception_wrapper_31
 	
-	.zero ((127-31) * 8)
+	.quad isr_wrapper_32
+	.quad isr_wrapper_33
+	.quad isr_wrapper_34
+	.quad isr_wrapper_35
+	.quad isr_wrapper_36
+	.quad isr_wrapper_37
+	.quad isr_wrapper_38
+	.quad isr_wrapper_39
+	
+	.quad isr_wrapper_40
+	.quad isr_wrapper_41
+	.quad isr_wrapper_42
+	.quad isr_wrapper_43
+	.quad isr_wrapper_44
+	.quad isr_wrapper_45
+	.quad isr_wrapper_46
+	.quad isr_wrapper_47
+	
+	
+	.zero ((127-47) * 8)
 	
 	.quad isr_wrapper_128
 	
