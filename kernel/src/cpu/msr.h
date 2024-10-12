@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #define MSR_PAT (0x277)
+#define MSR_EFER (0xC0000080)
 
 static inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
 {

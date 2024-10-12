@@ -129,10 +129,10 @@ extern "C" uint32_t kmain(void) {
 	);
 	
 	// Testing Page Fault Exception
-/* 	Console::Print("Testing Page Fault Exception.............");
+	Console::Print("Testing Page Fault Exception.............");
 	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
 	uint64_t _test2 = *_test;
-	Console::Print("...OK!\n"); */
+	Console::Print("...OK!\n");
 	
 	return RETVAL_OK;
 }

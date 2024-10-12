@@ -5,6 +5,7 @@
 #include <cpu/gdt.h>
 #include <cstub.h>
 #include <cpu/io.h>
+#include <cpu/msr.h>
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -108,12 +109,33 @@ extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
 	
 	char _TempString[32];
+	uint64_t _cr0 = 0;
 	uint64_t _cr2 = 0;
+	uint64_t _cr3 = 0;
+	uint64_t _cr4 = 0;
+	uint64_t _cr8 = 0;
+	uint64_t _dr6 = 0;
+	uint64_t _dr7 = 0;
+	union {
+		uint64_t u64;
+		struct {
+			uint32_t l32;
+			uint32_t h32;
+		}__attribute__((cached));
+	} _efer;
 	
 	asm volatile (
-		"mov %%cr2, %0;\n"
-		: "=r" (_cr2)
+		"mov %%cr0, %0;\n"
+		"mov %%cr2, %1;\n"
+		"mov %%cr3, %2;\n"
+		"mov %%cr4, %3;\n"
+		"mov %%cr8, %4;\n"
+		"mov %%dr6, %5;\n"
+		"mov %%dr7, %6;\n"
+		: "=r" (_cr0), "=r" (_cr2), "=r" (_cr3), "=r" (_cr4), "=r" (_cr8), "=r" (_dr6), "=r" (_dr7)
 	);
+	
+	ReadMSR(MSR_EFER, &(_efer.l32), &(_efer.h32));
 	
 	Interrupt::mInterruptCount[pInt] += 1;
 	
@@ -211,11 +233,36 @@ extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
 	Console::Print("\n");
 	Console::Print("\n");
 
-	Console::Print("CR2=0x");
+
+	Console::Print("CR0=0x");
+	Console::Print(htoa(_cr0, _TempString));
+	Console::Print(" \tCR2=0x");
 	Console::Print(htoa(_cr2, _TempString));
+	Console::Print("\n");
+
+	Console::Print("CR3=0x");
+	Console::Print(htoa(_cr3, _TempString));
+	Console::Print(" \tCR4=0x");
+	Console::Print(htoa(_cr4, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+
+	Console::Print("CR8=0x");
+	Console::Print(htoa(_cr8, _TempString));
 	Console::Print("\n");
 	Console::Print("\n");
 	
+	Console::Print("EFER=0x");
+	Console::Print(htoa(_efer.u64, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
+	
+	Console::Print("DR6=0x");
+	Console::Print(htoa(_dr6, _TempString));
+	Console::Print(" \tDR7=0x");
+	Console::Print(htoa(_dr7, _TempString));
+	Console::Print("\n");
+	Console::Print("\n");
 	
 	// Loop forever because of Exception
 	asm volatile ("cli;\n");
