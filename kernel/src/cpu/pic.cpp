@@ -6,6 +6,7 @@
 
 
 uint8_t PIC::mOffset = 0;
+uint64_t PIC::mSpuriousCount = 0;
 
 // For quick testing - needs to be put in a string.h or something similar
 char* itoa(int num, char* str, int base);
@@ -57,8 +58,10 @@ void PIC::SendEOI(uint8_t pIntLine) {
 		outb(PIC_MASTER_COMMAND_PORT, PIC_READ_ISR);
 		uint8_t _Value = inb(PIC_MASTER_COMMAND_PORT);
 		// Skip if it is a Spurious Int
-		if ((_Value & 0x80) == 0)
+		if ((_Value & 0x80) == 0) {
+			mSpuriousCount++;
 			return;
+		}
 	}
 	if (pIntLine == 15) {
 		//Read ISR (In-Service Register)
@@ -66,6 +69,7 @@ void PIC::SendEOI(uint8_t pIntLine) {
 		uint8_t _Value = inb(PIC_SLAVE_COMMAND_PORT);
 		// Skip if it is a Spurious Int
 		if ((_Value & 0x80) == 0) {
+			mSpuriousCount++;
 			outb(PIC_MASTER_COMMAND_PORT, PIC_EOI);
 			return;
 		}
@@ -136,4 +140,8 @@ uint8_t PIC::GetOffset(void) {
 
 uint8_t PIC::GetIntLineCount(void) {
 	return 16;
+}
+
+uint64_t PIC::GetSpuriousCount(void) {
+	return mSpuriousCount;
 }

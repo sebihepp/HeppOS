@@ -39,6 +39,7 @@ private:
 	~PIC();
 	
 	static uint8_t mOffset;
+	static uint64_t mSpuriousCount;
 	
 public:
 	static retval_t Init(uint8_t pOffset);
@@ -52,6 +53,8 @@ public:
 	
 	static uint8_t GetOffset(void);
 	static uint8_t GetIntLineCount(void);
+	
+	static uint64_t GetSpuriousCount(void);
 	
 };
 
