@@ -110,21 +110,21 @@ extern "C" uint32_t kmain(void) {
 
 
 	// Testing Cariage Return
-	Console::Print("Testing Carriage Return..................ERROR!");
-	Console::Print("\rTesting Carriage Return.....................OK!\n");
+/* 	Console::Print("Testing Carriage Return..................ERROR!");
+	Console::Print("\rTesting Carriage Return.....................OK!\n"); */
 	
 	// Testing tabulator
-	Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n");
+	/* Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n"); */
 	
 	
 	// Testing Handler
-	for (uint64_t i = 0; i < 5; i++) {
+/* 	for (uint64_t i = 0; i < 5; i++) {
 		Console::Print("Testing Handler 128...\n");
 		asm volatile (
 			"int $0x80;\n"
 		);
-	}
-/* 	Console::Print("Testing Handler 39...\n");
+	} 
+ 	Console::Print("Testing Handler 39...\n");
 	asm volatile (
 		"int $0x27;\n"
 	);
@@ -136,10 +136,11 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("...OK!\n"); */
 	
 	// Testing PIC with PIT
-	Interrupt::EnableInterrupts();
-	PIC::Unmask(0x01);
+/* 	Interrupt::EnableInterrupts();
+	PIC::Unmask(0x00); */
 
 	
+	Console::Print("Done!\n");
 	while (true) {
 		asm volatile ("hlt;\n");
 	}

@@ -114,7 +114,7 @@ extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 	Console::Print(" times!\n");
 	
 	if ((pInt >= PIC::GetOffset()) && (pInt < (PIC::GetOffset() + PIC::GetIntLineCount()))) {
-		Console::Print("EOI sent!\n");
+		//Console::Print("EOI sent!\n");
 		PIC::SendEOI(pInt - PIC::GetOffset());
 	}
 

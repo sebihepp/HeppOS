@@ -257,7 +257,7 @@ void Console::ScrollDown(const uint32_t pLines) {
 	
 	memmove(reinterpret_cast<void*>(_DestAddress), reinterpret_cast<void*>(_SrcAddress), _Size);
 	
-	Fill(0, mCursorMaxY - pLines + 1, mCursorMaxX, mCursorMaxY, mBGColor);
+	Fill(0, mCursorMaxY - pLines, mCursorMaxX + 1, mCursorMaxY + 1, mBGColor);
 	
 	if (pLines >= mCursorY) {
 			mCursorY = 1;
