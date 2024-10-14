@@ -48,7 +48,7 @@ inline void outb(uint16_t pPort, uint8_t pValue) {
 	);
 }
 
-inline void outw(uint16_t pPort, uint8_t pValue) {
+inline void outw(uint16_t pPort, uint16_t pValue) {
 		asm volatile (
 		"outw %%ax, %%dx;\n"
 		:
@@ -57,7 +57,7 @@ inline void outw(uint16_t pPort, uint8_t pValue) {
 	);
 }
 
-inline void outl(uint16_t pPort, uint8_t pValue) {
+inline void outl(uint16_t pPort, uint32_t pValue) {
 		asm volatile (
 		"outl %%eax, %%dx;\n"
 		:

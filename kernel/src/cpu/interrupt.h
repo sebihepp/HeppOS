@@ -21,6 +21,8 @@
 #define IDT_PRESENT		(0x1)
 #define IDT_NOT_PRESENT	(0x0)
 
+#define INTERRUPT_PIC_OFFSET	(0x20)
+
 
 struct IDTEntry_t {
 	uint64_t offset_l:16;

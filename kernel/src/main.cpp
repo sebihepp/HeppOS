@@ -12,6 +12,7 @@
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>
 #include <memory/paging.h>
+#include <cpu/pic.h>
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -123,16 +124,25 @@ extern "C" uint32_t kmain(void) {
 			"int $0x80;\n"
 		);
 	}
-	Console::Print("Testing Handler 39...\n");
+/* 	Console::Print("Testing Handler 39...\n");
 	asm volatile (
 		"int $0x27;\n"
 	);
-	
+	 */
 	// Testing Page Fault Exception
-	Console::Print("Testing Page Fault Exception.............");
+/* 	Console::Print("Testing Page Fault Exception.............");
 	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
 	uint64_t _test2 = *_test;
-	Console::Print("...OK!\n");
+	Console::Print("...OK!\n"); */
+	
+	// Testing PIC with PIT
+	Interrupt::EnableInterrupts();
+	PIC::Unmask(0x01);
+
+	
+	while (true) {
+		asm volatile ("hlt;\n");
+	}
 	
 	return RETVAL_OK;
 }

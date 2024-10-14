@@ -6,6 +6,7 @@
 #include <cstub.h>
 #include <cpu/io.h>
 #include <cpu/msr.h>
+#include <cpu/pic.h>
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -24,6 +25,14 @@ uint64_t Interrupt::mInterruptCount[INTERRUPT_MAX_COUNT];
 
 retval_t Interrupt::Init(void) {
 
+	retval_t _RetVal = RETVAL_OK;
+	
+	// Init PIC (Programmable Interrupt Controller)
+	_RetVal = PIC::Init(INTERRUPT_PIC_OFFSET);
+	if (_RetVal != RETVAL_OK)
+		return _RetVal;
+	
+	
 	memset(mIDT, 0, sizeof(mIDT));
 	memset(&mIDTD, 0, sizeof(mIDTD));
 	memset(mInterruptCount, 0, sizeof(mInterruptCount));
@@ -104,6 +113,11 @@ extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 	Console::Print(utoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
 	Console::Print(" times!\n");
 	
+	if ((pInt >= PIC::GetOffset()) && (pInt < (PIC::GetOffset() + PIC::GetIntLineCount()))) {
+		Console::Print("EOI sent!\n");
+		PIC::SendEOI(pInt - PIC::GetOffset());
+	}
+
 }
 
 extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
@@ -121,8 +135,8 @@ extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
 		struct {
 			uint32_t l32;
 			uint32_t h32;
-		}__attribute__((cached));
-	} _efer;
+		}__attribute__((packed));
+	}__attribute__((packed)) _efer;
 	
 	asm volatile (
 		"mov %%cr0, %0;\n"
