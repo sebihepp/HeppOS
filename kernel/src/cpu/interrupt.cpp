@@ -29,7 +29,7 @@ retval_t Interrupt::Init(void) {
 	
 	// Init PIC (Programmable Interrupt Controller)
 	_RetVal = PIC::Init(INTERRUPT_PIC_OFFSET);
-	if (_RetVal != RETVAL_OK)
+	if (IS_ERROR(_RetVal))
 		return _RetVal;
 	
 	
@@ -103,15 +103,15 @@ uint64_t Interrupt::GetInterruptCount(uint8_t pInt) {
 
 extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 
-	char _TempString[16];
+	//char _TempString[16];
 	
 	Interrupt::mInterruptCount[pInt] += 1;
 	
-	Console::Print("Interrupt ");
+/* 	Console::Print("Interrupt ");
 	Console::Print(utoa(pInt, _TempString, 10));
 	Console::Print(" occured ");
 	Console::Print(utoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
-	Console::Print(" times!\n");
+	Console::Print(" times!\n"); */
 	
 	if ((pInt >= PIC::GetOffset()) && (pInt < (PIC::GetOffset() + PIC::GetIntLineCount()))) {
 		//Console::Print("EOI sent!\n");

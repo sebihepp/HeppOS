@@ -43,9 +43,9 @@ retval_t PIC::Init(uint8_t pOffset) {
 
 void PIC::SendEOI(uint8_t pIntLine) {
 		
-	char _TempString[20];
+/*	char _TempString[20];
 	
-/* 	Console::Print("called SendEOI with pIntLine=");
+ 	Console::Print("called SendEOI with pIntLine=");
 	Console::Print(utoa(pIntLine, _TempString, 10));
 	Console::Print("\n"); */
 	

@@ -27,12 +27,12 @@ extern "C" uint32_t kmain(void) {
 	retval_t _RetVal = RETVAL_OK;
 	
 	_RetVal = Limine::Init();
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 		
 	_RetVal = Console::Init(Limine::GetFramebufferResponse());
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 	
@@ -82,7 +82,7 @@ extern "C" uint32_t kmain(void) {
 	
 	Console::Print("Initializing GDT.........................");
 	_RetVal = GDT::Init();
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		Console::Print("ERROR!\n");
 		return _RetVal;
 	}
@@ -98,7 +98,7 @@ extern "C" uint32_t kmain(void) {
 	
 	Console::Print("Initializing IDT.........................");
 	_RetVal = Interrupt::Init();
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		Console::Print("ERROR!\n");
 		return _RetVal;
 	}

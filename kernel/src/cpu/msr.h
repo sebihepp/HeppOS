@@ -12,9 +12,11 @@ static inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
 {
 	asm volatile 
 	(
-		"rdmsr" :
-		"=a" (*pLow), "=d" (*pHigh) :
-		"c" (pMSR) :
+		"mov %0, %%ecx;\n"
+		"rdmsr;\n"
+		: "=a" (*pLow), "=d" (*pHigh)
+		: "m" (pMSR)
+		: "ecx"
 	);	
 }
 
@@ -22,9 +24,13 @@ static inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
 {
 	asm volatile 
 	(
-		"wrmsr" :
+		"mov %0, %%eax;\n"
+		"mov %1, %%edx;\n"
+		"mov %2, %%ecx;\n"
+		"wrmsr;\n"
 		:
-		"a" (pLow), "d" (pHigh), "c" (pMSR) :
+		: "m" (pLow), "m" (pHigh), "m" (pMSR)
+		: "eax", "ecx", "edx"
 	);	
 }
 
