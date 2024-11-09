@@ -40,7 +40,7 @@ Members of classes are preceeded with a lower case m (m)
 	};
 	
 ## Types 
-- Types are followed by one underscore and a lower case t (_t)
+Types are followed by one underscore and a lower case t (_t)
 
 	struct StructName_t {
 	};
