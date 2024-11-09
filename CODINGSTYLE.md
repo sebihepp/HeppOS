@@ -16,7 +16,7 @@ Exceptions are made for variables where the use is self-explanatory, like in a s
 Local variables are preceeded with a underscore (_)
 
 	void main(void) {
-		uint32_t \_LocalVariable = 0;
+		uint32_t _LocalVariable = 0;
 	}
 	
 ### Global variables 
