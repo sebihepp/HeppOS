@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef uint64_t retval_t;
+typedef uint64_t ReturnValue_t;
 
 #define RETVAL_OK 						0
 #define RETVAL_ERROR_GENERAL			1

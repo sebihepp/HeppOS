@@ -42,7 +42,7 @@ private:
 	static uint64_t mSpuriousCount;
 	
 public:
-	static retval_t Init(uint8_t pOffset);
+	static ReturnValue_t Init(uint8_t pOffset);
 	
 	static void SendEOI(uint8_t pIntLine);
 	

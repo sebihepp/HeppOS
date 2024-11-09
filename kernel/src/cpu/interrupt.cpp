@@ -23,9 +23,9 @@ IDTD_t Interrupt::mIDTD;
 
 uint64_t Interrupt::mInterruptCount[INTERRUPT_MAX_COUNT];
 
-retval_t Interrupt::Init(void) {
+ReturnValue_t Interrupt::Init(void) {
 
-	retval_t _RetVal = RETVAL_OK;
+	ReturnValue_t _RetVal = RETVAL_OK;
 	
 	// Init PIC (Programmable Interrupt Controller)
 	_RetVal = PIC::Init(INTERRUPT_PIC_OFFSET);
@@ -101,7 +101,7 @@ uint64_t Interrupt::GetInterruptCount(uint8_t pInt) {
 	return mInterruptCount[pInt];
 }
 
-extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
+extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState) {
 
 	//char _TempString[16];
 	
@@ -120,7 +120,7 @@ extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState) {
 
 }
 
-extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState) {
+extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	
 	char _TempString[32];
 	uint64_t _cr0 = 0;

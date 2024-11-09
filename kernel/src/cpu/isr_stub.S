@@ -31,7 +31,7 @@ isr_wrapper_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call isr_handler
+	call ISRHandler
 	
 	popq %r15
 	popq %r14
@@ -88,7 +88,7 @@ exception_wrapper_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call exception_handler
+	call ExceptionHandler
 	
 	popq %r15
 	popq %r14
@@ -145,7 +145,7 @@ exception_wrapper_error_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call exception_handler
+	call ExceptionHandler
 	
 	popq %r15
 	popq %r14

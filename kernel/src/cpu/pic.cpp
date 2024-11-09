@@ -14,7 +14,7 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
-retval_t PIC::Init(uint8_t pOffset) {
+ReturnValue_t PIC::Init(uint8_t pOffset) {
 
 	MaskAll();
 	

@@ -9,12 +9,12 @@
 #include <limine.h>
 #include <retvals.h>
 
-struct video_char_t {
+struct VideoChar_t {
 	uint8_t a[16];
 } __attribute__((packed));
 
-struct video_font_t {
-	video_char_t a[256];
+struct VideoFont_t {
+	VideoChar_t a[256];
 } __attribute__((packed));
 
 
@@ -68,7 +68,7 @@ private:
 	~Console();
 	
 public:	
-	static retval_t Init(const limine_framebuffer_response *pLFBInfo);
+	static ReturnValue_t Init(const limine_framebuffer_response *pLFBInfo);
 
 	static void SetPixel(uint32_t x, uint32_t y, uint32_t color);
 	static void Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);

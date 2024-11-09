@@ -1,7 +1,7 @@
 
 #define FONTDATAMAX 16 * 256
 
-const unsigned char stdfont[FONTDATAMAX] = {
+const unsigned char STDFont[FONTDATAMAX] = {
 
 	/* 0 0x00 '^@' */
 	0x00, /* 00000000 */

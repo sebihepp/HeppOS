@@ -2,7 +2,7 @@
 #include <video/console.h>
 #include <cstub.h>
 
-extern "C" video_font_t stdfont;
+extern "C" VideoFont_t STDFont;
 
 void *Console::mFramebuffer = NULL;
 uint32_t Console::mPitch = 0;
@@ -32,7 +32,7 @@ void (*Console::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
 void (*Console::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
 	
 	
-retval_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
+ReturnValue_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
 
 	if (pLFBInfo == NULL) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
@@ -107,7 +107,7 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= mHeight)
 				continue;
 				
-			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
+			if (STDFont.a[c].a[row] & (0x80 >> col)) {				
 				mSetPixel(_x, _y, fg_color);
 			} else {
 				mSetPixel(_x, _y, bg_color);
@@ -132,7 +132,7 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= mHeight)
 				continue;
 				
-			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
+			if (STDFont.a[c].a[row] & (0x80 >> col)) {				
 				SetPixel(_x, _y, fg_color);
 			}
 		}

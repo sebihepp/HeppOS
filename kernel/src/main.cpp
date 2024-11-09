@@ -24,7 +24,7 @@ char *htoa(uint64_t num, char* str);
 extern "C" uint32_t kmain(void) {
 
 	char _TempText[24];
-	retval_t _RetVal = RETVAL_OK;
+	ReturnValue_t _RetVal = RETVAL_OK;
 	
 	_RetVal = Limine::Init();
 	if (IS_ERROR(_RetVal)) {

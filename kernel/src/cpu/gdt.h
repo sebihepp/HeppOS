@@ -106,7 +106,7 @@ private:
 	static TSS_t mTaskStateSegment;
 	
 public:	
-	static retval_t Init(void);
+	static ReturnValue_t Init(void);
 	
 	static void LoadGDT(void);
 	static void LoadTSS(void);

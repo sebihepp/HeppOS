@@ -18,7 +18,7 @@ GDT::~GDT() {
 	
 }
 
-retval_t GDT::Init(void) {
+ReturnValue_t GDT::Init(void) {
 
 	memset(mGlobalDescriptorTable, 0, GDT_TOTAL_COUNT * GDT_ENTRY_SIZE);
 	memset(&mTaskStateSegment, 0, sizeof(mTaskStateSegment));

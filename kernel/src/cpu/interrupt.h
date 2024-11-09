@@ -75,8 +75,8 @@ struct CPUState_t {
 
 typedef void (*ISRHandler_t)(uint64_t pInt, CPUState_t *pState);
 
-extern "C" void isr_handler(uint64_t pInt, CPUState_t *pState);
-extern "C" void exception_handler(uint64_t pInt, CPUState_t *pState);
+extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState);
+extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 
 
 class Interrupt {
@@ -91,11 +91,11 @@ private:
 	
 	static void SetIDTEntry(uint8_t pIndex, void *pAddress, uint8_t pType);
 	
-	friend void isr_handler(uint64_t pInt, CPUState_t *pState);
-	friend void exception_handler(uint64_t pInt, CPUState_t *pState);
+	friend void ISRHandler(uint64_t pInt, CPUState_t *pState);
+	friend void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 	
 public:
-	static retval_t Init(void);
+	static ReturnValue_t Init(void);
 	
 	static void LoadIDT(void);
 	
