@@ -2,7 +2,7 @@
 #include <video/console.h>
 #include <cstub.h>
 
-extern "C" video_font_t stdfont;
+extern "C" VideoFont_t STDFont;
 
 void *Console::mFramebuffer = NULL;
 uint32_t Console::mPitch = 0;
@@ -25,12 +25,14 @@ uint32_t Console::mCursorHeight = 0;
 uint32_t Console::mCursorMaxX = 0;
 uint32_t Console::mCursorMaxY = 0;
 
+uint32_t Console::mTabSize = 4;
+
 
 void (*Console::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
 void (*Console::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
 	
 	
-retval_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
+ReturnValue_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
 
 	if (pLFBInfo == NULL) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
@@ -40,7 +42,7 @@ retval_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
 	}
 	
-	mFramebuffer = (void*)_LimineLFB->address;
+	mFramebuffer = static_cast<void*>(_LimineLFB->address);
 	mPitch = _LimineLFB->pitch;
 	mWidth = _LimineLFB->width;
 	mHeight = _LimineLFB->height;
@@ -105,7 +107,7 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= mHeight)
 				continue;
 				
-			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
+			if (STDFont.a[c].a[row] & (0x80 >> col)) {				
 				mSetPixel(_x, _y, fg_color);
 			} else {
 				mSetPixel(_x, _y, bg_color);
@@ -130,7 +132,7 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= mHeight)
 				continue;
 				
-			if (stdfont.a[c].a[row] & (0x80 >> col)) {				
+			if (STDFont.a[c].a[row] & (0x80 >> col)) {				
 				SetPixel(_x, _y, fg_color);
 			}
 		}
@@ -211,18 +213,16 @@ void Console::Print(const char *pText) {
 		if (pText[i] == '\n') {
 			mCursorX = 0;
 			mCursorY += 1;
-			
-			if (mCursorY >= mCursorMaxY) {
-				ScrollDown(1);
-				
-			}
-			i++;
-			continue;
+		} else if (pText[i] == '\r') {
+			mCursorX = 0;
+		} else if (pText[i] == '\t') {
+			mCursorX = (mCursorX + mTabSize) & ~(mTabSize - 1);
 		} else {
-			PrintCharAlpha(pText[i], mCursorX, mCursorY, mFGColor);
+			PrintChar(pText[i], mCursorX, mCursorY, mFGColor, mBGColor);
+			mCursorX += 1;
 		}
 
-		mCursorX += 1;
+		
 		if (mCursorX >= mCursorMaxX) {
 			mCursorX = 0;
 			mCursorY += 1;
@@ -245,19 +245,19 @@ void Console::ScrollDown(const uint32_t pLines) {
 		return;
 	}
 	
-	uintptr_t _SrcAddress = (uintptr_t)GetFramebufferAddress();
-	uintptr_t _DestAddress = (uintptr_t)GetFramebufferAddress();
+	uintptr_t _SrcAddress = reinterpret_cast<uintptr_t>(GetFramebufferAddress());
+	uintptr_t _DestAddress = reinterpret_cast<uintptr_t>(GetFramebufferAddress());
 	size_t _Size = GetFramebufferSize();
 	
 	
 	_SrcAddress += mPitch * (pLines + mTitleHeight) * mCursorHeight;
 	_DestAddress += mPitch * mTitleHeight * mCursorHeight;
-	_Size -= (_SrcAddress - (uintptr_t)(GetFramebufferAddress()));		
+	_Size -= (_SrcAddress - reinterpret_cast<uintptr_t>(GetFramebufferAddress()));		
 
 	
-	memmove((void*)_DestAddress, (void*)_SrcAddress, _Size);
+	memmove(reinterpret_cast<void*>(_DestAddress), reinterpret_cast<void*>(_SrcAddress), _Size);
 	
-	Fill(0, mCursorMaxY - pLines + 1, mCursorMaxX, mCursorMaxY, mBGColor);
+	Fill(0, mCursorMaxY - pLines, mCursorMaxX + 1, mCursorMaxY + 1, mBGColor);
 	
 	if (pLines >= mCursorY) {
 			mCursorY = 1;
@@ -292,7 +292,7 @@ void Console::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
 	
 	color = ConvertColor24(color);
 	
-	volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 3));
+	volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (y * mPitch) + (x * 3));
 	uint32_t tmp = *target & 0xFF000000;
 	tmp |= color;
 	*target = color;
@@ -306,7 +306,7 @@ void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
 		
 	color = ConvertColor32(color);
 	
-	volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (y * mPitch) + (x * 4));
+	volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (y * mPitch) + (x * 4));
 	*target = color;
 }
 
@@ -331,7 +331,7 @@ void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 			if (_y >= mHeight)
 				continue;
 
-			volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 3));
+			volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (_y * mPitch) + (_x * 3));
 			uint32_t tmp = *target & 0xFF000000;
 			tmp |= color;
 			*target = color;
@@ -360,7 +360,7 @@ void Console::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 			if (_y >= mHeight)
 				continue;
 
-			volatile uint32_t *target = (uint32_t*)(((uintptr_t)mFramebuffer) + (_y * mPitch) + (_x * 4));
+			volatile uint32_t *target = reinterpret_cast<uint32_t*>((reinterpret_cast<uintptr_t>(GetFramebufferAddress())) + (_y * mPitch) + (_x * 4));
 			*target = color;
 		}
 	}
@@ -373,3 +373,12 @@ void Console::SetPixel(uint32_t x, uint32_t y, uint32_t color) {
 void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
 	mFill(left, top, right, bottom, color);
 }
+
+uint32_t Console::GetTabSize(void) {
+	return mTabSize;
+}
+
+void Console::SetTabSize(uint32_t pTabSize) {
+	mTabSize = pTabSize;
+}
+

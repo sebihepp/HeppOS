@@ -46,7 +46,7 @@ __attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_
 __attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
 
 
-retval_t Limine::Init(void) {
+ReturnValue_t Limine::Init(void) {
 	if (LIMINE_BASE_REVISION_SUPPORTED == false) {
 		return RETVAL_ERROR_LIMINE_REV;
 	}

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef uint32_t retval_t;
+typedef uint64_t ReturnValue_t;
 
 #define RETVAL_OK 						0
 #define RETVAL_ERROR_GENERAL			1
@@ -20,6 +20,11 @@ typedef uint32_t retval_t;
 #define RETVAL_ERROR_CPUID_EXT_LEVEL	10
 #define RETVAL_ERROR_NO_PAT				11
 #define RETVAL_ERROR_NO_HHDM			12
+
+
+
+#define IS_ERROR(x) ((x) != RETVAL_OK)
+#define IS_SUCCESS(x) ((x) == RETVAL_OK)
 
 
 #endif

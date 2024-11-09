@@ -41,9 +41,10 @@
 iso/*
 
 # config files of virtual machines
-/bochsrc
-/qemu.sh
-/qemu_uefi.sh
+# Disabled so the user can get them as an example
+#/bochsrc
+#/qemu.sh
+#/qemu_uefi.sh
 
 # Zone.Identifier files
 *.Zone.Identifier

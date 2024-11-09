@@ -12,8 +12,8 @@ LIMINE := "$(LIMINE_PATH)/bin/limine"
 LGCCPATH := $(dir $(shell $(CC) -mno-red-zone -print-libgcc-file-name))
 
 # Definition for flags
-CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone -mno-80387 -mno-sse -mno-sse2 -mno-mmx -I src -I "$(LIMINE_PATH)/include"
-CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-use-cxa-atexit -mcmodel=kernel -mno-red-zone -mno-80387 -mno-sse -mno-sse2 -mno-mmx -I src -I "$(LIMINE_PATH)/include"
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone -mno-80387 -mgeneral-regs-only -I src -I "$(LIMINE_PATH)/include"
+CXXFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-use-cxa-atexit -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -I src -I "$(LIMINE_PATH)/include"
 ASFLAGS := -I src
 LDFLAGS := -T linker.ld -O2 -nostdlib -L "$(LGCCPATH)" -lgcc
 

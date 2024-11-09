@@ -10,26 +10,29 @@
 #include <retvals.h>
 #include <video/console.h>
 #include <cpu/gdt.h>
+#include <cpu/interrupt.h>
 #include <memory/paging.h>
+#include <cpu/pic.h>
 
 
-
+// For quick testing - needs to be put in a string.h or something similar
 char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
+
 extern "C" uint32_t kmain(void) {
 
 	char _TempText[24];
-	retval_t _RetVal = RETVAL_OK;
+	ReturnValue_t _RetVal = RETVAL_OK;
 	
 	_RetVal = Limine::Init();
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 		
 	_RetVal = Console::Init(Limine::GetFramebufferResponse());
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 	
@@ -42,13 +45,13 @@ extern "C" uint32_t kmain(void) {
 	
 	// Print Video Mode
 	Console::Print("Video Format: ");
-	Console::Print(itoa(Console::GetWidth(), _TempText, 10));
+	Console::Print(utoa(Console::GetWidth(), _TempText, 10));
 	Console::Print("x");
-	Console::Print(itoa(Console::GetHeight(), _TempText, 10));
+	Console::Print(utoa(Console::GetHeight(), _TempText, 10));
 	Console::Print("x");
-	Console::Print(itoa(Console::GetBPP(), _TempText, 10));
+	Console::Print(utoa(Console::GetBPP(), _TempText, 10));
 	Console::Print(" (Pitch=");
-	Console::Print(itoa(Console::GetPitch(), _TempText, 10));
+	Console::Print(utoa(Console::GetPitch(), _TempText, 10));
 	Console::Print(")\n");
 	
 	//Debug Output
@@ -79,7 +82,7 @@ extern "C" uint32_t kmain(void) {
 	
 	Console::Print("Initializing GDT.........................");
 	_RetVal = GDT::Init();
-	if (_RetVal != RETVAL_OK) {
+	if (IS_ERROR(_RetVal)) {
 		Console::Print("ERROR!\n");
 		return _RetVal;
 	}
@@ -92,6 +95,55 @@ extern "C" uint32_t kmain(void) {
 	Console::Print("Loading TSS..............................");
 	GDT::LoadTSS();
 	Console::Print("...OK!\n");
+	
+	Console::Print("Initializing IDT.........................");
+	_RetVal = Interrupt::Init();
+	if (IS_ERROR(_RetVal)) {
+		Console::Print("ERROR!\n");
+		return _RetVal;
+	}
+	Console::Print("...OK!\n");
+
+	Console::Print("Loading IDT..............................");
+	Interrupt::LoadIDT();
+	Console::Print("...OK!\n");
+
+
+	// Testing Cariage Return
+/* 	Console::Print("Testing Carriage Return..................ERROR!");
+	Console::Print("\rTesting Carriage Return.....................OK!\n"); */
+	
+	// Testing tabulator
+	/* Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n"); */
+	
+	
+	// Testing Handler
+/* 	for (uint64_t i = 0; i < 5; i++) {
+		Console::Print("Testing Handler 128...\n");
+		asm volatile (
+			"int $0x80;\n"
+		);
+	} 
+ 	Console::Print("Testing Handler 39...\n");
+	asm volatile (
+		"int $0x27;\n"
+	);
+	 */
+	// Testing Page Fault Exception
+/* 	Console::Print("Testing Page Fault Exception.............");
+	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
+	uint64_t _test2 = *_test;
+	Console::Print("...OK!\n"); */
+	
+	// Testing PIC with PIT
+/* 	Interrupt::EnableInterrupts();
+	PIC::Unmask(0x00); */
+
+	
+	Console::Print("Done!\n");
+	while (true) {
+		asm volatile ("hlt;\n");
+	}
 	
 	return RETVAL_OK;
 }

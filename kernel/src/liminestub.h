@@ -17,7 +17,7 @@ private:
 	
 public:
 
-	static retval_t Init(void);
+	static ReturnValue_t Init(void);
 
 	static limine_framebuffer_response *GetFramebufferResponse(void);
 	static limine_memmap_response *GetMemoryMapResponse(void);

@@ -9,12 +9,12 @@
 #include <limine.h>
 #include <retvals.h>
 
-struct video_char_t {
+struct VideoChar_t {
 	uint8_t a[16];
 } __attribute__((packed));
 
-struct video_font_t {
-	video_char_t a[256];
+struct VideoFont_t {
+	VideoChar_t a[256];
 } __attribute__((packed));
 
 
@@ -45,6 +45,8 @@ private:
 	
 	static const char *mTitle;
 	
+	static uint32_t mTabSize;
+	
 	static void PrintChar(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor, uint32_t bgcolor);
 	static void PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, uint32_t fgcolor);
 	static void PrintTitle(void);
@@ -66,7 +68,7 @@ private:
 	~Console();
 	
 public:	
-	static retval_t Init(const limine_framebuffer_response *pLFBInfo);
+	static ReturnValue_t Init(const limine_framebuffer_response *pLFBInfo);
 
 	static void SetPixel(uint32_t x, uint32_t y, uint32_t color);
 	static void Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
@@ -89,6 +91,9 @@ public:
 	static uint32_t GetHeight(void);
 	static uint32_t GetBPP(void);
 	static size_t GetPitch(void);
+	
+	static uint32_t GetTabSize(void);
+	static void SetTabSize(uint32_t pTabSize);
 	
 };
 
