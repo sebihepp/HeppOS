@@ -1,4 +1,4 @@
-# Coding Style
+# Coding Style 
  
 ## General 
 Generally CamelCase is used.
@@ -7,10 +7,10 @@ Generally CamelCase is used.
 	void ThisIsATest(void) {
 	}
 	
-Exceptions are made for kmain() and \_kstart() and
+Exceptions are made for kmain() and \_kstart() and  
 Exceptions are made for standard functions like itoa() or print(), to maintain compatibility
 ## Variables 
-Variables should be named that the data they contain are easiest understandable
+Variables should be named that the data they contain are easiest understandable  
 Exceptions are made for variables where the use is self-explanatory, like in a simple counting for-loop
 ### Local variables 
 Local variables are preceeded with a underscore (_)
