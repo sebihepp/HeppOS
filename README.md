@@ -3,7 +3,7 @@ HeppOS is an Operating System with the target to learn and have fun coding.
 It targets x86_64 and should be able to run on desktops as well as single board computers and dev boards. 
 ## Design choices 
 ### General 
-- 64Bit OS
+- x86_64 target (64bit x86 cpus)
 - Using Limine protocol
 - Drivers must be in relocatable elf format
 - Drivers are loaded as modules
@@ -26,7 +26,7 @@ initial drivers, supplied as modules.
 ### PREREQUISITES 
 - cross compiler with binutils, gcc, g++ and libgcc as x86_64-elf (with mno-red-zone and mcmodel=kernel)
 - limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd 
-and installed into $HOME/opt/limine (by using --prefix=$HOME/opt/limine) - *i am searching for a way to also automate this*
+and installed into $HOME/opt/limine (by using --prefix=$HOME/opt/limine) *i am searching for a way to not rely on a predefined directory*
 - BOCHS for testing
 - QEMU for testing
 
