@@ -33,10 +33,10 @@ and installed into $HOME/opt/limine (by using --prefix=$HOME/opt/limine) *i am s
 
 ### FAQ 
 
-Q: I cannot boot the created iso file  
+#### I cannot boot the created iso file  
 
-A: If you use the windows subsystem linux (wsl) for creating the cdrom image, you need to install the grub binaries via "sudo apt-get install grub-pc-bin"  
----
-Q: When compiling the kernel I get errors like "relocation truncated to fit" 
+Answer: If you use the windows subsystem linux (wsl) for creating the cdrom image, you need to install the grub binaries via "sudo apt-get install grub-pc-bin"  
 
-A: You need to use a libgcc build with -mno-red-zone **and** -mcmodel=kernel 
+#### When compiling the kernel I get errors like "relocation truncated to fit" 
+
+Answer: You need to use a libgcc build with -mno-red-zone **and** -mcmodel=kernel 
