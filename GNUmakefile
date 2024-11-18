@@ -48,7 +48,7 @@ img:
 	mformat -i HeppOS.img@@64M
 	mmd -i HeppOS.img@@64M ::/limine
 	mcopy -i HeppOS.img@@64M kernel/bin/HeppOS.elf ::/
-	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/limine
+	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/
 
 .PHONY: clean-kernel
 clean-kernel:
