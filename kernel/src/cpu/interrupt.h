@@ -102,8 +102,13 @@ public:
 	
 	static void LoadIDT(void);
 	
-	static void EnableInterrupts(void);
-	static void DisableInterrupts(void);
+	static inline void EnableInterrupts(void) {
+		asm volatile ("sti;\n");
+	}
+	
+	static inline void DisableInterrupts(void) {
+		asm volatile ("cli;\n");
+	}
 	
 	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler);	
 	static void UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler);

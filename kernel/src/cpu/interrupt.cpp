@@ -77,20 +77,25 @@ void Interrupt::LoadIDT(void) {
 	);
 }
 
-void Interrupt::EnableInterrupts(void) {
-	asm volatile ("sti;\n");
-}
-
-void Interrupt::DisableInterrupts(void) {
-	asm volatile ("cli;\n");
-}
-
 void Interrupt::RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler) {
-	// ToDo: Implement
+	for (uint64_t i = 0; i < INTERRUPT_MAX_HANDLER; i++) {
+		if (mISRHandler[pIndex][i] == pHandler)
+			return;
+	}
+	for (uint64_t i = 0; i < INTERRUPT_MAX_HANDLER; i++) {
+		if (mISRHandler[pIndex][i] == NULL) {
+			mISRHandler[pIndex][i] = pHandler;
+			break;
+		}
+	}
 }
 
 void Interrupt::UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler) {
-	// ToDo: Implement
+	for (uint64_t i = 0; i < INTERRUPT_MAX_HANDLER; i++) {
+		if (mISRHandler[pIndex][i] == pHandler) {
+			mISRHandler[pIndex][i] = NULL;
+		}
+	}
 }
 
 void Interrupt::SetIDTEntry(uint8_t pIndex, void *pHandler, uint8_t pType) {
