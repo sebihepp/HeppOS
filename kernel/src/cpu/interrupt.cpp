@@ -17,6 +17,7 @@ char *htoa(uint64_t num, char* str);
 
 extern "C" void *gISRHandlerAddressTable[INTERRUPT_MAX_COUNT];
 
+ISRHandler_t Interrupt::mISRHandler[INTERRUPT_MAX_COUNT][INTERRUPT_MAX_HANDLER];
 
 IDTEntry_t Interrupt::mIDT[INTERRUPT_MAX_COUNT];
 IDTD_t Interrupt::mIDTD;
@@ -32,11 +33,17 @@ ReturnValue_t Interrupt::Init(void) {
 	if (IS_ERROR(_RetVal))
 		return _RetVal;
 	
-	
+	// Clear IDT and IDTD
 	memset(mIDT, 0, sizeof(mIDT));
 	memset(&mIDTD, 0, sizeof(mIDTD));
 	memset(mInterruptCount, 0, sizeof(mInterruptCount));
 	
+	// Clear ISRHandler Array
+	for (uint64_t a = 0; a < INTERRUPT_MAX_COUNT; a++) {
+		for (uint64_t b = 0; b < INTERRUPT_MAX_HANDLER; b++) {
+			mISRHandler[a][b] = NULL;
+		}		
+	}
 	
 	// Exceptions
 	for (uint64_t i = 0; i < 32; i++) {
@@ -45,16 +52,12 @@ ReturnValue_t Interrupt::Init(void) {
 		}
 	}
 	
-	// PIC
-	for (uint64_t i = 32; i < 48; i++) {
+	// Interrupts
+	for (uint64_t i = 32; i < 256; i++) {
 		if (gISRHandlerAddressTable[i] != NULL) {
 			SetIDTEntry(i, gISRHandlerAddressTable[i], IDT_TYPE_GATE);
 		}
 	}
-	
-	
-	// SysCall
-	SetIDTEntry(128, gISRHandlerAddressTable[128], IDT_TYPE_GATE);
 	
 	
 	// IDTD
@@ -86,6 +89,10 @@ void Interrupt::RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler) {
 	// ToDo: Implement
 }
 
+void Interrupt::UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler) {
+	// ToDo: Implement
+}
+
 void Interrupt::SetIDTEntry(uint8_t pIndex, void *pHandler, uint8_t pType) {
 	mIDT[pIndex].offset_l = (reinterpret_cast<uint64_t>(pHandler) >> 0) & 0xFFFF;
 	mIDT[pIndex].segment = GDT::GetSelector(GDT_CODE64_SEL);
@@ -112,6 +119,11 @@ extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState) {
 	Console::Print(" occured ");
 	Console::Print(utoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
 	Console::Print(" times!\n"); */
+	
+	for (uint64_t i = 0; i < INTERRUPT_MAX_HANDLER; i++) {
+		if (Interrupt::mISRHandler[pInt][i] != NULL)
+			Interrupt::mISRHandler[pInt][i](pInt, pState);
+	}
 	
 	if ((pInt >= PIC::GetOffset()) && (pInt < (PIC::GetOffset() + PIC::GetIntLineCount()))) {
 		//Console::Print("EOI sent!\n");
