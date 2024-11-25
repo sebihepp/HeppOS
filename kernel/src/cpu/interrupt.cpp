@@ -178,13 +178,7 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	Console::Print("\n");
 	Console::Print("\n");
 	
-	
-	Console::Print("Error code=0x");
-	Console::Print(utoa(pState->error_code, _TempString, 16));
-	Console::Print(" (");
-	Console::Print(utoa(pState->error_code, _TempString, 10));
-	Console::Print(")\n");
-	Console::Print("\n");
+	Interrupt::PrintErrorCode(pInt, pState->error_code);
 	
 	Console::Print("RFLAGS=0x");
 	Console::Print(htoa(pState->rflags, _TempString));
@@ -294,4 +288,60 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	for (;;) {
 		asm volatile ("hlt;\n");
 	}
+}
+
+void Interrupt::PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) {
+	
+	char _TempString[32];
+	
+	Console::Print("Error code=0x");
+	Console::Print(utoa(pErrorCode, _TempString, 16));
+	Console::Print(" (");
+	Console::Print(utoa(pErrorCode, _TempString, 10));
+	Console::Print(")\n");
+	
+	Console::Print("Meaning:\n");
+	switch (pInt) {
+		
+		case 0x0e:
+			if (pErrorCode & 0x01) {
+				Console::Print(" Protection fault\n");
+			} else {
+				Console::Print(" Page not present\n");
+			}
+			if (pErrorCode & 0x02) {
+				Console::Print(" Write access\n");
+			} else {
+				Console::Print(" Read access\n");
+			}
+			if (pErrorCode & 0x04) {
+				Console::Print(" User access\n");
+			} else {
+				Console::Print(" Superuser access\n");
+			}
+			if (pErrorCode & 0x08) {
+				Console::Print(" Reserved bit set\n");
+			}
+			if (pErrorCode & 0x10) {
+				Console::Print(" Instruction fetch\n");
+			} else {
+				Console::Print(" Data access\n");
+			}
+			if (pErrorCode & 0x20) {
+				Console::Print(" Protection key violation\n");
+			}
+			if (pErrorCode & 0x40) {
+				Console::Print(" Shadow-stack access fault\n");
+			}
+			if (pErrorCode & 0x8000) {
+				Console::Print(" SGX violation\n");
+			}
+			
+			break;
+			
+		default:
+			Console::Print("---\n");
+	}
+	Console::Print("\n");
+	
 }

@@ -97,6 +97,8 @@ private:
 	friend void ISRHandler(uint64_t pInt, CPUState_t *pState);
 	friend void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 	
+	static void PrintErrorCode(uint64_t pInt, uint64_t pErrorCode);
+	
 public:
 	static ReturnValue_t Init(void);
 	
