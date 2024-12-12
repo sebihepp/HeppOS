@@ -51,7 +51,7 @@ static limine_module_response gSTDModuleResponse = {
 	.modules = NULL
 };
 
-ReturnValue_t Limine::Init(void) {
+ReturnValue_t CLimine::Init(void) {
 	
 	// Check Limine Revision
 	if (LIMINE_BASE_REVISION_SUPPORTED == false) {
@@ -86,30 +86,30 @@ ReturnValue_t Limine::Init(void) {
 	return RETVAL_OK;
 }
 
-limine_framebuffer_response *Limine::GetFramebufferResponse(void) {
+limine_framebuffer_response *CLimine::GetFramebufferResponse(void) {
 	return FramebufferRequest.response;
 }
 
-limine_memmap_response *Limine::GetMemoryMapResponse(void) {
+limine_memmap_response *CLimine::GetMemoryMapResponse(void) {
 	return MemoryMapRequest.response;
 }
 
-limine_hhdm_response *Limine::GetHHDMResponse(void) {
+limine_hhdm_response *CLimine::GetHHDMResponse(void) {
 	return HHDMRequest.response;
 }
 
-limine_paging_mode_response *Limine::GetPagingModeResponse(void) {
+limine_paging_mode_response *CLimine::GetPagingModeResponse(void) {
 	return PagingModeRequest.response;
 }
 
-limine_module_response *Limine::GetModuleResponse(void) {
+limine_module_response *CLimine::GetModuleResponse(void) {
 	return ModuleRequest.response;
 }
 
-limine_kernel_address_response *Limine::GetKernelAddressResponse(void) {
+limine_kernel_address_response *CLimine::GetKernelAddressResponse(void) {
 	return KernelAddressRequest.response;
 }
 
-limine_kernel_file_response *Limine::GetKernelFileResponse(void) {
+limine_kernel_file_response *CLimine::GetKernelFileResponse(void) {
 	return KernelFileRequest.response;
 }

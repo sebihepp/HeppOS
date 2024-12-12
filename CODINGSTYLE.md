@@ -45,9 +45,14 @@ Types are followed by one underscore and a lower case t (_t)
 	struct StructName_t {
 	};
 
-## Classes
+## Classes 
 Each Class should implement a method Init() like the following:
 
 	ReturnValue_t Init(*necessary parameters*);
 	
 This method should be called once initially and only afterwards the class should be used
+
+### Classnames 
+Each class's name is preceeded with a capital c (C)
+
+	class CTest;

@@ -10,7 +10,7 @@ static uint64_t GetCR3(void) {
 	return _val;
 }
 
-void *Paging::GetPhysicalAddress(void *pVirtualAddress) {
+void *CPaging::GetPhysicalAddress(void *pVirtualAddress) {
 	
 	//ToDo: Implement
 	return (void*)GetCR3();

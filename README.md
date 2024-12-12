@@ -8,6 +8,7 @@ It targets x86_64 and should be able to run on desktops as well as single board 
 - Using Limine protocol
 - Drivers must be in relocatable elf format
 - Drivers are loaded as modules
+- Drivers will run in ring 0. 
 
 ### Programming languages 
 - Assembler (only when necessary) 
@@ -17,7 +18,7 @@ It targets x86_64 and should be able to run on desktops as well as single board 
 ### Kernel 
 - The kernel itself must be bootable by limine.
 - Kernel space is the last 2GB and must be mapped into every process.
-- The kernel should be a mix of monolith and microkernel (some things run in kernel space inside the kernel, while other drivers run as user programms).
+- The kernel should be a mix of monolith and microkernel. 
 - The kernel itself should only contain resource management, e.g. handling interrupts, physical and virtual memory management, paging, 
 managing memory mapped i/o and ports, scheduling.
 - The kernel executable will most likely also contain a loader for parsing drivers as modules. This is needed to parse and load the 

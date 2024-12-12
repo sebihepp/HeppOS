@@ -5,8 +5,8 @@
 #include <video/console.h>
 
 
-uint8_t PIC::mOffset = 0;
-uint64_t PIC::mSpuriousCount = 0;
+uint8_t CPIC::mOffset = 0;
+uint64_t CPIC::mSpuriousCount = 0;
 
 // For quick testing - needs to be put in a string.h or something similar
 char* itoa(int num, char* str, int base);
@@ -14,7 +14,7 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
-ReturnValue_t PIC::Init(uint8_t pOffset) {
+ReturnValue_t CPIC::Init(uint8_t pOffset) {
 
 	MaskAll();
 	
@@ -41,13 +41,13 @@ ReturnValue_t PIC::Init(uint8_t pOffset) {
 	return RETVAL_OK;
 }
 
-void PIC::SendEOI(uint8_t pIntLine) {
+void CPIC::SendEOI(uint8_t pIntLine) {
 		
 /*	char _TempString[20];
 	
- 	Console::Print("called SendEOI with pIntLine=");
-	Console::Print(utoa(pIntLine, _TempString, 10));
-	Console::Print("\n"); */
+ 	CConsole::Print("called SendEOI with pIntLine=");
+	CConsole::Print(utoa(pIntLine, _TempString, 10));
+	CConsole::Print("\n"); */
 	
 	if (pIntLine >= GetIntLineCount())
 		return;
@@ -82,7 +82,7 @@ void PIC::SendEOI(uint8_t pIntLine) {
 	outb(PIC_MASTER_COMMAND_PORT, PIC_EOI);
 }
 
-void PIC::Mask(uint8_t pIntLine) {
+void CPIC::Mask(uint8_t pIntLine) {
 	uint16_t _Port = 0;
 	uint8_t _Mask = 0;
 	uint8_t _Value = 0;
@@ -103,7 +103,7 @@ void PIC::Mask(uint8_t pIntLine) {
 	outb(_Port, _Value);
 }
 
-void PIC::Unmask(uint8_t pIntLine) {
+void CPIC::Unmask(uint8_t pIntLine) {
 	uint16_t _Port = 0;
 	uint8_t _Mask = 0;
 	uint8_t _Value = 0;
@@ -124,24 +124,24 @@ void PIC::Unmask(uint8_t pIntLine) {
 	outb(_Port, _Value);
 }
 
-void PIC::MaskAll(void) {
+void CPIC::MaskAll(void) {
 	outb(PIC_MASTER_DATA_PORT, 0xFF);
 	outb(PIC_SLAVE_DATA_PORT, 0xFF);
 }
 
-void PIC::UnmaskAll(void) {
+void CPIC::UnmaskAll(void) {
 	outb(PIC_MASTER_DATA_PORT, 0x00);
 	outb(PIC_SLAVE_DATA_PORT, 0x00);	
 }
 
-uint8_t PIC::GetOffset(void) {
+uint8_t CPIC::GetOffset(void) {
 	return mOffset;
 }
 
-uint8_t PIC::GetIntLineCount(void) {
+uint8_t CPIC::GetIntLineCount(void) {
 	return 16;
 }
 
-uint64_t PIC::GetSpuriousCount(void) {
+uint64_t CPIC::GetSpuriousCount(void) {
 	return mSpuriousCount;
 }

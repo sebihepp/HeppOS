@@ -11,10 +11,10 @@
 #include <retvals.h>
 
 
-class Paging {
+class CPaging {
 private:
-	Paging();
-	~Paging();
+	CPaging();
+	~CPaging();
 
 
 public:

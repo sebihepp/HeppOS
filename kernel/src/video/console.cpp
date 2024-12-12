@@ -4,35 +4,35 @@
 
 extern "C" VideoFont_t STDFont;
 
-void *Console::mFramebuffer = NULL;
-uint32_t Console::mPitch = 0;
-uint32_t Console::mWidth = 0;
-uint32_t Console::mHeight = 0;
-uint8_t Console::mBPP = 0;
+void *CConsole::mFramebuffer = NULL;
+uint32_t CConsole::mPitch = 0;
+uint32_t CConsole::mWidth = 0;
+uint32_t CConsole::mHeight = 0;
+uint8_t CConsole::mBPP = 0;
 
-uint32_t Console::mFGColor = 0x00AAAAAA;
-uint32_t Console::mBGColor = 0x00000000;
-uint32_t Console::mTitleFGColor = 0x0000FFFF;
-uint32_t Console::mTitleBGColor = 0x000000AA;
+uint32_t CConsole::mFGColor = 0x00AAAAAA;
+uint32_t CConsole::mBGColor = 0x00000000;
+uint32_t CConsole::mTitleFGColor = 0x0000FFFF;
+uint32_t CConsole::mTitleBGColor = 0x000000AA;
 
-const char *Console::mTitle = "";
-uint32_t Console::mTitleHeight = 1;
+const char *CConsole::mTitle = "";
+uint32_t CConsole::mTitleHeight = 1;
 
-uint32_t Console::mCursorX = 0;
-uint32_t Console::mCursorY = 0;
-uint32_t Console::mCursorWidth = 0;
-uint32_t Console::mCursorHeight = 0;
-uint32_t Console::mCursorMaxX = 0;
-uint32_t Console::mCursorMaxY = 0;
+uint32_t CConsole::mCursorX = 0;
+uint32_t CConsole::mCursorY = 0;
+uint32_t CConsole::mCursorWidth = 0;
+uint32_t CConsole::mCursorHeight = 0;
+uint32_t CConsole::mCursorMaxX = 0;
+uint32_t CConsole::mCursorMaxY = 0;
 
-uint32_t Console::mTabSize = 4;
+uint32_t CConsole::mTabSize = 4;
 
 
-void (*Console::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
-void (*Console::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
+void (*CConsole::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
+void (*CConsole::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
 	
 	
-ReturnValue_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
+ReturnValue_t CConsole::Init(const limine_framebuffer_response *pLFBInfo) {
 
 	if (pLFBInfo == NULL) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
@@ -75,23 +75,23 @@ ReturnValue_t Console::Init(const limine_framebuffer_response *pLFBInfo) {
 	return RETVAL_OK;
 }
 	
-uint32_t Console::GetWidth(void) {
+uint32_t CConsole::GetWidth(void) {
 	return mWidth;
 }
 
-uint32_t Console::GetHeight(void) {
+uint32_t CConsole::GetHeight(void) {
 	return mHeight;
 }
 
-uint32_t Console::GetBPP(void) {
+uint32_t CConsole::GetBPP(void) {
 	return mBPP;
 }
 
-size_t Console::GetPitch(void) {
+size_t CConsole::GetPitch(void) {
 	return mPitch;
 }
 
-void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
+void CConsole::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 	uint32_t fg_color, uint32_t bg_color)
 {
 	
@@ -116,7 +116,7 @@ void Console::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 	}
 }
 
-void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, 
+void CConsole::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y, 
 		uint32_t fg_color)
 {
 	
@@ -139,7 +139,7 @@ void Console::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 	}
 }
 
-void Console::PrintTitle(void) {	
+void CConsole::PrintTitle(void) {	
 	uint32_t i = 0;
 	uint32_t x = 1;
 	while (mTitle[i] != 0) {
@@ -151,7 +151,7 @@ void Console::PrintTitle(void) {
 	}
 }
 	
-void Console::Clear(void) {	
+void CConsole::Clear(void) {	
 	
 	// Clear all
 	Fill(0, 0, mCursorMaxX, mCursorMaxY, mBGColor);
@@ -167,15 +167,15 @@ void Console::Clear(void) {
 
 }
 
-void Console::SetFGColor(uint32_t color) {
+void CConsole::SetFGColor(uint32_t color) {
 	mFGColor = color;
 }
 
-void Console::SetBGColor(uint32_t color) {
+void CConsole::SetBGColor(uint32_t color) {
 	mBGColor = color;
 }
 
-void Console::SetTitleFGColor(uint32_t color) {
+void CConsole::SetTitleFGColor(uint32_t color) {
 	mTitleFGColor = color;
 	
 	// Background for Title
@@ -185,7 +185,7 @@ void Console::SetTitleFGColor(uint32_t color) {
 	PrintTitle();
 }
 
-void Console::SetTitleBGColor(uint32_t color) {
+void CConsole::SetTitleBGColor(uint32_t color) {
 	mTitleBGColor = color;
 	
 	// Background for Title
@@ -195,7 +195,7 @@ void Console::SetTitleBGColor(uint32_t color) {
 	PrintTitle();
 }
 
-void Console::SetTitleText(const char *pText) {
+void CConsole::SetTitleText(const char *pText) {
 	mTitle = pText;
 	
 	// Background for Title
@@ -205,7 +205,7 @@ void Console::SetTitleText(const char *pText) {
 	PrintTitle();
 }
 
-void Console::Print(const char *pText) {
+void CConsole::Print(const char *pText) {
 	size_t i = 0;
 	
 	while (pText[i] != 0) {
@@ -236,7 +236,7 @@ void Console::Print(const char *pText) {
 	
 }
 
-void Console::ScrollDown(const uint32_t pLines) {
+void CConsole::ScrollDown(const uint32_t pLines) {
 	
 	if (pLines == 0)
 		return;
@@ -267,23 +267,23 @@ void Console::ScrollDown(const uint32_t pLines) {
 	
 }
 
-void *Console::GetFramebufferAddress(void) {
+void *CConsole::GetFramebufferAddress(void) {
 	return mFramebuffer;
 }
 
-size_t Console::GetFramebufferSize(void) {
+size_t CConsole::GetFramebufferSize(void) {
 	return mHeight * mPitch;
 }
 
-uint32_t Console::ConvertColor24(uint32_t color) {	
+uint32_t CConsole::ConvertColor24(uint32_t color) {	
 	return color & 0x00FFFFFF;
 }
 
-uint32_t Console::ConvertColor32(uint32_t color) {	
+uint32_t CConsole::ConvertColor32(uint32_t color) {	
 	return color;
 }
 
-void Console::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
+void CConsole::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
 	
 	if (x >= mWidth)
 		return;
@@ -298,7 +298,7 @@ void Console::SetPixel24(uint32_t x, uint32_t y, uint32_t color) {
 	*target = color;
 }
 
-void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
+void CConsole::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
 	if (x >= mWidth)
 		return;
 	if (y >= mHeight)
@@ -310,7 +310,7 @@ void Console::SetPixel32(uint32_t x, uint32_t y, uint32_t color) {
 	*target = color;
 }
 
-void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+void CConsole::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
 	
 	left *= mCursorWidth;
 	top *= mCursorHeight;
@@ -339,7 +339,7 @@ void Console::Fill24(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 	}
 }
 
-void Console::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+void CConsole::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
 	
 	left *= mCursorWidth;
 	top *= mCursorHeight;
@@ -366,19 +366,19 @@ void Console::Fill32(uint32_t left, uint32_t top, uint32_t right, uint32_t botto
 	}
 }
 
-void Console::SetPixel(uint32_t x, uint32_t y, uint32_t color) {
+void CConsole::SetPixel(uint32_t x, uint32_t y, uint32_t color) {
 	mSetPixel(x, y, color);
 }
 
-void Console::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
+void CConsole::Fill(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) {
 	mFill(left, top, right, bottom, color);
 }
 
-uint32_t Console::GetTabSize(void) {
+uint32_t CConsole::GetTabSize(void) {
 	return mTabSize;
 }
 
-void Console::SetTabSize(uint32_t pTabSize) {
+void CConsole::SetTabSize(uint32_t pTabSize) {
 	mTabSize = pTabSize;
 }
 

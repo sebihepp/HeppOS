@@ -80,10 +80,10 @@ extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState);
 extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 
 
-class Interrupt {
+class CInterrupt {
 private:
-	Interrupt();
-	~Interrupt();
+	CInterrupt();
+	~CInterrupt();
 
 	static ISRHandler_t mISRHandler[INTERRUPT_MAX_COUNT][INTERRUPT_MAX_HANDLER];
 	
