@@ -8,19 +8,30 @@
 #define MSR_PAT (0x277)
 #define MSR_EFER (0xC0000080)
 
-static inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
+inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
 {
 	asm volatile 
 	(
-		"mov %0, %%ecx;\n"
+		"mov %2, %%ecx;\n"
 		"rdmsr;\n"
 		: "=a" (*pLow), "=d" (*pHigh)
 		: "m" (pMSR)
 		: "ecx"
-	);	
+	);
+
 }
 
-static inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
+inline void ReadMSR(uint32_t pMSR, uint64_t *pData)
+{
+	uint32_t _Low = 0;
+	uint32_t _High = 0;
+	ReadMSR(pMSR, &_Low, &_High);
+	*pData = static_cast<uint64_t>(_Low);
+	*pData |= static_cast<uint64_t>(_High) << 32;
+}
+
+
+inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
 {
 	asm volatile 
 	(
@@ -33,5 +44,13 @@ static inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
 		: "eax", "ecx", "edx"
 	);	
 }
+
+inline void WriteMSR(uint32_t pMSR, uint64_t *pData)
+{
+	uint32_t _Low = *pData & 0xFFFFFFFF;
+	uint32_t _High = (*pData >> 32) & 0xFFFFFFFF;
+	WriteMSR(pMSR, _Low, _High);
+}
+
 
 #endif

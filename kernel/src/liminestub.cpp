@@ -45,11 +45,44 @@ __attribute__((used, section(".requests"))) static volatile limine_kernel_file_r
 __attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_REQUESTS_START_MARKER;
 __attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
 
+static limine_module_response gSTDModuleResponse = {
+	.revision = 0,
+	.module_count = 0,
+	.modules = NULL
+};
 
 ReturnValue_t Limine::Init(void) {
+	
+	// Check Limine Revision
 	if (LIMINE_BASE_REVISION_SUPPORTED == false) {
 		return RETVAL_ERROR_LIMINE_REV;
 	}
+	
+	// Check for NULL Pointers in responses
+	if (GetFramebufferResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}
+	if (GetKernelAddressResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}
+	if (GetKernelFileResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}
+	if (GetMemoryMapResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}
+	if (GetModuleResponse() == NULL) {
+		ModuleRequest.response = &gSTDModuleResponse;
+	}
+	if (GetPagingModeResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}	
+	
+	// Check for 4-Level-Paging
+	if (GetPagingModeResponse()->mode != LIMINE_PAGING_MODE_X86_64_4LVL) {
+		return RETVAL_ERROR_LIMINE_PAGING_MODE;
+	}
+	
 	return RETVAL_OK;
 }
 

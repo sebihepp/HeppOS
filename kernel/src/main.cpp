@@ -129,6 +129,7 @@ extern "C" uint32_t kmain(void) {
 		"int $0x27;\n"
 	);
 	 */
+	 
 	// Testing Page Fault Exception
 /* 	Console::Print("Testing Page Fault Exception.............");
 	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);

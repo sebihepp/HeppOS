@@ -1,4 +1,48 @@
 
+.macro interrupt_save
+	pushq %rax
+	pushq %rbx
+	pushq %rcx
+	pushq %rdx
+	
+	pushq %rsp
+	pushq %rbp
+	pushq %rsi
+	pushq %rdi
+	
+	pushq %r8
+	pushq %r9
+	pushq %r10
+	pushq %r11
+
+	pushq %r12
+	pushq %r13
+	pushq %r14
+	pushq %r15
+.endm
+
+.macro interrupt_restore
+	popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
+
+	popq %r11
+	popq %r10
+	popq %r9
+	popq %r8
+	
+	popq %rdi
+	popq %rsi
+	popq %rbp
+	popq %rsp
+	
+	popq %rdx
+	popq %rcx
+	popq %rbx
+	popq %rax
+.endm
+
 
 .macro isr_wrapper_stub number:req
 .global isr_wrapper_\number
@@ -7,25 +51,7 @@ isr_wrapper_\number :
 	
 	pushq $0
 	
-	pushq %rax
-	pushq %rbx
-	pushq %rcx
-	pushq %rdx
-	
-	pushq %rsp
-	pushq %rbp
-	pushq %rsi
-	pushq %rdi
-	
-	pushq %r8
-	pushq %r9
-	pushq %r10
-	pushq %r11
-
-	pushq %r12
-	pushq %r13
-	pushq %r14
-	pushq %r15
+	interrupt_save
 	
 	movq $\number , %rdi
 	movq %rsp, %rsi
@@ -33,29 +59,12 @@ isr_wrapper_\number :
 	cld
 	call ISRHandler
 	
-	popq %r15
-	popq %r14
-	popq %r13
-	popq %r12
-
-	popq %r11
-	popq %r10
-	popq %r9
-	popq %r8
-	
-	popq %rdi
-	popq %rsi
-	popq %rbp
-	popq %rsp
-	
-	popq %rdx
-	popq %rcx
-	popq %rbx
-	popq %rax
+	interrupt_restore
 	
 	addq $8, %rsp
 	iretq
 .endm
+
 
 .macro exception_wrapper_stub number:req
 .global exception_wrapper_\number
@@ -64,25 +73,7 @@ exception_wrapper_\number :
 	
 	pushq $0
 	
-	pushq %rax
-	pushq %rbx
-	pushq %rcx
-	pushq %rdx
-	
-	pushq %rsp
-	pushq %rbp
-	pushq %rsi
-	pushq %rdi
-	
-	pushq %r8
-	pushq %r9
-	pushq %r10
-	pushq %r11
-
-	pushq %r12
-	pushq %r13
-	pushq %r14
-	pushq %r15
+	interrupt_save
 	
 	movq $\number , %rdi
 	movq %rsp, %rsi
@@ -90,25 +81,7 @@ exception_wrapper_\number :
 	cld
 	call ExceptionHandler
 	
-	popq %r15
-	popq %r14
-	popq %r13
-	popq %r12
-
-	popq %r11
-	popq %r10
-	popq %r9
-	popq %r8
-	
-	popq %rdi
-	popq %rsi
-	popq %rbp
-	popq %rsp
-	
-	popq %rdx
-	popq %rcx
-	popq %rbx
-	popq %rax
+	interrupt_restore
 	
 	addq $8, %rsp
 	iretq
@@ -121,25 +94,7 @@ exception_wrapper_\number :
 .type exception_wrapper_error_\number , @function
 exception_wrapper_error_\number :
 
-	pushq %rax
-	pushq %rbx
-	pushq %rcx
-	pushq %rdx
-	
-	pushq %rsp
-	pushq %rbp
-	pushq %rsi
-	pushq %rdi
-	
-	pushq %r8
-	pushq %r9
-	pushq %r10
-	pushq %r11
-
-	pushq %r12
-	pushq %r13
-	pushq %r14
-	pushq %r15
+	interrupt_save
 	
 	movq $\number , %rdi
 	movq %rsp, %rsi
@@ -147,31 +102,15 @@ exception_wrapper_error_\number :
 	cld
 	call ExceptionHandler
 	
-	popq %r15
-	popq %r14
-	popq %r13
-	popq %r12
-
-	popq %r11
-	popq %r10
-	popq %r9
-	popq %r8
-	
-	popq %rdi
-	popq %rsi
-	popq %rbp
-	popq %rsp
-	
-	popq %rdx
-	popq %rcx
-	popq %rbx
-	popq %rax
+	interrupt_restore
 	
 	addq $8, %rsp
 	iretq
 .endm
 
-
+.macro isr_wrapper_label number:req
+	.quad isr_wrapper_\number
+.endm
 
 .section ".text"
 
@@ -208,26 +147,12 @@ exception_wrapper_stub 29
 exception_wrapper_error_stub 30
 exception_wrapper_stub 31
 
-isr_wrapper_stub 32 
-isr_wrapper_stub 33 
-isr_wrapper_stub 34 
-isr_wrapper_stub 35 
-isr_wrapper_stub 36 
-isr_wrapper_stub 37 
-isr_wrapper_stub 38 
-isr_wrapper_stub 39 
-
-isr_wrapper_stub 40
-isr_wrapper_stub 41
-isr_wrapper_stub 42
-isr_wrapper_stub 43
-isr_wrapper_stub 44
-isr_wrapper_stub 45
-isr_wrapper_stub 46
-isr_wrapper_stub 47
-
-
-isr_wrapper_stub 128 
+.altmacro
+.set i,32
+.rept 256-32
+	isr_wrapper_stub %i
+	.set i, i+1
+.endr
 
 
 
@@ -270,28 +195,10 @@ gISRHandlerAddressTable:
 	.quad exception_wrapper_error_30
 	.quad exception_wrapper_31
 	
-	.quad isr_wrapper_32
-	.quad isr_wrapper_33
-	.quad isr_wrapper_34
-	.quad isr_wrapper_35
-	.quad isr_wrapper_36
-	.quad isr_wrapper_37
-	.quad isr_wrapper_38
-	.quad isr_wrapper_39
-	
-	.quad isr_wrapper_40
-	.quad isr_wrapper_41
-	.quad isr_wrapper_42
-	.quad isr_wrapper_43
-	.quad isr_wrapper_44
-	.quad isr_wrapper_45
-	.quad isr_wrapper_46
-	.quad isr_wrapper_47
-	
-	
-	.zero ((127-47) * 8)
-	
-	.quad isr_wrapper_128
-	
-	.zero ((255-128) * 8)
+.altmacro
+.set i,32
+.rept 256-32
+	isr_wrapper_label %i
+	.set i, i+1
+.endr
 	

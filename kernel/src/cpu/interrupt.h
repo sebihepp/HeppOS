@@ -9,6 +9,7 @@
 #include <retvals.h>
 
 #define INTERRUPT_MAX_COUNT (256)
+#define INTERRUPT_MAX_HANDLER (4)
 
 #define IDT_TYPE_GATE	(0xE)
 #define IDT_TYPE_TRAP	(0xF)
@@ -84,6 +85,8 @@ private:
 	Interrupt();
 	~Interrupt();
 
+	static ISRHandler_t mISRHandler[INTERRUPT_MAX_COUNT][INTERRUPT_MAX_HANDLER];
+	
 	static IDTEntry_t mIDT[INTERRUPT_MAX_COUNT];
 	static IDTD_t mIDTD;
 	
@@ -94,15 +97,23 @@ private:
 	friend void ISRHandler(uint64_t pInt, CPUState_t *pState);
 	friend void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 	
+	static void PrintErrorCode(uint64_t pInt, uint64_t pErrorCode);
+	
 public:
 	static ReturnValue_t Init(void);
 	
 	static void LoadIDT(void);
 	
-	static void EnableInterrupts(void);
-	static void DisableInterrupts(void);
+	static inline void EnableInterrupts(void) {
+		asm volatile ("sti;\n");
+	}
+	
+	static inline void DisableInterrupts(void) {
+		asm volatile ("cli;\n");
+	}
 	
 	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler);	
+	static void UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler);
 	
 	static uint64_t GetInterruptCount(uint8_t pInt);
 	

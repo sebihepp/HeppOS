@@ -9,11 +9,7 @@ LIMINE := "$(LIMINE_PATH)/bin/limine"
 all: kernel iso img
 
 .PHONY: clean
-clean:
-	rm -f HeppOS.iso
-	rm -rf iso
-	rm -f HeppOS.img
-	cd kernel && $(MAKE) clean
+clean: clean-img clean-iso clean-kernel
 
 .PHONY: kernel
 kernel:
@@ -52,4 +48,17 @@ img:
 	mformat -i HeppOS.img@@64M
 	mmd -i HeppOS.img@@64M ::/limine
 	mcopy -i HeppOS.img@@64M kernel/bin/HeppOS.elf ::/
-	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/limine
+	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/
+
+.PHONY: clean-kernel
+clean-kernel:
+	cd kernel && $(MAKE) clean
+
+.PHONY: clean-iso
+clean-iso:
+	rm -f HeppOS.iso
+	rm -rf iso
+	
+.PHONY: clean-img
+clean-img:
+	rm -f HeppOS.img
