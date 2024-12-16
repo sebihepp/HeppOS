@@ -18,6 +18,8 @@ private:
 
 
 public:
+
+	static void *GetCR3(void);
 	static void *GetPhysicalAddress(void *pVirtualAddress);
 	
 

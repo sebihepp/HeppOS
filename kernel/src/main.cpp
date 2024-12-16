@@ -56,28 +56,28 @@ extern "C" uint32_t kmain(void) {
 	
 	//Debug Output
 	
-	/*
+	
 	// Print HHDM offset
 	CConsole::Print("HHDM offset=0x");
-	CConsole::Print(htoa(Limine::GetHHDMResponse()->offset, _TempText));
+	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
 	CConsole::Print("\n");
 	
 	
 	// Print Framebuffer Address
 	CConsole::Print("Framebuffer Address=0x");
-	CConsole::Print(htoa((uint64_t)Limine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
+	CConsole::Print(htoa((uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
 	CConsole::Print("\n");
 	
-	// Print CR3 Address
+/* 	// Print CR3 Address
 	CConsole::Print("CR3=0x");
-	CConsole::Print(htoa((uint64_t)Paging::GetPhysicalAddress(NULL), _TempText));
-	CConsole::Print("\n");
+	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
+	CConsole::Print("\n"); */
 	
 	// Print TSS Address
 	CConsole::Print("TSS=0x");
-	CConsole::Print(htoa((uint64_t)GDT::GetTSS(), _TempText));
+	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
 	CConsole::Print("\n");
-	*/
+	
 	
 	
 	CConsole::Print("Initializing GDT.........................");

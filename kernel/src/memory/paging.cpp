@@ -1,17 +1,23 @@
 
 #include <memory/paging.h>
 
-static uint64_t GetCR3(void) {
-	uint64_t _val = 0;
+
+void *CPaging::GetCR3(void) {
+	
+	void *_CR3 = NULL;
 	asm volatile (
-		"movq %%cr3, %0;\n"
-		: "=r" (_val)
+		"movq %%cr3, %%rax;\n"
+		"movq %%rax, %0;\n"
+		: "=m" (_CR3)
+		: 
+		: "rax"
 	);
-	return _val;
+	
+	return _CR3;
 }
 
 void *CPaging::GetPhysicalAddress(void *pVirtualAddress) {
 	
-	//ToDo: Implement
-	return (void*)GetCR3();
+	return NULL;
 }
+
