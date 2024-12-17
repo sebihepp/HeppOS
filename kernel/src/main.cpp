@@ -68,10 +68,11 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print(htoa((uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
 	CConsole::Print("\n");
 	
-/* 	// Print CR3 Address
+	// Print CR3 Address
 	CConsole::Print("CR3=0x");
 	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
+	
 	
 	// Print TSS Address
 	CConsole::Print("TSS=0x");
@@ -140,6 +141,24 @@ extern "C" uint32_t kmain(void) {
 /* 	CInterrupt::EnableInterrupts();
 	CPIC::Unmask(0x00); */
 
+	
+	
+	
+	// Test GetPhysicalAddress
+	uint64_t _TestVirtualAddress = (uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address;
+	_TestVirtualAddress += 0x1234;
+	uint64_t _TestPhysicalAddress = 0;
+	CConsole::Print("Virtual 0x");
+	CConsole::Print(htoa(_TestVirtualAddress, _TempText));
+	_RetVal = CPaging::GetPhysicalAddress((void*)_TestVirtualAddress, (void**)&_TestPhysicalAddress);
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print("ERROR!\n");
+	} else {
+		CConsole::Print(" == Physical 0x");
+		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
+		CConsole::Print("\n");
+	}
+	
 	
 	CConsole::Print("Done!\n");
 	while (true) {
