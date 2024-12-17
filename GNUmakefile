@@ -15,6 +15,12 @@ clean: clean-img clean-iso clean-kernel
 kernel:
 	cd kernel && $(MAKE) all
 	
+.PHONY: debug
+debug: 
+	cd kernel && $(MAKE) debug
+	$(MAKE) iso
+	$(MAKE) img
+
 .PHONY: iso
 iso:
 	mkdir -p iso

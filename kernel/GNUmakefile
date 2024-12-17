@@ -12,11 +12,13 @@ LIMINE := "$(LIMINE_PATH)/bin/limine"
 LGCCPATH := $(dir $(shell $(CC) -mno-red-zone -print-libgcc-file-name))
 
 # Definition for flags
-CFLAGS := -g -ffreestanding -O2 -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone -mno-80387 -mgeneral-regs-only -I src -I "$(LIMINE_PATH)/include"
-CXXFLAGS := -g -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-use-cxa-atexit -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -I src -I "$(LIMINE_PATH)/include"
+CFLAGS := -ffreestanding -Wall -Wextra -fno-exceptions -mcmodel=kernel -mno-red-zone -mno-80387 -mgeneral-regs-only -I src -I "$(LIMINE_PATH)/include"
+CXXFLAGS := -ffreestanding -Wall -Wextra -fno-exceptions -fno-rtti -fno-use-cxa-atexit -mcmodel=kernel -mno-red-zone -mgeneral-regs-only -I src -I "$(LIMINE_PATH)/include"
 ASFLAGS := -I src
-LDFLAGS := -g -T linker.ld -O2 -nostdlib -L "$(LGCCPATH)" -lgcc
+LDFLAGS := -T linker.ld -nostdlib -L "$(LGCCPATH)" -lgcc
 
+DEBUG_FLAGS := -g 
+RELEASE_FLAGS := -O2
 
 
 # Get object files for global constructors/destructors
@@ -36,12 +38,20 @@ OBJ_FILES := $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OBJ_FILES) $(CRTEND_OBJ) $(CRTN_OBJ)
 TARGET := HeppOS.elf
 
 .PHONY: all
+all: CFLAGS += $(RELEASE_FLAGS)
+all: CXXFLAGS += $(RELEASE_FLAGS)
+all: LDFLAGS += $(RELEASE_FLAGS)
 all: bin/$(TARGET)
 
 .PHONY: clean
 clean: 
 	rm -rf bin obj
 
+.PHONY: debug
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LDFLAGS += $(DEBUG_FLAGS)
+debug: bin/$(TARGET)
 
 bin/$(TARGET): GNUmakefile linker.ld $(OBJ_FILES)
 	mkdir -p "$$(dirname $@)"
