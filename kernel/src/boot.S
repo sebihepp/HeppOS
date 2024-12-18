@@ -7,7 +7,7 @@
 _kstart:
 	
 	# Call global constructors
-	call _init
+	#call _init
 	
 	# Call kmain
 	call kmain

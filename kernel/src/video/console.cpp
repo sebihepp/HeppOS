@@ -30,10 +30,9 @@ uint32_t CConsole::mTabSize = 4;
 
 void (*CConsole::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
 void (*CConsole::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
-	
-	
-ReturnValue_t CConsole::Init(const limine_framebuffer_response *pLFBInfo) {
 
+ReturnValue_t CConsole::Init(const limine_framebuffer_response *pLFBInfo) {
+	
 	if (pLFBInfo == NULL) {
 		return RETVAL_ERROR_NO_FRAMEBUFFER;
 	}

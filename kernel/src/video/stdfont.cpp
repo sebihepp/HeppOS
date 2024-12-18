@@ -1,7 +1,14 @@
 
+#include <stddef.h>
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define FONTDATAMAX 16 * 256
 
-const unsigned char STDFont[FONTDATAMAX] = {
+const volatile uint8_t STDFont[FONTDATAMAX] = {
 
 	/* 0 0x00 '^@' */
 	0x00, /* 00000000 */
@@ -4612,3 +4619,7 @@ const unsigned char STDFont[FONTDATAMAX] = {
 	0x00, /* 00000000 */
 
 };
+
+#ifdef __cplusplus
+}
+#endif
