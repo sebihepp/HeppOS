@@ -26,12 +26,16 @@ initial drivers, supplied as modules.
 
 ### Drivers 
 - The drivers must be in relocatable elf format. 
-- Drivers will be loaded into kernel space. 
+- Drivers will be loaded as processes in ring 0. 
 
 ## PREREQUISITES 
-- cross compiler with binutils, gcc, g++ and libgcc as x86_64-elf (with mno-red-zone and mcmodel=kernel)
-- limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd 
-and installed into $HOME/opt/limine (by using --prefix=$HOME/opt/limine) *i am searching for a way to not rely on a predefined directory*
+- installed binutils (configured with --target=x86_64-elf --with-sysroot --disable-nls --disable-werror)
+- installed g++ (configured with --target=x86_64-elf --disable-nls --enable-languages=c++ --without-headers --disable-hosted-libstdcxx --enable-initfini-array)
+- installed libgcc (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=kernel')
+- installed limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd
+- installed autoconfig
+- installed automake
+- installed make
 - BOCHS for testing
 - QEMU for testing
 
