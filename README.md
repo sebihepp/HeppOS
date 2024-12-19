@@ -8,6 +8,7 @@ It targets x86_64 and should be able to run on desktops as well as single board 
 - Using Limine protocol
 - Drivers must be in relocatable elf format
 - Drivers are loaded as modules
+- Drivers will run in ring 0. 
 
 ### Programming languages 
 - Assembler (only when necessary) 
@@ -17,7 +18,7 @@ It targets x86_64 and should be able to run on desktops as well as single board 
 ### Kernel 
 - The kernel itself must be bootable by limine.
 - Kernel space is the last 2GB and must be mapped into every process.
-- The kernel should be a mix of monolith and microkernel (some things run in kernel space inside the kernel, while other drivers run as user programms).
+- The kernel should be a mix of monolith and microkernel. 
 - The kernel itself should only contain resource management, e.g. handling interrupts, physical and virtual memory management, paging, 
 managing memory mapped i/o and ports, scheduling.
 - The kernel executable will most likely also contain a loader for parsing drivers as modules. This is needed to parse and load the 
@@ -25,12 +26,16 @@ initial drivers, supplied as modules.
 
 ### Drivers 
 - The drivers must be in relocatable elf format. 
-- Drivers will be loaded into kernel space. 
+- Drivers will be loaded as processes in ring 0. 
 
 ## PREREQUISITES 
-- cross compiler with binutils, gcc, g++ and libgcc as x86_64-elf (with mno-red-zone and mcmodel=kernel)
-- limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd 
-and installed into $HOME/opt/limine (by using --prefix=$HOME/opt/limine) *i am searching for a way to not rely on a predefined directory*
+- installed binutils (configured with --target=x86_64-elf --with-sysroot --disable-nls --disable-werror)
+- installed g++ (configured with --target=x86_64-elf --disable-nls --enable-languages=c++ --without-headers --disable-hosted-libstdcxx --enable-initfini-array)
+- installed libgcc (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=kernel')
+- installed limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd
+- installed autoconfig
+- installed automake
+- installed make
 - BOCHS for testing
 - QEMU for testing
 

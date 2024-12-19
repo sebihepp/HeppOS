@@ -1,6 +1,10 @@
 
 #include "cstub.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int32_t memcmp(const void *a, const void *b, size_t length)
 {
 	const uint8_t *_a = (const uint8_t*)a;
@@ -54,3 +58,7 @@ void *memset(void *s, int value, size_t length)
 	}
 	return s;
 }
+
+#ifdef __cplusplus
+}
+#endif

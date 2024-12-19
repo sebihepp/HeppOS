@@ -96,10 +96,10 @@ struct TSS_t {
 }__attribute__((packed, aligned (8) ));
 
 
-class GDT {
+class CGDT {
 private:
-	GDT();
-	~GDT();
+	CGDT();
+	~CGDT();
 	
 	static GDTD_t mGlobalDescriptorTableDescriptor;
 	static GDTEntry_t mGlobalDescriptorTable[GDT_TOTAL_COUNT];

@@ -5,20 +5,20 @@
 #include <cstub.h>
 #include <retvals.h>
 
-GDTD_t GDT::mGlobalDescriptorTableDescriptor;
-GDTEntry_t GDT::mGlobalDescriptorTable[GDT_TOTAL_COUNT];
-TSS_t GDT::mTaskStateSegment;
+GDTD_t CGDT::mGlobalDescriptorTableDescriptor;
+GDTEntry_t CGDT::mGlobalDescriptorTable[GDT_TOTAL_COUNT];
+TSS_t CGDT::mTaskStateSegment;
 
 
-GDT::GDT() {
+CGDT::CGDT() {
 	
 }
 
-GDT::~GDT() {
+CGDT::~CGDT() {
 	
 }
 
-ReturnValue_t GDT::Init(void) {
+ReturnValue_t CGDT::Init(void) {
 
 	memset(mGlobalDescriptorTable, 0, GDT_TOTAL_COUNT * GDT_ENTRY_SIZE);
 	memset(&mTaskStateSegment, 0, sizeof(mTaskStateSegment));
@@ -72,7 +72,7 @@ ReturnValue_t GDT::Init(void) {
 	return RETVAL_OK; 
 }
 
-void GDT::LoadGDT(void) {
+void CGDT::LoadGDT(void) {
 	
 	asm volatile (
 		//"xchgw %%bx, %%bx;\n" //Magic breakpoint in bochs for debugging
@@ -99,7 +99,7 @@ void GDT::LoadGDT(void) {
 	);
 }
 
-void GDT::LoadTSS(void) {
+void CGDT::LoadTSS(void) {
 	
 		asm volatile (
 		//"xchgw %%bx, %%bx;\n" //Magic breakpoint in bochs for debugging
@@ -111,10 +111,10 @@ void GDT::LoadTSS(void) {
 	);
 }
 
-TSS_t *GDT::GetTSS(void) {
+TSS_t *CGDT::GetTSS(void) {
 	return &mTaskStateSegment;
 }
 
-uint16_t GDT::GetSelector(uint64_t pSelector) {
+uint16_t CGDT::GetSelector(uint64_t pSelector) {
 	return pSelector;
 }

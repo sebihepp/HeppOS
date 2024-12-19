@@ -18,7 +18,7 @@ struct VideoFont_t {
 } __attribute__((packed));
 
 
-class Console {
+class CConsole {
 
 private:
 	
@@ -64,8 +64,8 @@ private:
 	static void (*mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	
 	
-	Console();
-	~Console();
+	CConsole();
+	~CConsole();
 	
 public:	
 	static ReturnValue_t Init(const limine_framebuffer_response *pLFBInfo);

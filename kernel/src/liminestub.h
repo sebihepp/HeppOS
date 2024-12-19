@@ -10,10 +10,10 @@
 
 #include <retvals.h>
 
-class Limine {
+class CLimine {
 private:
-	Limine();
-	~Limine();	
+	CLimine();
+	~CLimine();	
 	
 public:
 

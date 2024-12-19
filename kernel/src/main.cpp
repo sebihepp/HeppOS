@@ -21,127 +21,182 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
+// For Testing global Constructors
+class CGlobalCTORTest {
+private:
+	volatile uint32_t mTest;
+
+public:
+	CGlobalCTORTest() {
+		mTest = 5;
+	};
+	~CGlobalCTORTest() {
+	};
+	
+	uint32_t GetTest(void) {
+		return mTest;
+	};
+	
+	void PrintTest(void) {
+		char _TempText[24];
+		CConsole::Print(itoa(mTest, _TempText, 10));
+	};
+	
+};
+
+CGlobalCTORTest gCTORTest;
+
+
 extern "C" uint32_t kmain(void) {
 
 	char _TempText[24];
 	ReturnValue_t _RetVal = RETVAL_OK;
 	
-	_RetVal = Limine::Init();
+	_RetVal = CLimine::Init();
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 		
-	_RetVal = Console::Init(Limine::GetFramebufferResponse());
+	_RetVal = CConsole::Init(CLimine::GetFramebufferResponse());
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 	
-	Console::SetFGColor(0x00AAAAAA);
-	Console::SetBGColor(0x00000000);
-	Console::SetTitleFGColor(0x0000FFFF);
-	Console::SetTitleBGColor(0x000000AA);
-	Console::SetTitleText("HeppOS");
-	Console::Clear();
+	CConsole::SetFGColor(0x00AAAAAA);
+	CConsole::SetBGColor(0x00000000);
+	CConsole::SetTitleFGColor(0x0000FFFF);
+	CConsole::SetTitleBGColor(0x000000AA);
+	CConsole::SetTitleText("HeppOS");
+	CConsole::Clear();
 	
 	// Print Video Mode
-	Console::Print("Video Format: ");
-	Console::Print(utoa(Console::GetWidth(), _TempText, 10));
-	Console::Print("x");
-	Console::Print(utoa(Console::GetHeight(), _TempText, 10));
-	Console::Print("x");
-	Console::Print(utoa(Console::GetBPP(), _TempText, 10));
-	Console::Print(" (Pitch=");
-	Console::Print(utoa(Console::GetPitch(), _TempText, 10));
-	Console::Print(")\n");
+	CConsole::Print("Video Format: ");
+	CConsole::Print(utoa(CConsole::GetWidth(), _TempText, 10));
+	CConsole::Print("x");
+	CConsole::Print(utoa(CConsole::GetHeight(), _TempText, 10));
+	CConsole::Print("x");
+	CConsole::Print(utoa(CConsole::GetBPP(), _TempText, 10));
+	CConsole::Print(" (Pitch=");
+	CConsole::Print(utoa(CConsole::GetPitch(), _TempText, 10));
+	CConsole::Print(")\n");
 	
 	//Debug Output
 	
-	/*
+	
 	// Print HHDM offset
-	Console::Print("HHDM offset=0x");
-	Console::Print(htoa(Limine::GetHHDMResponse()->offset, _TempText));
-	Console::Print("\n");
+/* 	CConsole::Print("HHDM offset=0x");
+	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
+	CConsole::Print("\n"); */
 	
 	
 	// Print Framebuffer Address
-	Console::Print("Framebuffer Address=0x");
-	Console::Print(htoa((uint64_t)Limine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
-	Console::Print("\n");
+/* 	CConsole::Print("Framebuffer Address=0x");
+	CConsole::Print(htoa((uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
+	CConsole::Print("\n"); */
 	
 	// Print CR3 Address
-	Console::Print("CR3=0x");
-	Console::Print(htoa((uint64_t)Paging::GetPhysicalAddress(NULL), _TempText));
-	Console::Print("\n");
+/* 	CConsole::Print("CR3=0x");
+	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
+	CConsole::Print("\n"); */
+	
 	
 	// Print TSS Address
-	Console::Print("TSS=0x");
-	Console::Print(htoa((uint64_t)GDT::GetTSS(), _TempText));
-	Console::Print("\n");
-	*/
+/* 	CConsole::Print("TSS=0x");
+	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
+	CConsole::Print("\n"); */
 	
 	
-	Console::Print("Initializing GDT.........................");
-	_RetVal = GDT::Init();
+	
+	CConsole::Print("Initializing GDT.........................");
+	_RetVal = CGDT::Init();
 	if (IS_ERROR(_RetVal)) {
-		Console::Print("ERROR!\n");
+		CConsole::Print("ERROR!\n");
 		return _RetVal;
 	}
-	Console::Print("...OK!\n");
+	CConsole::Print("...OK!\n");
 	
-	Console::Print("Loading GDT..............................");
-	GDT::LoadGDT();
-	Console::Print("...OK!\n");
+	CConsole::Print("Loading GDT..............................");
+	CGDT::LoadGDT();
+	CConsole::Print("...OK!\n");
 
-	Console::Print("Loading TSS..............................");
-	GDT::LoadTSS();
-	Console::Print("...OK!\n");
+	CConsole::Print("Loading TSS..............................");
+	CGDT::LoadTSS();
+	CConsole::Print("...OK!\n");
 	
-	Console::Print("Initializing IDT.........................");
-	_RetVal = Interrupt::Init();
+	CConsole::Print("Initializing IDT.........................");
+	_RetVal = CInterrupt::Init();
 	if (IS_ERROR(_RetVal)) {
-		Console::Print("ERROR!\n");
+		CConsole::Print("ERROR!\n");
 		return _RetVal;
 	}
-	Console::Print("...OK!\n");
+	CConsole::Print("...OK!\n");
 
-	Console::Print("Loading IDT..............................");
-	Interrupt::LoadIDT();
-	Console::Print("...OK!\n");
+	CConsole::Print("Loading IDT..............................");
+	CInterrupt::LoadIDT();
+	CConsole::Print("...OK!\n");
 
 
 	// Testing Cariage Return
-/* 	Console::Print("Testing Carriage Return..................ERROR!");
-	Console::Print("\rTesting Carriage Return.....................OK!\n"); */
+/* 	CConsole::Print("Testing Carriage Return..................ERROR!");
+	CConsole::Print("\rTesting Carriage Return.....................OK!\n"); */
 	
 	// Testing tabulator
-	/* Console::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n"); */
+	/* CConsole::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n"); */
 	
 	
 	// Testing Handler
 /* 	for (uint64_t i = 0; i < 5; i++) {
-		Console::Print("Testing Handler 128...\n");
+		CConsole::Print("Testing Handler 128...\n");
 		asm volatile (
 			"int $0x80;\n"
 		);
 	} 
- 	Console::Print("Testing Handler 39...\n");
+ 	CConsole::Print("Testing Handler 39...\n");
 	asm volatile (
 		"int $0x27;\n"
 	);
 	 */
 	 
 	// Testing Page Fault Exception
-/* 	Console::Print("Testing Page Fault Exception.............");
+/* 	CConsole::Print("Testing Page Fault Exception.............");
 	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
 	uint64_t _test2 = *_test;
-	Console::Print("...OK!\n"); */
+	CConsole::Print("...OK!\n"); */
 	
 	// Testing PIC with PIT
-/* 	Interrupt::EnableInterrupts();
-	PIC::Unmask(0x00); */
+/* 	CInterrupt::EnableInterrupts();
+	CPIC::Unmask(0x00); */
 
 	
-	Console::Print("Done!\n");
+	
+	
+	// Test GetPhysicalAddress
+/* 	uint64_t _TestVirtualAddress = (uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address;
+	_TestVirtualAddress += 0x1234;
+	uint64_t _TestPhysicalAddress = 0;
+	CConsole::Print("Virtual 0x");
+	CConsole::Print(htoa(_TestVirtualAddress, _TempText));
+	_RetVal = CPaging::GetPhysicalAddress((void*)_TestVirtualAddress, (void**)&_TestPhysicalAddress);
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print("ERROR!\n");
+	} else {
+		CConsole::Print(" == Physical 0x");
+		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
+		CConsole::Print("\n");
+	} */
+	
+	
+	// Test global CTORs
+/* 	CConsole::Print("Global CTOR test=");
+	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
+	CConsole::Print("\n");
+
+	CConsole::Print("Global CTOR test=");
+	gCTORTest.PrintTest();
+	CConsole::Print("\n"); */
+
+	
+	CConsole::Print("Done!\n");
 	while (true) {
 		asm volatile ("hlt;\n");
 	}

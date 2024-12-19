@@ -33,10 +33,10 @@
 #define PIC_ICW4_SFNM				(0x10)
 
 
-class PIC {
+class CPIC {
 private:
-	PIC();
-	~PIC();
+	CPIC();
+	~CPIC();
 	
 	static uint8_t mOffset;
 	static uint64_t mSpuriousCount;

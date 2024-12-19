@@ -38,13 +38,23 @@
 *.img
 
 # ignore created cdrom structure
-iso/*
+iso/**
 
-# config files of virtual machines
-# Disabled so the user can get them as an example
-#/bochsrc
-#/qemu.sh
-#/qemu_uefi.sh
+# ignore automake generated files
+configure
+configure~
+compile
+depcomp
+install-sh
+missing
+config.h.in
+config.h.in~
+Makefile.in
+aclocal.m4
+autom4te.cache
 
 # Zone.Identifier files
 *.Zone.Identifier
+
+# ingnore build directory
+build
