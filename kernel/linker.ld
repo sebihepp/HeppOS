@@ -7,7 +7,8 @@ PHDRS
 	text		PT_LOAD;
 	rodata		PT_LOAD;
 	init_array	PT_LOAD;
-	data		PT_LOAD;	
+	data		PT_LOAD;
+	dynamic		PT_DYNAMIC;
 }
 
 SECTIONS
@@ -21,25 +22,17 @@ SECTIONS
 		*(.text.*)
 	} :text
 	
-	.preinit_array :
+	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		PREINIT_ARRAY_START = .;
 		KEEP(*(.preinit_array*))
-		PREINIT_ARRAY_END = .;	
-	} :text
-	
-	.init_array :
-	{
+		PREINIT_ARRAY_END = .;
+
 		INIT_ARRAY_START = .;
 		KEEP(*(SORT(.init_array.*)))
-		KEEP(*(.init_array))
-		KEEP(*(SORT(.ctors.*)))
-		KEEP(*(.ctors))	
-		INIT_ARRAY_END = .;
-	} :init_array
-	
-	.rodata BLOCK(4K) : ALIGN(4K)
-	{
+		KEEP(*(.init_array))	
+		PROVIDE(INIT_ARRAY_END = .);
+		
 		*(.rodata)
 		*(.rodata.*)
 		*(.eh_frame)

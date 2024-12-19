@@ -23,6 +23,7 @@ kernel_LDFLAGS = \
 
 kernel_SOURCES = \
 	src/boot.S \
+	src/init.cpp \
 	src/main.cpp \
 	src/cstub.cpp \
 	src/liminestub.cpp \

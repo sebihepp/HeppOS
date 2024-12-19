@@ -20,6 +20,31 @@ char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
+// For Testing global Constructors
+class CGlobalCTORTest {
+private:
+	volatile uint32_t mTest;
+
+public:
+	CGlobalCTORTest() {
+		mTest = 5;
+	};
+	~CGlobalCTORTest() {
+	};
+	
+	uint32_t GetTest(void) {
+		return mTest;
+	};
+	
+	void PrintTest(void) {
+		char _TempText[24];
+		CConsole::Print(itoa(mTest, _TempText, 10));
+	};
+	
+};
+
+CGlobalCTORTest gCTORTest;
+
 
 extern "C" uint32_t kmain(void) {
 
@@ -159,6 +184,16 @@ extern "C" uint32_t kmain(void) {
 		CConsole::Print("\n");
 	}
 	
+	
+	// Test global CTORs
+	CConsole::Print("Global CTOR test=");
+	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
+	CConsole::Print("\n");
+
+	CConsole::Print("Global CTOR test=");
+	gCTORTest.PrintTest();
+	CConsole::Print("\n");
+
 	
 	CConsole::Print("Done!\n");
 	while (true) {
