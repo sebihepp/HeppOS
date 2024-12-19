@@ -20,6 +20,7 @@ char* itoa(int num, char* str, int base);
 char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
+
 // For Testing global Constructors
 class CGlobalCTORTest {
 private:
@@ -83,26 +84,26 @@ extern "C" uint32_t kmain(void) {
 	
 	
 	// Print HHDM offset
-	CConsole::Print("HHDM offset=0x");
+/* 	CConsole::Print("HHDM offset=0x");
 	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
-	CConsole::Print("\n");
+	CConsole::Print("\n"); */
 	
 	
 	// Print Framebuffer Address
-	CConsole::Print("Framebuffer Address=0x");
+/* 	CConsole::Print("Framebuffer Address=0x");
 	CConsole::Print(htoa((uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
-	CConsole::Print("\n");
+	CConsole::Print("\n"); */
 	
 	// Print CR3 Address
-	CConsole::Print("CR3=0x");
+/* 	CConsole::Print("CR3=0x");
 	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
-	CConsole::Print("\n");
+	CConsole::Print("\n"); */
 	
 	
 	// Print TSS Address
-	CConsole::Print("TSS=0x");
+/* 	CConsole::Print("TSS=0x");
 	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
-	CConsole::Print("\n");
+	CConsole::Print("\n"); */
 	
 	
 	
@@ -170,7 +171,7 @@ extern "C" uint32_t kmain(void) {
 	
 	
 	// Test GetPhysicalAddress
-	uint64_t _TestVirtualAddress = (uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address;
+/* 	uint64_t _TestVirtualAddress = (uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address;
 	_TestVirtualAddress += 0x1234;
 	uint64_t _TestPhysicalAddress = 0;
 	CConsole::Print("Virtual 0x");
@@ -182,17 +183,17 @@ extern "C" uint32_t kmain(void) {
 		CConsole::Print(" == Physical 0x");
 		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
 		CConsole::Print("\n");
-	}
+	} */
 	
 	
 	// Test global CTORs
-	CConsole::Print("Global CTOR test=");
+/* 	CConsole::Print("Global CTOR test=");
 	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
 	CConsole::Print("\n");
 
 	CConsole::Print("Global CTOR test=");
 	gCTORTest.PrintTest();
-	CConsole::Print("\n");
+	CConsole::Print("\n"); */
 
 	
 	CConsole::Print("Done!\n");
