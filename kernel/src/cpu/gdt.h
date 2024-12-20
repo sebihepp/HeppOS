@@ -53,7 +53,7 @@
 struct GDTD_t {
 	uint16_t limit;
 	uint64_t base;
-}__attribute__((packed, aligned (8) ));
+}__attribute__(( packed, aligned (8) ));
 
 struct GDTEntry_t {
 	uint16_t limit_l;
@@ -63,7 +63,7 @@ struct GDTEntry_t {
 	uint8_t limit_h:4;
 	uint8_t flags:4;
 	uint8_t base_h;
-}__attribute__((packed, aligned (8) ));
+}__attribute__(( packed, aligned (8) ));
 
 struct GDTSystemEntry_t {
 	uint16_t limit_l;
@@ -75,7 +75,7 @@ struct GDTSystemEntry_t {
 	uint8_t base_h;
 	uint32_t base_vh;
 	uint32_t reserved;
-}__attribute__((packed, aligned (8) ));
+}__attribute__(( packed, aligned (8) ));
 
 struct TSS_t {
 	uint32_t reserved0;
@@ -93,7 +93,7 @@ struct TSS_t {
 	uint64_t reserved2;
 	uint16_t reserved3;
 	uint16_t IOPB_offset;
-}__attribute__((packed, aligned (8) ));
+}__attribute__(( packed ));
 
 
 class CGDT {
@@ -106,14 +106,14 @@ private:
 	static TSS_t mTaskStateSegment;
 	
 public:	
-	static ReturnValue_t Init(void);
+	static ReturnValue_t Init(void) __attribute__(( nothrow ));
 	
-	static void LoadGDT(void);
-	static void LoadTSS(void);
+	static void LoadGDT(void) __attribute__(( nothrow ));
+	static void LoadTSS(void) __attribute__(( nothrow ));
 	
-	static TSS_t *GetTSS(void);
+	static TSS_t *GetTSS(void) __attribute__(( const, nothrow ));
 	
-	static uint16_t GetSelector(uint64_t pSelector);
+	static uint16_t GetSelector(uint64_t pSelector) __attribute__(( const, nothrow ));
 };
 
 #endif

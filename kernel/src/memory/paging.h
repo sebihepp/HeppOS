@@ -123,15 +123,15 @@ private:
 	
 public:
 
-	static void *GetCR3(void);
+	static void *GetCR3(void) __attribute__ (( nothrow ));
 	
-	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void **pPhysicalAddress);
-	static PageLevel_t GetPageLevel(void *pVirtualAddress);
+	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void **pPhysicalAddress) __attribute__ (( nothrow ));
+	static PageLevel_t GetPageLevel(void *pVirtualAddress) __attribute__ (( nothrow ));
 	
-	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel);
+	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
 	
-	static const char *GetPageLevelString(PageLevel_t pPageLevel);
-	static const char *GetPageLevelString(void *pVirtualAddress);
+	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
+	static const char *GetPageLevelString(void *pVirtualAddress) __attribute__ (( nothrow ));
 	
 
 };

@@ -8,6 +8,7 @@
 #define MSR_PAT (0x277)
 #define MSR_EFER (0xC0000080)
 
+inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh) __attribute__(( nothrow, always_inline ));
 inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
 {
 	asm volatile 
@@ -21,6 +22,7 @@ inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
 
 }
 
+inline void ReadMSR(uint32_t pMSR, uint64_t *pData) __attribute__(( nothrow, always_inline ));
 inline void ReadMSR(uint32_t pMSR, uint64_t *pData)
 {
 	uint32_t _Low = 0;
@@ -30,7 +32,7 @@ inline void ReadMSR(uint32_t pMSR, uint64_t *pData)
 	*pData |= static_cast<uint64_t>(_High) << 32;
 }
 
-
+inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh) __attribute__(( nothrow, always_inline ));
 inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
 {
 	asm volatile 
@@ -45,6 +47,7 @@ inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
 	);	
 }
 
+inline void WriteMSR(uint32_t pMSR, uint64_t *pData) __attribute__(( nothrow, always_inline ));
 inline void WriteMSR(uint32_t pMSR, uint64_t *pData)
 {
 	uint32_t _Low = *pData & 0xFFFFFFFF;

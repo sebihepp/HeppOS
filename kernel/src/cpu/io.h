@@ -5,7 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-inline uint8_t inb(uint16_t pPort) {
+inline uint8_t inb(uint16_t pPort) __attribute__(( nothrow, always_inline ));
+inline uint8_t inb(uint16_t pPort)
+{
 	uint8_t _value = 0;
 	asm volatile (
 		"mov %1, %%dx;\n"
@@ -17,7 +19,9 @@ inline uint8_t inb(uint16_t pPort) {
 	return _value;
 }
 
-inline uint16_t inw(uint16_t pPort) {
+inline uint16_t inw(uint16_t pPort) __attribute__(( nothrow, always_inline ));
+inline uint16_t inw(uint16_t pPort)
+{
 	uint16_t _value = 0;
 	asm volatile (
 		"mov %1, %%dx;\n"
@@ -29,7 +33,9 @@ inline uint16_t inw(uint16_t pPort) {
 	return _value;
 }
 
-inline uint32_t inl(uint16_t pPort) {
+inline uint32_t inl(uint16_t pPort) __attribute__(( nothrow, always_inline ));
+inline uint32_t inl(uint16_t pPort)
+{
 	uint32_t _value = 0;
 	asm volatile (
 		"mov %1, %%dx;\n"
@@ -42,7 +48,9 @@ inline uint32_t inl(uint16_t pPort) {
 }
 
 
-inline void outb(uint16_t pPort, uint8_t pValue) {
+inline void outb(uint16_t pPort, uint8_t pValue) __attribute__(( nothrow, always_inline ));
+inline void outb(uint16_t pPort, uint8_t pValue)
+{
 	asm volatile (
 		"mov %0, %%al;\n"
 		"mov %1, %%dx;\n"
@@ -53,7 +61,9 @@ inline void outb(uint16_t pPort, uint8_t pValue) {
 	);
 }
 
-inline void outw(uint16_t pPort, uint16_t pValue) {
+inline void outw(uint16_t pPort, uint16_t pValue) __attribute__(( nothrow, always_inline ));
+inline void outw(uint16_t pPort, uint16_t pValue)
+{
 	asm volatile (
 		"mov %0, %%ax;\n"
 		"mov %1, %%dx;\n"
@@ -64,7 +74,9 @@ inline void outw(uint16_t pPort, uint16_t pValue) {
 	);
 }
 
-inline void outl(uint16_t pPort, uint32_t pValue) {
+inline void outl(uint16_t pPort, uint32_t pValue) __attribute__(( nothrow, always_inline ));
+inline void outl(uint16_t pPort, uint32_t pValue)
+{
 	asm volatile (
 		"mov %0, %%eax;\n"
 		"mov %1, %%dx;\n"

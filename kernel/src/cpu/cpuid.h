@@ -13,7 +13,7 @@ struct cpuid_retval_t
 	uint32_t edx;
 } __attribute__((packed));
 
-static inline void cpuid(uint32_t pCode, cpuid_retval_t &pRetval)
+static inline void cpuid(uint32_t pCode, cpuid_retval_t &pRetval)  __attribute__ (( nothrow, always_inline ))
 {
 	asm volatile 
 	(

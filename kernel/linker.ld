@@ -33,6 +33,11 @@ SECTIONS
 		KEEP(*(.init_array))	
 		PROVIDE(INIT_ARRAY_END = .);
 		
+		FINI_ARRAY_START = .;
+		KEEP(*(SORT(.fini_array.*)))
+		KEEP(*(.fini_array))	
+		PROVIDE(FINI_ARRAY_END = .);
+		
 		*(.rodata)
 		*(.rodata.*)
 		*(.eh_frame)

@@ -37,12 +37,12 @@ struct IDTEntry_t {
 	uint64_t offset_m:16;
 	uint64_t offset_h:32;
 	uint64_t reserved1:32;
-} __attribute__((packed)); 
+} __attribute__(( packed, aligned(8) )); 
 
 struct IDTD_t {
 	uint16_t size;
 	uint64_t offset;
-} __attribute__((packed)); 
+} __attribute__(( packed ));
 
 struct CPUState_t {
 	uint64_t r15;
@@ -70,7 +70,7 @@ struct CPUState_t {
 	uint64_t rflags;
 	uint64_t rsp;
 	uint64_t ss;
-} __attribute__((packed));
+} __attribute__(( packed ));
 
 
 
@@ -92,30 +92,30 @@ private:
 	
 	static uint64_t mInterruptCount[INTERRUPT_MAX_COUNT];
 	
-	static void SetIDTEntry(uint8_t pIndex, void *pAddress, uint8_t pType);
+	static void SetIDTEntry(uint8_t pIndex, void *pAddress, uint8_t pType) __attribute__(( nothrow ));
 	
-	friend void ISRHandler(uint64_t pInt, CPUState_t *pState);
-	friend void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
+	friend void ISRHandler(uint64_t pInt, CPUState_t *pState) __attribute__(( nothrow ));
+	friend void ExceptionHandler(uint64_t pInt, CPUState_t *pState) __attribute__(( nothrow ));
 	
-	static void PrintErrorCode(uint64_t pInt, uint64_t pErrorCode);
+	static void PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) __attribute__(( nothrow ));
 	
 public:
-	static ReturnValue_t Init(void);
+	static ReturnValue_t Init(void) __attribute__(( nothrow ));
 	
-	static void LoadIDT(void);
+	static void LoadIDT(void) __attribute__(( nothrow ));
 	
-	static inline void EnableInterrupts(void) {
+	static inline void EnableInterrupts(void) __attribute__(( nothrow, always_inline )) {
 		asm volatile ("sti;\n");
 	}
 	
-	static inline void DisableInterrupts(void) {
+	static inline void DisableInterrupts(void) __attribute__(( nothrow, always_inline )) {
 		asm volatile ("cli;\n");
 	}
 	
-	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler);	
-	static void UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler);
+	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler) __attribute__(( nothrow ));	
+	static void UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler) __attribute__(( nothrow ));
 	
-	static uint64_t GetInterruptCount(uint8_t pInt);
+	static uint64_t GetInterruptCount(uint8_t pInt) __attribute__(( nothrow ));
 	
 };
 
