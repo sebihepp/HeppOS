@@ -52,7 +52,7 @@ ReturnValue_t CGDT::Init(void) {
 	mGlobalDescriptorTable[GDT_DATA64].flags = GDT_FLAGS_GRANULARITY | GDT_FLAGS_64BIT;
 	mGlobalDescriptorTable[GDT_DATA64].base_h = 0;	
 	
-	// TSS
+	// TSS Entry
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->limit_l = sizeof(mTaskStateSegment) & 0xFFFF;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_l = reinterpret_cast<uint64_t>(&mTaskStateSegment) & 0xFFFF;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_m = (reinterpret_cast<uint64_t>(&mTaskStateSegment) >> 16) & 0xFF;
@@ -61,6 +61,19 @@ ReturnValue_t CGDT::Init(void) {
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->flags = GDT_FLAGS_GRANULARITY | GDT_FLAGS_64BIT;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_h = (reinterpret_cast<uint64_t>(&mTaskStateSegment) >> 24) & 0xFF;
 	((GDTSystemEntry_t*)&(mGlobalDescriptorTable[GDT_TSS]))->base_vh = (reinterpret_cast<uint64_t>(&mTaskStateSegment) >> 32) & 0xFFFFFFFF;
+	
+	// Setup TSS
+	mTaskStateSegment.RSP0 = 0;
+	mTaskStateSegment.RSP1 = 0;
+	mTaskStateSegment.RSP2 = 0;
+	mTaskStateSegment.IST1 = 0;
+	mTaskStateSegment.IST2 = 0;
+	mTaskStateSegment.IST3 = 0;
+	mTaskStateSegment.IST4 = 0;
+	mTaskStateSegment.IST5 = 0;
+	mTaskStateSegment.IST6 = 0;
+	mTaskStateSegment.IST7 = 0;
+	mTaskStateSegment.IOPB_offset = 104;
 	
 	
 	// GDTD

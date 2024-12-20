@@ -22,7 +22,7 @@ char *htoa(uint64_t num, char* str);
 
 
 // For Testing global Constructors
-class CGlobalCTORTest {
+/* class CGlobalCTORTest {
 private:
 	volatile uint32_t mTest;
 
@@ -31,6 +31,7 @@ public:
 		mTest = 5;
 	};
 	~CGlobalCTORTest() {
+		mTest = 2;
 	};
 	
 	uint32_t GetTest(void) {
@@ -44,10 +45,10 @@ public:
 	
 };
 
-CGlobalCTORTest gCTORTest;
+CGlobalCTORTest gCTORTest; */
 
-
-uint8_t gPagingMapTest[1024] __attribute__ ((aligned (1024)));
+// For Testing CPaging::MapAddress()
+/* uint8_t gPagingMapTest[1024] __attribute__ ((aligned (1024))); */
 
 extern "C" uint32_t kmain(void) {
 
@@ -244,11 +245,7 @@ extern "C" uint32_t kmain(void) {
 	} */
 	
 	
-	CConsole::Print("Done!\n");
-	while (true) {
-		asm volatile ("hlt;\n");
-	}
-	
+	CConsole::Print("Done!\n");	
 	return RETVAL_OK;
 }
 
