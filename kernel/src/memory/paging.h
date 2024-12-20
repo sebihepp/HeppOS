@@ -6,10 +6,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <limine.h>
-
 #include <retvals.h>
 
+enum PageLevel_t {
+	PAGELEVEL_UNKNOWN = 0,
+	PAGELEVEL_PML1,
+	PAGELEVEL_PML2,
+	PAGELEVEL_PML3,
+	PAGELEVEL_PML4,
+	PAGELEVEL_PML5,
+};
 
 struct PML4Entry_t {
 	uint64_t Present:1;
@@ -40,6 +46,7 @@ struct PML3Entry_t {
 	uint64_t Available3:11;
 	uint64_t ExecuteDisable:1;
 } __attribute__ ((packed));
+
 
 struct PML3Entry_1G_t {
 	uint64_t Present:1;
@@ -117,9 +124,15 @@ private:
 public:
 
 	static void *GetCR3(void);
-	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void **pPhysicalAddress);
 	
-
+	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void **pPhysicalAddress);
+	static PageLevel_t GetPageLevel(void *pVirtualAddress);
+	
+	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel);
+	
+	static const char *GetPageLevelString(PageLevel_t pPageLevel);
+	static const char *GetPageLevelString(void *pVirtualAddress);
+	
 
 };
 

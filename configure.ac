@@ -12,6 +12,7 @@ AC_CONFIG_LINKS([
 	qemu_debug.sh:qemu_debug.sh
 	qemu_uefi.sh:qemu_uefi.sh
 	qemu_uefi_debug.sh:qemu_uefi_debug.sh
+	bochsrc:bochsrc
 ])
 
 AC_CONFIG_FILES([

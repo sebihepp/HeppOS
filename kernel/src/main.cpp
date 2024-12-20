@@ -47,6 +47,8 @@ public:
 CGlobalCTORTest gCTORTest;
 
 
+uint8_t gPagingMapTest[1024] __attribute__ ((aligned (1024)));
+
 extern "C" uint32_t kmain(void) {
 
 	char _TempText[24];
@@ -154,8 +156,7 @@ extern "C" uint32_t kmain(void) {
  	CConsole::Print("Testing Handler 39...\n");
 	asm volatile (
 		"int $0x27;\n"
-	);
-	 */
+	);*/
 	 
 	// Testing Page Fault Exception
 /* 	CConsole::Print("Testing Page Fault Exception.............");
@@ -195,6 +196,60 @@ extern "C" uint32_t kmain(void) {
 	gCTORTest.PrintTest();
 	CConsole::Print("\n"); */
 
+	
+	// Test CPaging::GetPageLevel
+/* 	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
+	CConsole::Print("Virtual Address 0x");
+	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CConsole::Print(" has page level=");
+	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
+	CConsole::Print("\n");
+
+	_PageLevelTestVirtualAddress = (void*)CLimine::GetHHDMResponse()->offset;
+	CConsole::Print("Virtual Address 0x");
+	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CConsole::Print(" has page level=");
+	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
+	CConsole::Print("\n"); */
+	
+	
+	//Test CPaging::MapAddress
+/* 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
+	if (CPaging::GetPageLevel((void*)&gPagingMapTest) != PAGELEVEL_PML1) {
+		CConsole::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
+	} else {
+		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1);
+		if (IS_ERROR(_RetVal)) {
+			CConsole::Print("ERROR during mapping address!\n");
+			switch (_RetVal) {
+			
+				case RETVAL_ERROR_PAGE_NOT_PRESENT:
+					CConsole::Print("RETVAL_ERROR_PAGE_NOT_PRESENT!\n");
+					break;
+				case RETVAL_ERROR_INVALID_PAGELEVEL:
+					CConsole::Print("RETVAL_ERROR_INVALID_PAGELEVEL!\n");
+					break;
+				default:
+					break;
+			}
+			
+			return _RetVal;
+		}
+		
+		
+		// Check if mapping worked
+		CConsole::Print("Virtual 0x");
+		CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, (void**)&_PagingMapTestPhysicalAddress);
+		if (IS_ERROR(_RetVal)) {
+			CConsole::Print("ERROR!\n");
+		} else {
+			CConsole::Print(" == Physical 0x");
+			CConsole::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
+			CConsole::Print("\n");
+		} 
+	} */
+	
 	
 	CConsole::Print("Done!\n");
 	while (true) {
