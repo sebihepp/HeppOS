@@ -30,7 +30,7 @@ struct PML4Entry_t {
 	uint64_t Address:40;
 	uint64_t Available3:11;
 	uint64_t ExecuteDisable:1;
-} __attribute__ ((packed));
+} __attribute__ (( packed, aligned(8) ));
 
 struct PML3Entry_t {
 	uint64_t Present:1;
@@ -45,7 +45,7 @@ struct PML3Entry_t {
 	uint64_t Address:40;
 	uint64_t Available3:11;
 	uint64_t ExecuteDisable:1;
-} __attribute__ ((packed));
+} __attribute__ (( packed, aligned(8) ));
 
 
 struct PML3Entry_1G_t {
@@ -63,7 +63,7 @@ struct PML3Entry_1G_t {
 	uint64_t Address:40;
 	uint64_t Available2:11;
 	uint64_t ExecuteDisable:1;
-} __attribute__ ((packed));
+} __attribute__ (( packed, aligned(8) ));
 struct PML2Entry_t {
 	uint64_t Present:1;
 	uint64_t ReadWrite:1;
@@ -77,7 +77,7 @@ struct PML2Entry_t {
 	uint64_t Address:40;
 	uint64_t Available2:11;
 	uint64_t ExecuteDisable:1;
-} __attribute__ ((packed));
+} __attribute__ (( packed, aligned(8) ));
 
 struct PML2Entry_2M_t {
 	uint64_t Present:1;
@@ -94,7 +94,7 @@ struct PML2Entry_2M_t {
 	uint64_t Address:40;
 	uint64_t Available2:11;
 	uint64_t ExecuteDisable:1;
-} __attribute__ ((packed));
+} __attribute__ (( packed, aligned(8) ));
 
 struct PML1Entry_t {
 	uint64_t Present:1;
@@ -110,7 +110,7 @@ struct PML1Entry_t {
 	uint64_t Address:40;
 	uint64_t Available2:11;
 	uint64_t ExecuteDisable:1;
-} __attribute__ ((packed));
+} __attribute__ (( packed, aligned(8) ));
 
 
 
