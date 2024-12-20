@@ -17,6 +17,8 @@ enum PageLevel_t {
 	PAGELEVEL_PML5,
 };
 
+//////
+
 struct PML4Entry_t {
 	uint64_t Present:1;
 	uint64_t ReadWrite:1;
@@ -32,6 +34,12 @@ struct PML4Entry_t {
 	uint64_t ExecuteDisable:1;
 } __attribute__ (( packed, aligned(8) ));
 
+struct PML4_t {
+	PML4Entry_t Entry[512];
+} __attribute__ (( packed, aligned(1024) ));
+
+//////
+
 struct PML3Entry_t {
 	uint64_t Present:1;
 	uint64_t ReadWrite:1;
@@ -46,7 +54,6 @@ struct PML3Entry_t {
 	uint64_t Available3:11;
 	uint64_t ExecuteDisable:1;
 } __attribute__ (( packed, aligned(8) ));
-
 
 struct PML3Entry_1G_t {
 	uint64_t Present:1;
@@ -64,6 +71,16 @@ struct PML3Entry_1G_t {
 	uint64_t Available2:11;
 	uint64_t ExecuteDisable:1;
 } __attribute__ (( packed, aligned(8) ));
+
+struct PML3_t {
+	union {
+		PML3Entry_t Entry[512];
+		PML3Entry_1G_t Entry1G[512];
+	} __attribute__(( packed ));
+} __attribute__ (( packed, aligned(1024) ));
+
+//////
+
 struct PML2Entry_t {
 	uint64_t Present:1;
 	uint64_t ReadWrite:1;
@@ -96,6 +113,15 @@ struct PML2Entry_2M_t {
 	uint64_t ExecuteDisable:1;
 } __attribute__ (( packed, aligned(8) ));
 
+struct PML2_t {
+	union {
+		PML2Entry_t Entry[512];
+		PML2Entry_2M_t Entry2M[512];
+	} __attribute__(( packed ));
+} __attribute__ (( packed, aligned(1024) ));
+
+//////
+
 struct PML1Entry_t {
 	uint64_t Present:1;
 	uint64_t ReadWrite:1;
@@ -111,6 +137,10 @@ struct PML1Entry_t {
 	uint64_t Available2:11;
 	uint64_t ExecuteDisable:1;
 } __attribute__ (( packed, aligned(8) ));
+
+struct PML1_t {
+	PML1Entry_t Entry[512];
+} __attribute__ (( packed, aligned(1024) ));
 
 
 
