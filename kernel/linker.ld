@@ -25,7 +25,7 @@ SECTIONS
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		PREINIT_ARRAY_START = .;
-		KEEP(*(.preinit_array*))
+		KEEP(*(.preinit_array*)) 
 		PREINIT_ARRAY_END = .;
 
 		INIT_ARRAY_START = .;
