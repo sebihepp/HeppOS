@@ -27,6 +27,7 @@ kernel_SOURCES = \
 	src/main.cpp \
 	src/cstub.cpp \
 	src/liminestub.cpp \
+	src/retval.cpp \
 	\
 	src/video/stdfont.cpp \
 	src/video/console.cpp \

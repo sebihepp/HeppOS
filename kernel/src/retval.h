@@ -26,5 +26,6 @@ enum ReturnValue_t {
 #define IS_ERROR(x) ((x) != RETVAL_OK)
 #define IS_SUCCESS(x) ((x) == RETVAL_OK)
 
+const char *GetReturnValueString(const ReturnValue_t pReturnValue) __attribute__((const, nothrow));
 
 #endif

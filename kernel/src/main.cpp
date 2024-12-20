@@ -112,7 +112,8 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print("Initializing GDT.........................");
 	_RetVal = CGDT::Init();
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
 		return _RetVal;
 	}
 	CConsole::Print("...OK!\n");
@@ -128,7 +129,8 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print("Initializing IDT.........................");
 	_RetVal = CInterrupt::Init();
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
 		return _RetVal;
 	}
 	CConsole::Print("...OK!\n");
@@ -179,7 +181,8 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print(htoa(_TestVirtualAddress, _TempText));
 	_RetVal = CPaging::GetPhysicalAddress((void*)_TestVirtualAddress, (void**)&_TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
 	} else {
 		CConsole::Print(" == Physical 0x");
 		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
@@ -220,19 +223,8 @@ extern "C" uint32_t kmain(void) {
 	} else {
 		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1);
 		if (IS_ERROR(_RetVal)) {
-			CConsole::Print("ERROR during mapping address!\n");
-			switch (_RetVal) {
-			
-				case RETVAL_ERROR_PAGE_NOT_PRESENT:
-					CConsole::Print("RETVAL_ERROR_PAGE_NOT_PRESENT!\n");
-					break;
-				case RETVAL_ERROR_INVALID_PAGELEVEL:
-					CConsole::Print("RETVAL_ERROR_INVALID_PAGELEVEL!\n");
-					break;
-				default:
-					break;
-			}
-			
+			CConsole::Print(GetReturnValueString(_RetVal));
+			CConsole::Print("!\n");			
 			return _RetVal;
 		}
 		
@@ -242,7 +234,8 @@ extern "C" uint32_t kmain(void) {
 		CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
 		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, (void**)&_PagingMapTestPhysicalAddress);
 		if (IS_ERROR(_RetVal)) {
-			CConsole::Print("ERROR!\n");
+			CConsole::Print(GetReturnValueString(_RetVal));
+			CConsole::Print("!\n");
 		} else {
 			CConsole::Print(" == Physical 0x");
 			CConsole::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));

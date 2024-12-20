@@ -3,7 +3,6 @@
 #include <limine.h>
 
 #include <cstub.h>
-#include <retvals.h>
 
 GDTD_t CGDT::mGlobalDescriptorTableDescriptor;
 GDTEntry_t CGDT::mGlobalDescriptorTable[GDT_TOTAL_COUNT];
