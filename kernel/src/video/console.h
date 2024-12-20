@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 #include <limine.h>
-#include <retvals.h>
+#include <retval.h>
 
 struct VideoChar_t {
 	uint8_t a[16];

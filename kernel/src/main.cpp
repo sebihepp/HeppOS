@@ -7,7 +7,7 @@
 #include <liminestub.h>
 #include <cstub.h>
 
-#include <retvals.h>
+#include <retval.h>
 #include <video/console.h>
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>

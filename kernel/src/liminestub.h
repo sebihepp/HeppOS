@@ -8,7 +8,7 @@
 
 #include <limine.h>
 
-#include <retvals.h>
+#include <retval.h>
 
 class CLimine {
 private:

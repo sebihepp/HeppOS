@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <retvals.h>
+#include <retval.h>
 #include <cpu/interrupt.h>
 
 

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <retvals.h>
+#include <retval.h>
 
 #define INTERRUPT_MAX_COUNT (256)
 #define INTERRUPT_MAX_HANDLER (4)

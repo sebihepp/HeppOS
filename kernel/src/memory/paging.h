@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <retvals.h>
+#include <retval.h>
 
 enum PageLevel_t {
 	PAGELEVEL_UNKNOWN = 0,

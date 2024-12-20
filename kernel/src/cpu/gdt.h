@@ -8,7 +8,7 @@
 
 #include <limine.h>
 
-#include <retvals.h>
+#include <retval.h>
 
 #define GDT_ENTRY_SIZE				0x8
 #define GDT_SYSTEM_ENTRY_SIZE		0x10

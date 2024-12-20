@@ -1,6 +1,6 @@
 
-#ifndef RETVALS_HEADER
-#define RETVALS_HEADER
+#ifndef RETVAL_HEADER
+#define RETVAL_HEADER
 
 enum ReturnValue_t {
 	RETVAL_OK = 0,					
