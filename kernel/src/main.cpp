@@ -60,6 +60,11 @@ extern "C" uint32_t kmain(void) {
 		return _RetVal;
 	}
 		
+	_RetVal = CPaging::PreInit();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	
 	_RetVal = CConsole::Init(CLimine::GetFramebufferResponse());
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
@@ -87,26 +92,26 @@ extern "C" uint32_t kmain(void) {
 	
 	
 	// Print HHDM offset
-/* 	CConsole::Print("HHDM offset=0x");
+	CConsole::Print("HHDM offset=0x");
 	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
 	
 	
 	// Print Framebuffer Address
-/* 	CConsole::Print("Framebuffer Address=0x");
-	CConsole::Print(htoa((uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("Framebuffer Address=0x");
+	CConsole::Print(htoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText));
+	CConsole::Print("\n");
 	
 	// Print CR3 Address
-/* 	CConsole::Print("CR3=0x");
+	CConsole::Print("CR3=0x");
 	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
 	
 	
 	// Print TSS Address
-/* 	CConsole::Print("TSS=0x");
+	CConsole::Print("TSS=0x");
 	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
 	
 	
 	
@@ -175,7 +180,7 @@ extern "C" uint32_t kmain(void) {
 	
 	
 	// Test GetPhysicalAddress
-/* 	uint64_t _TestVirtualAddress = (uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address;
+	uint64_t _TestVirtualAddress = (uint64_t)CConsole::GetFramebufferAddress();
 	_TestVirtualAddress += 0x1234;
 	uint64_t _TestPhysicalAddress = 0;
 	CConsole::Print("Virtual 0x");
@@ -188,21 +193,21 @@ extern "C" uint32_t kmain(void) {
 		CConsole::Print(" == Physical 0x");
 		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
 		CConsole::Print("\n");
-	} */
+	}
 	
 	
 	// Test global CTORs
-/* 	CConsole::Print("Global CTOR test=");
+	CConsole::Print("Global CTOR test=");
 	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
 	CConsole::Print("\n");
 
 	CConsole::Print("Global CTOR test=");
 	gCTORTest.PrintTest();
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
 
 	
 	// Test CPaging::GetPageLevel
-/* 	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
+	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
 	CConsole::Print("Virtual Address 0x");
 	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
 	CConsole::Print(" has page level=");
@@ -214,11 +219,12 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
 	CConsole::Print(" has page level=");
 	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
 	
 	
 	//Test CPaging::MapAddress
-/* 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
+	CConsole::Print("Test: Mapping gPagingMapTest to 0x7000...\n");
+	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
 	if (CPaging::GetPageLevel((void*)&gPagingMapTest) != PAGELEVEL_PML1) {
 		CConsole::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
 	} else {
@@ -242,7 +248,7 @@ extern "C" uint32_t kmain(void) {
 			CConsole::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
 			CConsole::Print("\n");
 		} 
-	} */
+	}
 	
 	
 	CConsole::Print("Done!\n");	

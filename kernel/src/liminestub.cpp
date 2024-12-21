@@ -22,7 +22,7 @@ __attribute__((used, section(".requests"))) static volatile limine_paging_mode_r
 	.revision = 1,
 	.response = NULL,
 	.mode = LIMINE_PAGING_MODE_X86_64_4LVL,
-	.max_mode = LIMINE_PAGING_MODE_X86_64_4LVL,
+	.max_mode = LIMINE_PAGING_MODE_X86_64_5LVL,
 	.min_mode = LIMINE_PAGING_MODE_X86_64_4LVL
 };
 __attribute__((used, section(".requests"))) static volatile limine_module_request ModuleRequest = {
@@ -77,11 +77,6 @@ ReturnValue_t CLimine::Init(void) {
 	if (GetPagingModeResponse() == NULL) {
 		return RETVAL_ERROR_LIMINE_NULL_POINTER;
 	}	
-	
-	// Check for 4-Level-Paging
-	if (GetPagingModeResponse()->mode != LIMINE_PAGING_MODE_X86_64_4LVL) {
-		return RETVAL_ERROR_LIMINE_PAGING_MODE;
-	}
 	
 	return RETVAL_OK;
 }
