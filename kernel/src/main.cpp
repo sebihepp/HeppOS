@@ -21,6 +21,13 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
+extern "C" uint64_t kmain(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage0(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage1(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage2(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage3(void) __attribute__(( nothrow ));
+
+
 // For Testing global Constructors
 class CGlobalCTORTest {
 private:
@@ -50,46 +57,44 @@ CGlobalCTORTest gCTORTest;
 // For Testing CPaging::MapAddress()
 uint8_t gPagingMapTest[1024] __attribute__ ((aligned (1024)));
 
-extern "C" uint32_t kmain(void) {
+//////
+
+extern "C" uint64_t kmain(void) {
 
 	char _TempText[24];
 	ReturnValue_t _RetVal = RETVAL_OK;
 	
+	
+	// First check for correct limine protocol.
+	// Everything builds up from this
 	_RetVal = CLimine::Init();
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 		
-	_RetVal = CPaging::PreInit();
+	// Init Stages
+	_RetVal = InitStage0();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+
+	_RetVal = InitStage1();
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 	
-	_RetVal = CConsole::Init(CLimine::GetFramebufferResponse());
+	_RetVal = InitStage2();
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
-	
-	CConsole::SetFGColor(0x00AAAAAA);
-	CConsole::SetBGColor(0x00000000);
-	CConsole::SetTitleFGColor(0x0000FFFF);
-	CConsole::SetTitleBGColor(0x000000AA);
-	CConsole::SetTitleText("HeppOS");
-	CConsole::Clear();
-	
-	// Print Video Mode
-	CConsole::Print("Video Format: ");
-	CConsole::Print(utoa(CConsole::GetWidth(), _TempText, 10));
-	CConsole::Print("x");
-	CConsole::Print(utoa(CConsole::GetHeight(), _TempText, 10));
-	CConsole::Print("x");
-	CConsole::Print(utoa(CConsole::GetBPP(), _TempText, 10));
-	CConsole::Print(" (Pitch=");
-	CConsole::Print(utoa(CConsole::GetPitch(), _TempText, 10));
-	CConsole::Print(")\n");
+
+	_RetVal = InitStage3();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+
 	
 	//Debug Output
-	
 	
 	// Print HHDM offset
 	CConsole::Print("HHDM offset=0x");
@@ -112,72 +117,7 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print("TSS=0x");
 	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
 	CConsole::Print("\n");
-	
-	
-	
-	CConsole::Print("Initializing GDT.........................");
-	_RetVal = CGDT::Init();
-	if (IS_ERROR(_RetVal)) {
-		CConsole::Print(GetReturnValueString(_RetVal));
-		CConsole::Print("!\n");
-		return _RetVal;
-	}
-	CConsole::Print("...OK!\n");
-	
-	CConsole::Print("Loading GDT..............................");
-	CGDT::LoadGDT();
-	CConsole::Print("...OK!\n");
-
-	CConsole::Print("Loading TSS..............................");
-	CGDT::LoadTSS();
-	CConsole::Print("...OK!\n");
-	
-	CConsole::Print("Initializing IDT.........................");
-	_RetVal = CInterrupt::Init();
-	if (IS_ERROR(_RetVal)) {
-		CConsole::Print(GetReturnValueString(_RetVal));
-		CConsole::Print("!\n");
-		return _RetVal;
-	}
-	CConsole::Print("...OK!\n");
-
-	CConsole::Print("Loading IDT..............................");
-	CInterrupt::LoadIDT();
-	CConsole::Print("...OK!\n");
-
-
-	// Testing Cariage Return
-/* 	CConsole::Print("Testing Carriage Return..................ERROR!");
-	CConsole::Print("\rTesting Carriage Return.....................OK!\n"); */
-	
-	// Testing tabulator
-	/* CConsole::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n"); */
-	
-	
-	// Testing Handler
-/* 	for (uint64_t i = 0; i < 5; i++) {
-		CConsole::Print("Testing Handler 128...\n");
-		asm volatile (
-			"int $0x80;\n"
-		);
-	} 
- 	CConsole::Print("Testing Handler 39...\n");
-	asm volatile (
-		"int $0x27;\n"
-	);*/
-	 
-	// Testing Page Fault Exception
-/* 	CConsole::Print("Testing Page Fault Exception.............");
-	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
-	uint64_t _test2 = *_test;
-	CConsole::Print("...OK!\n"); */
-	
-	// Testing PIC with PIT
-/* 	CInterrupt::EnableInterrupts();
-	CPIC::Unmask(0x00); */
-
-	
-	
+		
 	
 	// Test GetPhysicalAddress
 	uint64_t _TestVirtualAddress = (uint64_t)CConsole::GetFramebufferAddress();
@@ -255,6 +195,110 @@ extern "C" uint32_t kmain(void) {
 	return RETVAL_OK;
 }
 
+//////
+
+ReturnValue_t InitStage0(void) {
+	
+	//char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
+	_RetVal = CPaging::PreInit();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	
+	
+	return RETVAL_OK;
+	
+}
+
+//////
+
+ReturnValue_t InitStage1(void) {
+
+	char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
+	_RetVal = CConsole::Init(CLimine::GetFramebufferResponse());
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	
+	CConsole::SetFGColor(0x00AAAAAA);
+	CConsole::SetBGColor(0x00000000);
+	CConsole::SetTitleFGColor(0x0000FFFF);
+	CConsole::SetTitleBGColor(0x000000AA);
+	CConsole::SetTitleText("HeppOS");
+	CConsole::Clear();
+	
+	// Print Video Mode
+	CConsole::Print("Video Format: ");
+	CConsole::Print(utoa(CConsole::GetWidth(), _TempText, 10));
+	CConsole::Print("x");
+	CConsole::Print(utoa(CConsole::GetHeight(), _TempText, 10));
+	CConsole::Print("x");
+	CConsole::Print(utoa(CConsole::GetBPP(), _TempText, 10));
+	CConsole::Print(" (Pitch=");
+	CConsole::Print(utoa(CConsole::GetPitch(), _TempText, 10));
+	CConsole::Print(")\n");
+	
+	return RETVAL_OK;
+	
+}
+
+//////
+
+ReturnValue_t InitStage2(void) {
+	
+	//char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
+	CConsole::Print("Initializing GDT.........................");
+	_RetVal = CGDT::Init();
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
+		return _RetVal;
+	}
+	CConsole::Print("...OK!\n");
+	
+	CConsole::Print("Loading GDT..............................");
+	CGDT::LoadGDT();
+	CConsole::Print("...OK!\n");
+
+	CConsole::Print("Loading TSS..............................");
+	CGDT::LoadTSS();
+	CConsole::Print("...OK!\n");
+	
+	return RETVAL_OK;
+	
+}
+
+//////
+
+ReturnValue_t InitStage3(void) {
+	
+	//char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
+	CConsole::Print("Initializing IDT.........................");
+	_RetVal = CInterrupt::Init();
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
+		return _RetVal;
+	}
+	CConsole::Print("...OK!\n");
+
+	CConsole::Print("Loading IDT..............................");
+	CInterrupt::LoadIDT();
+	CConsole::Print("...OK!\n");	
+	
+	return RETVAL_OK;
+	
+}
+
+//////
 
 void reverse(char str[], int length)
 {
