@@ -120,18 +120,18 @@ extern "C" uint64_t kmain(void) {
 		
 	
 	// Test GetPhysicalAddress
-	uint64_t _TestVirtualAddress = (uint64_t)CConsole::GetFramebufferAddress();
-	_TestVirtualAddress += 0x1234;
-	uint64_t _TestPhysicalAddress = 0;
+	void *_TestVirtualAddress = CConsole::GetFramebufferAddress();
+	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
+	void *_TestPhysicalAddress = NULL;
 	CConsole::Print("Virtual 0x");
-	CConsole::Print(htoa(_TestVirtualAddress, _TempText));
-	_RetVal = CPaging::GetPhysicalAddress((void*)_TestVirtualAddress, (void**)&_TestPhysicalAddress);
+	CConsole::Print(htoa((uint64_t)_TestVirtualAddress, _TempText));
+	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
 		CConsole::Print(GetReturnValueString(_RetVal));
 		CConsole::Print("!\n");
 	} else {
 		CConsole::Print(" == Physical 0x");
-		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
+		CConsole::Print(htoa((uint64_t)_TestPhysicalAddress, _TempText));
 		CConsole::Print("\n");
 	}
 	
@@ -165,7 +165,9 @@ extern "C" uint64_t kmain(void) {
 	//Test CPaging::MapAddress
 	CConsole::Print("Test: Mapping gPagingMapTest to 0x7000...\n");
 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
-	if (CPaging::GetPageLevel((void*)&gPagingMapTest) != PAGELEVEL_PML1) {
+	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
+	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
+	if (IS_ERROR(_RetVal) || (_PageLevel != PAGELEVEL_PML1)) {
 		CConsole::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
 	} else {
 		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1);
@@ -179,7 +181,7 @@ extern "C" uint64_t kmain(void) {
 		// Check if mapping worked
 		CConsole::Print("Virtual 0x");
 		CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
-		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, (void**)&_PagingMapTestPhysicalAddress);
+		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress);
 		if (IS_ERROR(_RetVal)) {
 			CConsole::Print(GetReturnValueString(_RetVal));
 			CConsole::Print("!\n");

@@ -237,8 +237,8 @@ public:
 	
 	static void *GetCR3(void) __attribute__ (( nothrow ));
 	
-	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void **pPhysicalAddress) __attribute__ (( nothrow ));
-	static PageLevel_t GetPageLevel(void *pVirtualAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
 	
 	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
 	
