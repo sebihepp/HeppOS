@@ -227,15 +227,18 @@ private:
 	CPaging();
 	~CPaging();
 
-	static bool IsInitial;
-	static bool UsesPML5;
-	static bool Supports1GPages;
+	static bool mIsInitial;
+	static bool mUsesPML5;
+	static bool mSupports1GPages;
+	
+	static void *mHHDMAddress;
 	
 public:
 
-	static ReturnValue_t PreInit(void);
+	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
 	
 	static void *GetCR3(void) __attribute__ (( nothrow ));
+	static void InvalidateAddress(void *pAddress) __attribute__ (( nothrow ));
 	
 	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) __attribute__ (( nothrow ));
 	static ReturnValue_t GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
