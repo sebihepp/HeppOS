@@ -15,7 +15,7 @@ bool CPaging::mUsesPML5 = false;
 bool CPaging::mSupports1GPages = false;
 void *CPaging::mHHDMAddress = NULL;
 
-void *CPaging::GetCR3(void) {
+/* void *CPaging::GetCR3(void) {
 	
 	void *_CR3 = NULL;
 	asm volatile (
@@ -26,9 +26,9 @@ void *CPaging::GetCR3(void) {
 	);
 	
 	return _CR3;
-}
+} */
 
-void CPaging::InvalidateAddress(void *pAddress) {
+/* void CPaging::InvalidateAddress(void *pAddress) {
 	
 	asm volatile (
 		"invlpg %0;\n"
@@ -37,7 +37,7 @@ void CPaging::InvalidateAddress(void *pAddress) {
 		:
 	);
 	
-}
+} */
 
 const char *CPaging::GetPageLevelString(void *pVirtualAddress) {
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
@@ -438,13 +438,13 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	return RETVAL_ERROR_PAGE_NOT_PRESENT;
 }
 
-bool CPaging::GetUsesPLM5(void) {
+/* bool CPaging::GetUsesPLM5(void) {
 	return mUsesPML5;
-}
+} */
 
-bool CPaging::GetSupports1GPages(void) {
+/* bool CPaging::GetSupports1GPages(void) {
 	return mSupports1GPages;
-}
+} */
 
 ReturnValue_t CPaging::PreInit(void) {
 

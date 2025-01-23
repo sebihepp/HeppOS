@@ -237,8 +237,25 @@ public:
 
 	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
 	
-	static void *GetCR3(void) __attribute__ (( nothrow ));
-	static void InvalidateAddress(void *pAddress) __attribute__ (( nothrow ));
+	static inline void *GetCR3(void) __attribute__ (( nothrow )) {
+		void *_CR3 = NULL;
+		asm volatile (
+			"movq %%cr3, %0;\n"
+			: "=a" (_CR3)
+			: 
+			:
+		);
+		return _CR3;
+	}
+	static inline void InvalidateAddress(void *pAddress) __attribute__ (( nothrow )) {
+		asm volatile (
+			"invlpg %0;\n"
+			:
+			: "m" (pAddress)
+			:
+		);	
+	}
+	
 	
 	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) __attribute__ (( nothrow ));
 	static ReturnValue_t GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
@@ -248,8 +265,13 @@ public:
 	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
 	static const char *GetPageLevelString(void *pVirtualAddress) __attribute__ (( nothrow ));
 	
-	static bool GetUsesPLM5(void) __attribute__ (( nothrow ));
-	static bool GetSupports1GPages(void) __attribute__ (( nothrow ));
+	static inline bool GetUsesPLM5(void) __attribute__ (( nothrow )) {
+		return mUsesPML5;
+	}
+	
+	static inline bool GetSupports1GPages(void) __attribute__ (( nothrow )) {
+		return mSupports1GPages;
+	}
 };
 
 
