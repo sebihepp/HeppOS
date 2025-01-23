@@ -25,13 +25,18 @@ SECTIONS
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		PREINIT_ARRAY_START = .;
-		KEEP(*(.preinit_array*))
+		KEEP(*(.preinit_array*)) 
 		PREINIT_ARRAY_END = .;
 
 		INIT_ARRAY_START = .;
 		KEEP(*(SORT(.init_array.*)))
 		KEEP(*(.init_array))	
 		PROVIDE(INIT_ARRAY_END = .);
+		
+		FINI_ARRAY_START = .;
+		KEEP(*(SORT(.fini_array.*)))
+		KEEP(*(.fini_array))	
+		PROVIDE(FINI_ARRAY_END = .);
 		
 		*(.rodata)
 		*(.rodata.*)

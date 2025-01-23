@@ -13,7 +13,7 @@ _kstart:
 	call kmain
 	
 	# Not necessary to call destructors, as the OS is dying if it reaches this point
-	# call _fini
+	call _fini
 	
 _error:
 	cli

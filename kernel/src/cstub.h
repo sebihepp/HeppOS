@@ -10,10 +10,10 @@
 extern "C" {
 #endif
 
-int32_t memcmp(const void*, const void*, size_t);
-void* memcpy(void*, const void*, size_t);
-void* memmove(void*, const void*, size_t);
-void* memset(void*, int, size_t);
+int32_t memcmp(const void*, const void*, size_t) __attribute__(( nothrow ));
+void* memcpy(void*, const void*, size_t) __attribute__(( nothrow ));
+void* memmove(void*, const void*, size_t) __attribute__(( nothrow ));
+void* memset(void*, int, size_t) __attribute__(( nothrow ));
 
 #ifdef __cplusplus
 }

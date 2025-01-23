@@ -9,7 +9,7 @@ iso:
 	mkdir -p iso/EFI
 	mkdir -p iso/EFI/BOOT
 	cp -v kernel/kernel iso/
-	cp -v $(top_srcdir)/kernel/limine.conf iso/
+	cp -v kernel/limine.conf iso/
 	cp -v "/usr/local/share/limine/limine-bios.sys" iso/boot/limine/
 	cp -v "/usr/local/share/limine/limine-bios-cd.bin" iso/boot/limine/
 	cp -v "/usr/local/share/limine/limine-uefi-cd.bin" iso/boot/limine/
@@ -34,4 +34,4 @@ img:
 	mformat -i HeppOS.img@@64M
 	mmd -i HeppOS.img@@64M ::/limine
 	mcopy -i HeppOS.img@@64M kernel/kernel ::/
-	mcopy -i HeppOS.img@@64M $(top_srcdir)/kernel/limine.conf ::/
+	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/

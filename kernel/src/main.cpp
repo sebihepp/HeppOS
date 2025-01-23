@@ -7,7 +7,7 @@
 #include <liminestub.h>
 #include <cstub.h>
 
-#include <retvals.h>
+#include <retval.h>
 #include <video/console.h>
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>
@@ -21,6 +21,13 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 
+extern "C" uint64_t kmain(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage0(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage1(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage2(void) __attribute__(( nothrow ));
+ReturnValue_t InitStage3(void) __attribute__(( nothrow ));
+
+
 // For Testing global Constructors
 class CGlobalCTORTest {
 private:
@@ -31,6 +38,7 @@ public:
 		mTest = 5;
 	};
 	~CGlobalCTORTest() {
+		mTest = 2;
 	};
 	
 	uint32_t GetTest(void) {
@@ -46,17 +54,173 @@ public:
 
 CGlobalCTORTest gCTORTest;
 
+// For Testing CPaging::MapAddress()
+uint8_t gPagingMapTest[1024] __attribute__ ((aligned (1024)));
 
-extern "C" uint32_t kmain(void) {
+//////
+
+extern "C" uint64_t kmain(void) {
 
 	char _TempText[24];
 	ReturnValue_t _RetVal = RETVAL_OK;
 	
+	
+	// First check for correct limine protocol.
+	// Everything builds up from this
 	_RetVal = CLimine::Init();
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 		
+	// Init Stages
+	_RetVal = InitStage0();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+
+	_RetVal = InitStage1();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	
+	_RetVal = InitStage2();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+
+	_RetVal = InitStage3();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+
+	
+	//Debug Output
+	
+	// Print HHDM offset
+	CConsole::Print("HHDM offset=0x");
+	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
+	CConsole::Print("\n");
+	
+	
+	// Print Framebuffer Address
+	CConsole::Print("Framebuffer Address=0x");
+	CConsole::Print(htoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText));
+	CConsole::Print("\n");
+	
+	// Print CR3 Address
+	CConsole::Print("CR3=0x");
+	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
+	CConsole::Print("\n");
+	
+	
+	// Print TSS Address
+	CConsole::Print("TSS=0x");
+	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
+	CConsole::Print("\n");
+		
+	
+	// Test GetPhysicalAddress
+	void *_TestVirtualAddress = CConsole::GetFramebufferAddress();
+	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
+	void *_TestPhysicalAddress = NULL;
+	CConsole::Print("Virtual 0x");
+	CConsole::Print(htoa((uint64_t)_TestVirtualAddress, _TempText));
+	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
+	} else {
+		CConsole::Print(" == Physical 0x");
+		CConsole::Print(htoa((uint64_t)_TestPhysicalAddress, _TempText));
+		CConsole::Print("\n");
+	}
+	
+	
+	// Test global CTORs
+	CConsole::Print("Global CTOR test=");
+	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
+	CConsole::Print("\n");
+
+	CConsole::Print("Global CTOR test=");
+	gCTORTest.PrintTest();
+	CConsole::Print("\n");
+
+	
+	// Test CPaging::GetPageLevel
+	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
+	CConsole::Print("Virtual Address 0x");
+	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CConsole::Print(" has page level=");
+	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
+	CConsole::Print("\n");
+
+	_PageLevelTestVirtualAddress = (void*)CLimine::GetHHDMResponse()->offset;
+	CConsole::Print("Virtual Address 0x");
+	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CConsole::Print(" has page level=");
+	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
+	CConsole::Print("\n");
+	
+	
+	//Test CPaging::MapAddress
+	CConsole::Print("Test: Mapping gPagingMapTest to 0x7000...\n");
+	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
+	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
+	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
+	if (IS_ERROR(_RetVal) || (_PageLevel != PAGELEVEL_PML1)) {
+		CConsole::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
+	} else {
+		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1);
+		if (IS_ERROR(_RetVal)) {
+			CConsole::Print(GetReturnValueString(_RetVal));
+			CConsole::Print("!\n");			
+			return _RetVal;
+		}
+		
+		
+		// Check if mapping worked
+		CConsole::Print("Virtual 0x");
+		CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress);
+		if (IS_ERROR(_RetVal)) {
+			CConsole::Print(GetReturnValueString(_RetVal));
+			CConsole::Print("!\n");
+		} else {
+			CConsole::Print(" == Physical 0x");
+			CConsole::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
+			CConsole::Print("\n");
+		} 
+	}
+	
+	
+	CConsole::Print("Done!\n");	
+	return RETVAL_OK;
+}
+
+//////
+
+ReturnValue_t InitStage0(void) {
+	
+	//char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
+	_RetVal = CPaging::PreInit();
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	
+	
+	return RETVAL_OK;
+	
+}
+
+//////
+
+ReturnValue_t InitStage1(void) {
+
+	char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
 	_RetVal = CConsole::Init(CLimine::GetFramebufferResponse());
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
@@ -80,37 +244,22 @@ extern "C" uint32_t kmain(void) {
 	CConsole::Print(utoa(CConsole::GetPitch(), _TempText, 10));
 	CConsole::Print(")\n");
 	
-	//Debug Output
+	return RETVAL_OK;
 	
+}
+
+//////
+
+ReturnValue_t InitStage2(void) {
 	
-	// Print HHDM offset
-/* 	CConsole::Print("HHDM offset=0x");
-	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
-	CConsole::Print("\n"); */
-	
-	
-	// Print Framebuffer Address
-/* 	CConsole::Print("Framebuffer Address=0x");
-	CConsole::Print(htoa((uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address, _TempText));
-	CConsole::Print("\n"); */
-	
-	// Print CR3 Address
-/* 	CConsole::Print("CR3=0x");
-	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
-	CConsole::Print("\n"); */
-	
-	
-	// Print TSS Address
-/* 	CConsole::Print("TSS=0x");
-	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
-	CConsole::Print("\n"); */
-	
-	
+	//char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
 	
 	CConsole::Print("Initializing GDT.........................");
 	_RetVal = CGDT::Init();
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
 		return _RetVal;
 	}
 	CConsole::Print("...OK!\n");
@@ -123,87 +272,35 @@ extern "C" uint32_t kmain(void) {
 	CGDT::LoadTSS();
 	CConsole::Print("...OK!\n");
 	
+	return RETVAL_OK;
+	
+}
+
+//////
+
+ReturnValue_t InitStage3(void) {
+	
+	//char _TempText[24];
+	ReturnValue_t _RetVal = RETVAL_OK;
+	
 	CConsole::Print("Initializing IDT.........................");
 	_RetVal = CInterrupt::Init();
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");
 		return _RetVal;
 	}
 	CConsole::Print("...OK!\n");
 
 	CConsole::Print("Loading IDT..............................");
 	CInterrupt::LoadIDT();
-	CConsole::Print("...OK!\n");
-
-
-	// Testing Cariage Return
-/* 	CConsole::Print("Testing Carriage Return..................ERROR!");
-	CConsole::Print("\rTesting Carriage Return.....................OK!\n"); */
-	
-	// Testing tabulator
-	/* CConsole::Print("Testing Tabulator...\tTEST\tTEST2\tTTT\tOK!\n"); */
-	
-	
-	// Testing Handler
-/* 	for (uint64_t i = 0; i < 5; i++) {
-		CConsole::Print("Testing Handler 128...\n");
-		asm volatile (
-			"int $0x80;\n"
-		);
-	} 
- 	CConsole::Print("Testing Handler 39...\n");
-	asm volatile (
-		"int $0x27;\n"
-	);
-	 */
-	 
-	// Testing Page Fault Exception
-/* 	CConsole::Print("Testing Page Fault Exception.............");
-	volatile uint64_t *_test = reinterpret_cast<uint64_t*>(0x123);
-	uint64_t _test2 = *_test;
-	CConsole::Print("...OK!\n"); */
-	
-	// Testing PIC with PIT
-/* 	CInterrupt::EnableInterrupts();
-	CPIC::Unmask(0x00); */
-
-	
-	
-	
-	// Test GetPhysicalAddress
-/* 	uint64_t _TestVirtualAddress = (uint64_t)CLimine::GetFramebufferResponse()->framebuffers[0]->address;
-	_TestVirtualAddress += 0x1234;
-	uint64_t _TestPhysicalAddress = 0;
-	CConsole::Print("Virtual 0x");
-	CConsole::Print(htoa(_TestVirtualAddress, _TempText));
-	_RetVal = CPaging::GetPhysicalAddress((void*)_TestVirtualAddress, (void**)&_TestPhysicalAddress);
-	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
-	} else {
-		CConsole::Print(" == Physical 0x");
-		CConsole::Print(htoa(_TestPhysicalAddress, _TempText));
-		CConsole::Print("\n");
-	} */
-	
-	
-	// Test global CTORs
-/* 	CConsole::Print("Global CTOR test=");
-	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
-	CConsole::Print("\n");
-
-	CConsole::Print("Global CTOR test=");
-	gCTORTest.PrintTest();
-	CConsole::Print("\n"); */
-
-	
-	CConsole::Print("Done!\n");
-	while (true) {
-		asm volatile ("hlt;\n");
-	}
+	CConsole::Print("...OK!\n");	
 	
 	return RETVAL_OK;
+	
 }
 
+//////
 
 void reverse(char str[], int length)
 {

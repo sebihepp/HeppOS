@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <retvals.h>
+#include <retval.h>
 #include <cpu/interrupt.h>
 
 
@@ -42,19 +42,19 @@ private:
 	static uint64_t mSpuriousCount;
 	
 public:
-	static ReturnValue_t Init(uint8_t pOffset);
+	static ReturnValue_t Init(uint8_t pOffset) __attribute__(( nothrow )) ;
 	
-	static void SendEOI(uint8_t pIntLine);
+	static void SendEOI(uint8_t pIntLine) __attribute__(( nothrow )) ;
 	
-	static void Mask(uint8_t pIntLine);
-	static void Unmask(uint8_t pIntLine);
-	static void MaskAll(void);
-	static void UnmaskAll(void);
+	static void Mask(uint8_t pIntLine) __attribute__(( nothrow )) ;
+	static void Unmask(uint8_t pIntLine) __attribute__(( nothrow )) ;
+	static void MaskAll(void) __attribute__(( nothrow )) ;
+	static void UnmaskAll(void) __attribute__(( nothrow )) ;
 	
-	static uint8_t GetOffset(void);
-	static uint8_t GetIntLineCount(void);
+	static uint8_t GetOffset(void) __attribute__(( nothrow )) ;
+	static uint8_t GetIntLineCount(void) __attribute__(( nothrow )) ;
 	
-	static uint64_t GetSpuriousCount(void);
+	static uint64_t GetSpuriousCount(void) __attribute__(( nothrow )) ;
 	
 };
 

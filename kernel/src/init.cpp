@@ -14,6 +14,8 @@ extern uint64_t INIT_ARRAY_END;
 
 typedef void (*Constructor_t)(void);
 
+void _init(void) __attribute(( nothrow ));
+
 void _init(void) {
 	
 	uint64_t *_Start = 0;

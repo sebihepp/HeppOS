@@ -24,9 +24,11 @@ kernel_LDFLAGS = \
 kernel_SOURCES = \
 	src/boot.S \
 	src/init.cpp \
+	src/fini.cpp \
 	src/main.cpp \
 	src/cstub.cpp \
 	src/liminestub.cpp \
+	src/retval.cpp \
 	\
 	src/video/stdfont.cpp \
 	src/video/console.cpp \

@@ -36,4 +36,8 @@ AC_CONFIG_FILES([
 	Makefile
 ])
 
+AC_CONFIG_LINKS([
+	limine.conf:limine.conf
+])
+
 AC_OUTPUT
