@@ -145,6 +145,7 @@ extern "C" uint64_t kmain(void) {
 	gCTORTest.PrintTest();
 	CConsole::Print("\n");
 
+	CConsole::ScrollDown(25);
 	
 	// Test CPaging::GetPageLevel
 	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	

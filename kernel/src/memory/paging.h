@@ -249,10 +249,10 @@ public:
 	}
 	static inline void InvalidateAddress(void *pAddress) __attribute__ (( nothrow )) {
 		asm volatile (
-			"invlpg %0;\n"
+			"invlpg (%0);\n"
 			:
-			: "m" (pAddress)
-			:
+			: "r" (pAddress)
+			: "memory"
 		);	
 	}
 	

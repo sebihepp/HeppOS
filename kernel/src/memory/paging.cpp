@@ -65,30 +65,33 @@ const char *CPaging::GetPageLevelString(PageLevel_t pPageLevel) {
 
 ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) {
 	
-	
+#ifdef _DEBUG
 	char _TempText[24];
+#endif
 	
 	uint32_t _PML5Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 48) & 0x1FF;
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML5Index=");
-	CConsole::Print(itoa(_PML5Index, _TempText, 10));
-	CConsole::Print("\n"); */	
 	uint32_t _PML4Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 39) & 0x1FF;
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML4Index=");
-	CConsole::Print(itoa(_PML4Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML3Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 30) & 0x1FF;
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML3Index=");
-	CConsole::Print(itoa(_PML3Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML2Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 21) & 0x1FF;
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML2Index=");
-	CConsole::Print(itoa(_PML2Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML1Index=");
+	
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPhysicalAddress() - _PML5Index=");
+	CConsole::Print(itoa(_PML5Index, _TempText, 10));
+	CConsole::Print("\n");
+ 	CConsole::Print("CPaging::GetPhysicalAddress() - _PML4Index=");
+	CConsole::Print(itoa(_PML4Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::GetPhysicalAddress() - _PML3Index=");
+	CConsole::Print(itoa(_PML3Index, _TempText, 10));
+	CConsole::Print("\n"); 
+	CConsole::Print("CPaging::GetPhysicalAddress() - _PML2Index=");
+	CConsole::Print(itoa(_PML2Index, _TempText, 10));
+	CConsole::Print("\n");
+ 	CConsole::Print("CPaging::GetPhysicalAddress() - _PML1Index=");
 	CConsole::Print(itoa(_PML1Index, _TempText, 10));
-	CConsole::Print("\n"); */
-
+	CConsole::Print("\n");
+#endif
 	
 	
 	volatile PML4_t *_PML4 = NULL;
@@ -97,16 +100,20 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMAddress));
-		/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML5=0x");
+
+#ifdef _DEBUG
+		CConsole::Print("CPaging::GetPhysicalAddress() - _PML5=0x");
 		CConsole::Print(htoa((uint64_t)_PML5, _TempText));
-		CConsole::Print("\n"); */
-		
+		CConsole::Print("\n"); 
+#endif
 		if (_PML5->Entry[_PML5Index].Present == 0) {
 			return RETVAL_ERROR_PAGE_NOT_PRESENT;
 		}
 		
 		if (_PML5->Entry[_PML5Index].PageSize) {
-			// CConsole::Print("CPaging::GetInitialPhysicalAddress() - 256T page size\n");
+#ifdef _DEBUG
+			CConsole::Print("CPaging::GetPhysicalAddress() - 256T page size\n");
+#endif
 			pPhysicalAddress = reinterpret_cast<void*>((reinterpret_cast<uintptr_t>(_PML5->Entry256T[_PML5Index].Address) << 48) &
 				(reinterpret_cast<uintptr_t>(pVirtualAddress) & 0xFFFFFFFFFFFF));
 			return RETVAL_OK;
@@ -120,15 +127,19 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 			reinterpret_cast<uintptr_t>(mHHDMAddress));
 	}
 	
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML4=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPhysicalAddress() - _PML4=0x");
 	CConsole::Print(htoa((uint64_t)_PML4, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
+#endif
 	if (_PML4->Entry[_PML4Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
 	
 	if (CPaging::GetUsesPLM5() && _PML4->Entry[_PML4Index].PageSize) {
-		// CConsole::Print("CPaging::GetInitialPhysicalAddress() - 512G page size\n");
+#ifdef _DEBUG
+		CConsole::Print("CPaging::GetPhysicalAddress() - 512G page size\n");
+#endif
 		pPhysicalAddress = reinterpret_cast<void*>((reinterpret_cast<uintptr_t>(_PML4->Entry512G[_PML4Index].Address) << 39) &
 			(reinterpret_cast<uintptr_t>(pVirtualAddress) & 0x7FFFFFFFFF));
 		return RETVAL_OK;
@@ -137,15 +148,19 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) +
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML3=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPhysicalAddress() - _PML3=0x");
 	CConsole::Print(htoa((uint64_t)_PML3, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n");
+#endif
 	if (_PML3->Entry[_PML3Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
 
 	if (_PML3->Entry[_PML3Index].PageSize) {
-		// CConsole::Print("CPaging::GetInitialPhysicalAddress() - 1G page size\n");
+#ifdef _DEBUG
+		CConsole::Print("CPaging::GetPhysicalAddress() - 1G page size\n");
+#endif
 		pPhysicalAddress = reinterpret_cast<void*>((reinterpret_cast<uintptr_t>(_PML3->Entry1G[_PML3Index].Address) << 30) &
 			(reinterpret_cast<uintptr_t>(pVirtualAddress) & 0x3FFFFFFF));
 		return RETVAL_OK;
@@ -154,15 +169,19 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML2=0x");
+#ifdef _DEBUG
+	CConsole::Print("CPaging::GetPhysicalAddress() - _PML2=0x");
 	CConsole::Print(htoa((uint64_t)_PML2, _TempText));
-	CConsole::Print("\n");	 */
+	CConsole::Print("\n");
+#endif
 	if (_PML2->Entry[_PML2Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
 	
 	if (_PML2->Entry[_PML2Index].PageSize) {
-		// CConsole::Print("CPaging::GetInitialPhysicalAddress() - 2M page size\n");
+#ifdef _DEBUG
+		CConsole::Print("CPaging::GetPhysicalAddress() - 2M page size\n");
+#endif
 		pPhysicalAddress = reinterpret_cast<void*>((reinterpret_cast<uintptr_t>(_PML2->Entry2M[_PML2Index].Address) << 21) &
 			(reinterpret_cast<uintptr_t>(pVirtualAddress) & 0x1FFFFF));
 		return RETVAL_OK;
@@ -170,14 +189,18 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) +
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("GetInitialPhysicalAddress() - _PML1=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPhysicalAddress() - _PML1=0x");
 	CConsole::Print(htoa((uint64_t)_PML1, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n"); 
+#endif
 	if (_PML1->Entry[_PML1Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
 	
-	// CConsole::Print("CPaging::GetInitialPhysicalAddress() - 4K page size\n");
+#ifdef _DEBUG
+	CConsole::Print("CPaging::GetPhysicalAddress() - 4K page size\n");
+#endif
 	pPhysicalAddress = reinterpret_cast<void*>((reinterpret_cast<uintptr_t>(_PML1->Entry[_PML1Index].Address) << 12) +
 		(reinterpret_cast<uintptr_t>(pVirtualAddress) & 0xFFF));
 	return RETVAL_OK;
@@ -186,6 +209,10 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 
 ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel) {
 	
+#ifdef _DEBUG
+	char _TempText[24];
+#endif
+
 	if (pPageLevel == PAGELEVEL_UNKNOWN) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
 	}
@@ -197,30 +224,30 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	if ((pPageLevel == PAGELEVEL_PML3) && (CPaging::GetSupports1GPages() == false)) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
 	}
-	
-	char _TempText[24];
+
 	uint32_t _PML5Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 48) & 0x1FF;
-/* 	CConsole::Print("MapInitialAddress() - _PML5Index=");
-	CConsole::Print(itoa(_PML5Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML4Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 39) & 0x1FF;
-/* 	CConsole::Print("MapInitialAddress() - _PML4Index=");
-	CConsole::Print(itoa(_PML4Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML3Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 30) & 0x1FF;
-/* 	CConsole::Print("MapInitialAddress() - _PML3Index=");
-	CConsole::Print(itoa(_PML3Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML2Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 21) & 0x1FF;
-/* 	CConsole::Print("MapInitialAddress() - _PML2Index=");
-	CConsole::Print(itoa(_PML2Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
-/* 	CConsole::Print("MapInitialAddress() - _PML1Index=");
+	
+#ifdef _DEBUG
+	CConsole::Print("CPaging::MapAddress() - _PML5Index=");
+	CConsole::Print(itoa(_PML5Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::MapAddress() - _PML4Index=");
+	CConsole::Print(itoa(_PML4Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::MapAddress() - _PML3Index=");
+	CConsole::Print(itoa(_PML3Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::MapAddress() - _PML2Index=");
+	CConsole::Print(itoa(_PML2Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::MapAddress() - _PML1Index=");
 	CConsole::Print(itoa(_PML1Index, _TempText, 10));
-	CConsole::Print("\n"); */
-	
-	
+	CConsole::Print("\n");
+#endif	
 	
 	volatile PML4_t *_PML4 = NULL;
 	
@@ -228,9 +255,11 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMAddress));
-		/* 	CConsole::Print("MapInitialAddress() - _PML5=0x");
+#ifdef _DEBUG
+		 CConsole::Print("CPaging::MapAddress() - _PML5=0x");
 		CConsole::Print(htoa((uint64_t)_PML5, _TempText));
-		CConsole::Print("\n"); */
+		CConsole::Print("\n"); 
+#endif
 		
 		if (_PML5->Entry[_PML5Index].Present == 0) {
 			return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -253,9 +282,11 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 			reinterpret_cast<uintptr_t>(mHHDMAddress));
 	}
 	
-/* 	CConsole::Print("MapInitialAddress() - _PML4=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::MapAddress() - _PML4=0x");
 	CConsole::Print(htoa((uint64_t)_PML4, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n"); 
+#endif
 	if (_PML4->Entry[_PML4Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
@@ -271,10 +302,11 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("MapInitialAddress() - _PML3=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::MapAddress() - _PML3=0x");
 	CConsole::Print(htoa((uint64_t)_PML3, _TempText));
-	CConsole::Print("\n");	 */
-	
+	CConsole::Print("\n");
+#endif
 	if (_PML3->Entry[_PML3Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
@@ -291,10 +323,11 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("MapInitialAddress() - _PML2=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::MapAddress() - _PML2=0x");
 	CConsole::Print(htoa((uint64_t)_PML2, _TempText));
-	CConsole::Print("\n");	 */
-	
+	CConsole::Print("\n");
+#endif
 	
 	if (_PML2->Entry[_PML2Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -312,10 +345,11 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("MapInitialAddress() - _PML1=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::MapAddress() - _PML1=0x");
 	CConsole::Print(htoa((uint64_t)_PML1, _TempText));
-	CConsole::Print("\n");	 */
-	
+	CConsole::Print("\n");
+#endif
 	if (_PML1->Entry[_PML1Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
@@ -332,30 +366,33 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 
 ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) {
 	
-	
+#ifdef _DEBUG	
 	char _TempText[24];
-	
+#endif	
+
 	uint32_t _PML5Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 48) & 0x1FF;
-/* 	CConsole::Print("GetInitialPageLevel() - _PML5Index=");
-	CConsole::Print(itoa(_PML5Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML4Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 39) & 0x1FF;
-/* 	CConsole::Print("GetInitialPageLevel() - _PML4Index=");
-	CConsole::Print(itoa(_PML4Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML3Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 30) & 0x1FF;
-/* 	CConsole::Print("GetInitialPageLevel() - _PML3Index=");
-	CConsole::Print(itoa(_PML3Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML2Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 21) & 0x1FF;
-/* 	CConsole::Print("GetInitialPageLevel() - _PML2Index=");
-	CConsole::Print(itoa(_PML2Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
-/* 	CConsole::Print("GetInitialPageLevel() - _PML1Index=");
-	CConsole::Print(itoa(_PML1Index, _TempText, 10));
-	CConsole::Print("\n"); */
 	
+#ifdef _DEBUG
+	CConsole::Print("CPaging::GetPageLevel() - _PML5Index=");
+	CConsole::Print(itoa(_PML5Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::GetPageLevel() - _PML4Index=");
+	CConsole::Print(itoa(_PML4Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::GetPageLevel() - _PML3Index=");
+	CConsole::Print(itoa(_PML3Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::GetPageLevel() - _PML2Index=");
+	CConsole::Print(itoa(_PML2Index, _TempText, 10));
+	CConsole::Print("\n");
+	CConsole::Print("CPaging::GetPageLevel() - _PML1Index=");
+	CConsole::Print(itoa(_PML1Index, _TempText, 10));
+	CConsole::Print("\n");
+#endif
 	
 	volatile PML4_t *_PML4 = NULL;
 	
@@ -363,10 +400,12 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) +
 			reinterpret_cast<uintptr_t>(mHHDMAddress));
-		/* 	CConsole::Print("GetInitialPageLevel() - _PML5=0x");
+#ifdef _DEBUG
+		CConsole::Print("CPaging::GetPageLevel() - _PML5=0x");
 		CConsole::Print(htoa((uint64_t)_PML5, _TempText));
-		CConsole::Print("\n"); */
-		
+		CConsole::Print("\n");
+#endif
+
 		pPageLevel = PAGELEVEL_PML5;
 		if (_PML5->Entry[_PML5Index].Present == 0) {
 			return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -383,9 +422,11 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 			reinterpret_cast<uintptr_t>(mHHDMAddress));
 	}
 	
-/* 	CConsole::Print("GetInitialPageLevel() - _PML4=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPageLevel() - _PML4=0x");
 	CConsole::Print(htoa((uint64_t)_PML4, _TempText));
-	CConsole::Print("\n"); */
+	CConsole::Print("\n"); 
+#endif
 	
 	pPageLevel = PAGELEVEL_PML4;
 	if (_PML4->Entry[_PML4Index].Present == 0) {
@@ -398,9 +439,11 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("GetInitialPageLevel() - _PML3=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPageLevel() - _PML3=0x");
 	CConsole::Print(htoa((uint64_t)_PML3, _TempText));
-	CConsole::Print("\n");	 */
+	CConsole::Print("\n");
+#endif
 	
 	pPageLevel = PAGELEVEL_PML3;
 	if (_PML3->Entry[_PML3Index].Present == 0) {
@@ -412,9 +455,11 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("GetInitialPageLevel() - _PML2=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPageLevel() - _PML2=0x");
 	CConsole::Print(htoa((uint64_t)_PML2, _TempText));
-	CConsole::Print("\n");	 */
+	CConsole::Print("\n");
+#endif
 	pPageLevel = PAGELEVEL_PML2;
 	
 	if (_PML2->Entry[_PML2Index].Present == 0) {
@@ -427,10 +472,11 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 		
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMAddress));
-/* 	CConsole::Print("GetInitialPageLevel() - _PML1=0x");
+#ifdef _DEBUG
+ 	CConsole::Print("CPaging::GetPageLevel() - _PML1=0x");
 	CConsole::Print(htoa((uint64_t)_PML1, _TempText));
-	CConsole::Print("\n");	 */
-	
+	CConsole::Print("\n");
+#endif
 	pPageLevel = PAGELEVEL_PML1;
 	if (_PML1->Entry[_PML1Index].Present)
 		return RETVAL_OK;
