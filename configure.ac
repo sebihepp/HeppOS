@@ -8,6 +8,7 @@ AM_INIT_AUTOMAKE([-Wall foreign])
 
 
 AC_CONFIG_LINKS([
+	gdb_qemu.sh:gdb_qemu.sh
 	qemu.sh:qemu.sh
 	qemu_debug.sh:qemu_debug.sh
 	qemu_uefi.sh:qemu_uefi.sh
