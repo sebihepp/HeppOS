@@ -19,9 +19,24 @@
 	pushq %r13
 	pushq %r14
 	pushq %r15
+	
+	xorq %rax, %rax
+	movw %ds, %ax
+	pushq %rax
+	movw %es, %ax
+	pushq %rax
+	pushq %fs
+	pushq %gs
 .endm
 
-.macro interrupt_restore
+.macro interrupt_restore	
+	popq %gs
+	popq %fs
+	popq %rax
+	movw %ax, %es
+	popq %rax
+	movw %ax, %ds
+	
 	popq %r15
 	popq %r14
 	popq %r13

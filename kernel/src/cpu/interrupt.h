@@ -45,6 +45,12 @@ struct IDTD_t {
 } __attribute__(( packed ));
 
 struct CPUState_t {
+	
+	uint64_t gs;
+	uint64_t fs;
+	uint64_t es;
+	uint64_t ds;
+	
 	uint64_t r15;
 	uint64_t r14;
 	uint64_t r13;
