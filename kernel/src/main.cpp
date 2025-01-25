@@ -55,7 +55,7 @@ public:
 CGlobalCTORTest gCTORTest;
 
 // For Testing CPaging::MapAddress()
-uint8_t gPagingMapTest[1024] __attribute__ ((aligned (1024)));
+uint8_t gPagingMapTest[4096] __attribute__ ((aligned (1024)));
 
 //////
 
@@ -145,7 +145,7 @@ extern "C" uint64_t kmain(void) {
 	gCTORTest.PrintTest();
 	CConsole::Print("\n");
 
-	CConsole::ScrollDown(25);
+	//CConsole::ScrollDown(25);
 	
 	// Test CPaging::GetPageLevel
 	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
@@ -164,7 +164,9 @@ extern "C" uint64_t kmain(void) {
 	
 	
 	//Test CPaging::MapAddress
-	CConsole::Print("Test: Mapping gPagingMapTest to 0x7000...\n");
+	CConsole::Print("Test: Mapping gPagingMapTest(");
+	CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+	CConsole::Print(") to 0x7000...\n");
 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
 	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
@@ -180,13 +182,13 @@ extern "C" uint64_t kmain(void) {
 		
 		
 		// Check if mapping worked
-		CConsole::Print("Virtual 0x");
-		CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
 		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress);
 		if (IS_ERROR(_RetVal)) {
 			CConsole::Print(GetReturnValueString(_RetVal));
 			CConsole::Print("!\n");
 		} else {
+			CConsole::Print("Virtual 0x");
+			CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
 			CConsole::Print(" == Physical 0x");
 			CConsole::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
 			CConsole::Print("\n");
