@@ -119,6 +119,11 @@ extern "C" uint64_t kmain(void) {
 	CConsole::Print("\n");
 		
 	
+	// Interrupt Test
+	//asm volatile ("int $0x20;\n");
+	// Exception Test
+	//asm volatile ("int $0x06;\n");
+	
 	// Test GetPhysicalAddress
 	void *_TestVirtualAddress = CConsole::GetFramebufferAddress();
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);

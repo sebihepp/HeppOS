@@ -302,6 +302,18 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	CConsole::Print("SS =0x");
 	CConsole::Print(htoa(pState->ss, _TempString));
 	CConsole::Print("\n");
+	CConsole::Print("DS =0x");
+	CConsole::Print(htoa(pState->ds, _TempString));
+	CConsole::Print("\n");
+	CConsole::Print("ES =0x");
+	CConsole::Print(htoa(pState->es, _TempString));
+	CConsole::Print("\n");
+	CConsole::Print("FS =0x");
+	CConsole::Print(htoa(pState->fs, _TempString));
+	CConsole::Print("\n");
+	CConsole::Print("GS =0x");
+	CConsole::Print(htoa(pState->gs, _TempString));
+	CConsole::Print("\n");
 	CConsole::Print("\n");
 
 
