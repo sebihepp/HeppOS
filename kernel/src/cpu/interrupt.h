@@ -105,10 +105,10 @@ private:
 	
 	static void PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) __attribute__(( nothrow ));
 	
+	static void LoadIDT(void) __attribute__(( nothrow ));
+		
 public:
 	static ReturnValue_t Init(void) __attribute__(( nothrow ));
-	
-	static void LoadIDT(void) __attribute__(( nothrow ));
 	
 	static inline void EnableInterrupts(void) __attribute__(( nothrow, always_inline )) {
 		asm volatile ("sti;\n");

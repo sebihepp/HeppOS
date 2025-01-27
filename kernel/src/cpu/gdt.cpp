@@ -80,6 +80,8 @@ ReturnValue_t CGDT::Init(void) {
 	mGlobalDescriptorTableDescriptor.base = reinterpret_cast<uint64_t>(mGlobalDescriptorTable);
 	mGlobalDescriptorTableDescriptor.limit = (GDT_TOTAL_COUNT * GDT_ENTRY_SIZE) - 1;
 	
+	LoadGDT();
+	LoadTSS();
 	
 	return RETVAL_OK; 
 }

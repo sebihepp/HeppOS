@@ -64,6 +64,13 @@ ReturnValue_t CInterrupt::Init(void) {
 	mIDTD.size = sizeof(mIDT) - 1;
 	mIDTD.offset = reinterpret_cast<uint64_t>(&mIDT);
 	
+	LoadIDT();
+	
+	EnableInterrupts();
+	
+	//Unmask cascade interrupt
+	CPIC::Unmask(2);
+	
 	return RETVAL_OK;
 }
 
@@ -117,24 +124,27 @@ extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState) {
 
 	//char _TempString[16];
 	
-	CInterrupt::mInterruptCount[pInt] += 1;
-	
 /* 	CConsole::Print("Interrupt ");
 	CConsole::Print(utoa(pInt, _TempString, 10));
 	CConsole::Print(" occured ");
 	CConsole::Print(utoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
 	CConsole::Print(" times!\n"); */
 	
+	CInterrupt::mInterruptCount[pInt] += 1;
+	
+	//Check for spurious interrupt and return if yes
+	if (CPIC::CheckSpurious(pInt)) {
+		CPIC::SendEOI(pInt);
+		return;
+	}
+	
 	for (uint64_t i = 0; i < INTERRUPT_MAX_HANDLER; i++) {
 		if (CInterrupt::mISRHandler[pInt][i] != NULL)
 			CInterrupt::mISRHandler[pInt][i](pInt, pState);
 	}
 	
-	if ((pInt >= CPIC::GetOffset()) && (pInt < (CPIC::GetOffset() + CPIC::GetIntLineCount()))) {
-		//Console::Print("EOI sent!\n");
-		CPIC::SendEOI(pInt - CPIC::GetOffset());
-	}
-
+	//Send EOI (CPIC will make sure it is only send if pInt is a PIC IRQ.
+	CPIC::SendEOI(pInt);
 }
 
 extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {

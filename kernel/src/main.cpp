@@ -272,16 +272,7 @@ ReturnValue_t InitStage2(void) {
 	}
 	CConsole::Print("...OK!\n");
 	
-	CConsole::Print("Loading GDT..............................");
-	CGDT::LoadGDT();
-	CConsole::Print("...OK!\n");
-
-	CConsole::Print("Loading TSS..............................");
-	CGDT::LoadTSS();
-	CConsole::Print("...OK!\n");
-	
 	return RETVAL_OK;
-	
 }
 
 //////
@@ -298,14 +289,9 @@ ReturnValue_t InitStage3(void) {
 		CConsole::Print("!\n");
 		return _RetVal;
 	}
-	CConsole::Print("...OK!\n");
-
-	CConsole::Print("Loading IDT..............................");
-	CInterrupt::LoadIDT();
 	CConsole::Print("...OK!\n");	
 	
 	return RETVAL_OK;
-	
 }
 
 //////
