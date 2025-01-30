@@ -34,6 +34,7 @@ kernel_SOURCES = \
 	src/video/console.cpp \
 	\
 	src/memory/paging.cpp \
+	src/memory/pmm.cpp \
 	\
 	src/cpu/gdt.cpp \
 	src/cpu/interrupt.cpp \

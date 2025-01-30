@@ -61,7 +61,10 @@ uint8_t gPagingMapTest[4096] __attribute__ ((aligned (1024)));
 
 extern "C" uint64_t kmain(void) {
 
+#ifdef _DEBUG
 	char _TempText[24];
+#endif
+
 	ReturnValue_t _RetVal = RETVAL_OK;
 	
 	
@@ -94,6 +97,7 @@ extern "C" uint64_t kmain(void) {
 	}
 
 	
+#ifdef _DEBUG
 	//Debug Output
 	
 	// Print HHDM offset
@@ -117,13 +121,16 @@ extern "C" uint64_t kmain(void) {
 	CConsole::Print("TSS=0x");
 	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
 	CConsole::Print("\n");
-		
+#endif
 	
+#ifdef _DEBUG
 	// Interrupt Test
 	//asm volatile ("int $0x20;\n");
 	// Exception Test
 	//asm volatile ("int $0x06;\n");
-	
+#endif
+
+#ifdef _DEBUG
 	// Test GetPhysicalAddress
 	void *_TestVirtualAddress = CConsole::GetFramebufferAddress();
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
@@ -139,8 +146,9 @@ extern "C" uint64_t kmain(void) {
 		CConsole::Print(htoa((uint64_t)_TestPhysicalAddress, _TempText));
 		CConsole::Print("\n");
 	}
+#endif	
 	
-	
+#ifdef _DEBUG
 	// Test global CTORs
 	CConsole::Print("Global CTOR test=");
 	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
@@ -149,9 +157,9 @@ extern "C" uint64_t kmain(void) {
 	CConsole::Print("Global CTOR test=");
 	gCTORTest.PrintTest();
 	CConsole::Print("\n");
-
-	//CConsole::ScrollDown(25);
+#endif
 	
+#ifdef _DEBUG
 	// Test CPaging::GetPageLevel
 	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
 	CConsole::Print("Virtual Address 0x");
@@ -166,8 +174,9 @@ extern "C" uint64_t kmain(void) {
 	CConsole::Print(" has page level=");
 	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
 	CConsole::Print("\n");
+#endif	
 	
-	
+#ifdef _DEBUG
 	//Test CPaging::MapAddress
 	CConsole::Print("Test: Mapping gPagingMapTest(");
 	CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
@@ -199,7 +208,7 @@ extern "C" uint64_t kmain(void) {
 			CConsole::Print("\n");
 		} 
 	}
-	
+#endif	
 	
 	CConsole::Print("Done!\n");	
 	return RETVAL_OK;

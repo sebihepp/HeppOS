@@ -35,8 +35,8 @@
 
 class CPIC {
 private:
-	CPIC();
-	~CPIC();
+	CPIC() = delete;
+	~CPIC() = delete;
 	
 	static uint8_t mOffset;
 	static uint64_t mSpuriousCount;

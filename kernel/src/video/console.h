@@ -64,8 +64,8 @@ private:
 	static void (*mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color);
 	
 	
-	CConsole();
-	~CConsole();
+	CConsole() = delete;
+	~CConsole() = delete;
 	
 public:	
 	static ReturnValue_t Init(const limine_framebuffer_response *pLFBInfo) __attribute__ (( nothrow ));

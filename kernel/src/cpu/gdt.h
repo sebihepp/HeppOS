@@ -98,8 +98,8 @@ struct TSS_t {
 
 class CGDT {
 private:
-	CGDT();
-	~CGDT();
+	CGDT() = delete;
+	~CGDT() = delete;
 	
 	static GDTD_t mGlobalDescriptorTableDescriptor;
 	static GDTEntry_t mGlobalDescriptorTable[GDT_TOTAL_COUNT];

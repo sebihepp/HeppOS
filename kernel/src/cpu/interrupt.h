@@ -88,8 +88,8 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 
 class CInterrupt {
 private:
-	CInterrupt();
-	~CInterrupt();
+	CInterrupt() = delete;
+	~CInterrupt() = delete;
 
 	static ISRHandler_t mISRHandler[INTERRUPT_MAX_COUNT][INTERRUPT_MAX_HANDLER];
 	

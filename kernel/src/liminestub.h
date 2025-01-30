@@ -12,8 +12,8 @@
 
 class CLimine {
 private:
-	CLimine();
-	~CLimine();	
+	CLimine() = delete;
+	~CLimine() = delete;	
 	
 public:
 

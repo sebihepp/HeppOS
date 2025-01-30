@@ -9,14 +9,6 @@ GDTEntry_t CGDT::mGlobalDescriptorTable[GDT_TOTAL_COUNT];
 TSS_t CGDT::mTaskStateSegment;
 
 
-CGDT::CGDT() {
-	
-}
-
-CGDT::~CGDT() {
-	
-}
-
 ReturnValue_t CGDT::Init(void) {
 
 	memset(mGlobalDescriptorTable, 0, GDT_TOTAL_COUNT * GDT_ENTRY_SIZE);
