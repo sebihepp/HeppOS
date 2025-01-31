@@ -231,7 +231,7 @@ private:
 	static bool mUsesPML5;
 	static bool mSupports1GPages;
 	
-	static void *mHHDMAddress;
+	static void *mHHDMOffset;
 	
 public:
 
@@ -256,16 +256,20 @@ public:
 		);	
 	}
 	
+	static inline void *GetHHDMOffset(void) __attribute__ (( nothrow )) {
+		return mHHDMOffset;
+	}
 	
 	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) __attribute__ (( nothrow ));
 	static ReturnValue_t GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
 	
 	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
+	static ReturnValue_t UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
 	
 	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
 	static const char *GetPageLevelString(void *pVirtualAddress) __attribute__ (( nothrow ));
 	
-	static inline bool GetUsesPLM5(void) __attribute__ (( nothrow )) {
+	static inline bool GetUsesPML5(void) __attribute__ (( nothrow )) {
 		return mUsesPML5;
 	}
 	

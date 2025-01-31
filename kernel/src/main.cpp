@@ -55,7 +55,7 @@ public:
 CGlobalCTORTest gCTORTest;
 
 // For Testing CPaging::MapAddress()
-uint8_t gPagingMapTest[4096] __attribute__ ((aligned (1024)));
+volatile uint8_t gPagingMapTest[4096] __attribute__ ((aligned (1024)));
 
 //////
 
@@ -102,7 +102,7 @@ extern "C" uint64_t kmain(void) {
 	
 	// Print HHDM offset
 	CConsole::Print("HHDM offset=0x");
-	CConsole::Print(htoa(CLimine::GetHHDMResponse()->offset, _TempText));
+	CConsole::Print(htoa((uint64_t)CPaging::GetHHDMOffset(), _TempText));
 	CConsole::Print("\n");
 	
 	
@@ -168,7 +168,7 @@ extern "C" uint64_t kmain(void) {
 	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
 	CConsole::Print("\n");
 
-	_PageLevelTestVirtualAddress = (void*)CLimine::GetHHDMResponse()->offset;
+	_PageLevelTestVirtualAddress = CPaging::GetHHDMOffset();
 	CConsole::Print("Virtual Address 0x");
 	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
 	CConsole::Print(" has page level=");
@@ -208,6 +208,25 @@ extern "C" uint64_t kmain(void) {
 			CConsole::Print("\n");
 		} 
 	}
+	
+	// Test UnmapAddress
+	CConsole::Print("Test: Mapping gPagingMapTest(");
+	CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+	CConsole::Print(") to 0x7000...\n");
+	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print("ERROR: UnmapAddress failed!\n");
+		CConsole::Print(GetReturnValueString(_RetVal));
+		CConsole::Print("!\n");			
+		return _RetVal;
+	} else {
+		CConsole::Print("UnmapAddress successful!");
+		
+		CConsole::Print("Testing Access to unmapped page (should result in a #PF)...\n");
+		gPagingMapTest[0] = 5;
+		CConsole::Print("If you see this, then UnmapAddress() has a bug!\n");
+	}
+		
 #endif	
 	
 	CConsole::Print("Done!\n");	
