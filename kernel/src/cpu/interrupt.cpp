@@ -68,8 +68,8 @@ ReturnValue_t CInterrupt::Init(void) {
 	
 	EnableInterrupts();
 	
-	//Unmask cascade interrupt
-	CPIC::Unmask(2);
+	//Unmask all
+	CPIC::UnmaskAll();
 	
 	return RETVAL_OK;
 }
