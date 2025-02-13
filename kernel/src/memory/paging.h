@@ -222,6 +222,15 @@ struct PML1_t {
 
 
 
+enum CachType_t {
+	CACHETYPE_WRITEBACK = 0,
+	CACHETYPE_WRITETHROUGH = 1,
+	CACHETYPE_UNCACHED = 2,
+	CACHETYPE_UNCACHABLE = 3,
+	CACHETYPE_WRITEPROTECT = 4,
+	CACHETYPE_WRITECOMBINING = 5,
+};
+
 class CPaging {
 private:
 	CPaging();
@@ -263,7 +272,8 @@ public:
 	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) __attribute__ (( nothrow ));
 	static ReturnValue_t GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
 	
-	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
+	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel, CachType_t pCacheType, 
+		bool pGlobal, bool pExecuteDisable, bool pUser) __attribute__ (( nothrow ));
 	static ReturnValue_t UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
 	
 	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));

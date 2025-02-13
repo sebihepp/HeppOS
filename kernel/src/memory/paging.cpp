@@ -207,7 +207,8 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	
 }
 
-ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel) {
+ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel, CachType_t pCacheType, 
+		bool pGlobal, bool pExecuteDisable, bool pUser) {
 	
 #ifdef _DEBUG
 	char _TempText[24];
@@ -256,7 +257,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
-		 CConsole::Print("CPaging::MapAddress() - _PML5=0x");
+		CConsole::Print("CPaging::MapAddress() - _PML5=0x");
 		CConsole::Print(htoa((uint64_t)_PML5, _TempText));
 		CConsole::Print("\n"); 
 #endif
@@ -271,6 +272,12 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 			
 			_PML5->Entry256T[_PML5Index].Address = reinterpret_cast<uint64_t>(reinterpret_cast<uintptr_t>(pPhysicalAddress) >> 48);
 			_PML5->Entry256T[_PML5Index].Present = 1;
+			_PML5->Entry256T[_PML5Index].Global = (pGlobal) ? 1 : 0;
+			_PML5->Entry256T[_PML5Index].ExecuteDisable = (pExecuteDisable) ? 1 : 0;
+			_PML5->Entry256T[_PML5Index].NotSupervisor = (pUser) ? 1 : 0;
+			_PML5->Entry256T[_PML5Index].WriteThrough = (pCacheType & 0x1) ? 1 : 0;
+			_PML5->Entry256T[_PML5Index].CacheDisable = (pCacheType & 0x2) ? 1 : 0;
+			_PML5->Entry256T[_PML5Index].PAT = (pCacheType & 0x4) ? 1 : 0;
 			InvalidateAddress(pVirtualAddress);
 			return RETVAL_OK;
 		}
@@ -294,8 +301,14 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 		if (pPageLevel != PAGELEVEL_PML4)
 			return RETVAL_ERROR_INVALID_PAGELEVEL;
 		
-		_PML4->Entry512G[_PML3Index].Address = reinterpret_cast<uint64_t>(reinterpret_cast<uintptr_t>(pPhysicalAddress) >> 39);
-		_PML4->Entry512G[_PML3Index].Present = 1;
+		_PML4->Entry512G[_PML4Index].Address = reinterpret_cast<uint64_t>(reinterpret_cast<uintptr_t>(pPhysicalAddress) >> 39);
+		_PML4->Entry512G[_PML4Index].Present = 1;
+		_PML4->Entry512G[_PML4Index].Global = (pGlobal) ? 1 : 0;
+		_PML4->Entry512G[_PML4Index].ExecuteDisable = (pExecuteDisable) ? 1 : 0;
+		_PML4->Entry512G[_PML4Index].NotSupervisor = (pUser) ? 1 : 0;
+		_PML4->Entry512G[_PML4Index].WriteThrough = (pCacheType & 0x1) ? 1 : 0;
+		_PML4->Entry512G[_PML4Index].CacheDisable = (pCacheType & 0x2) ? 1 : 0;
+		_PML4->Entry512G[_PML4Index].PAT = (pCacheType & 0x4) ? 1 : 0;
 		InvalidateAddress(pVirtualAddress);
 		return RETVAL_OK;
 	}
@@ -317,6 +330,12 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 		
 		_PML3->Entry1G[_PML3Index].Address = reinterpret_cast<uint64_t>(reinterpret_cast<uintptr_t>(pPhysicalAddress) >> 30);
 		_PML3->Entry1G[_PML3Index].Present = 1;
+		_PML3->Entry1G[_PML3Index].Global = (pGlobal) ? 1 : 0;
+		_PML3->Entry1G[_PML3Index].ExecuteDisable = (pExecuteDisable) ? 1 : 0;
+		_PML3->Entry1G[_PML3Index].NotSupervisor = (pUser) ? 1 : 0;
+		_PML3->Entry1G[_PML3Index].WriteThrough = (pCacheType & 0x1) ? 1 : 0;
+		_PML3->Entry1G[_PML3Index].CacheDisable = (pCacheType & 0x2) ? 1 : 0;
+		_PML3->Entry1G[_PML3Index].PAT = (pCacheType & 0x4) ? 1 : 0;
 		InvalidateAddress(pVirtualAddress);
 		return RETVAL_OK;
 	}
@@ -338,6 +357,12 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 		
 		_PML2->Entry2M[_PML2Index].Address = reinterpret_cast<uint64_t>(reinterpret_cast<uintptr_t>(pPhysicalAddress) >> 21);
 		_PML2->Entry2M[_PML2Index].Present = 1;
+		_PML2->Entry2M[_PML2Index].Global = (pGlobal) ? 1 : 0;
+		_PML2->Entry2M[_PML2Index].ExecuteDisable = (pExecuteDisable) ? 1 : 0;
+		_PML2->Entry2M[_PML2Index].NotSupervisor = (pUser) ? 1 : 0;
+		_PML2->Entry2M[_PML2Index].WriteThrough = (pCacheType & 0x1) ? 1 : 0;
+		_PML2->Entry2M[_PML2Index].CacheDisable = (pCacheType & 0x2) ? 1 : 0;
+		_PML2->Entry2M[_PML2Index].PAT = (pCacheType & 0x4) ? 1 : 0;
 		InvalidateAddress(pVirtualAddress);
 		return RETVAL_OK;
 	}
@@ -358,6 +383,12 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	
 	_PML1->Entry[_PML1Index].Address = reinterpret_cast<uint64_t>(reinterpret_cast<uintptr_t>(pPhysicalAddress) >> 12);
 	_PML1->Entry[_PML1Index].Present = 1;
+	_PML1->Entry[_PML1Index].Global = (pGlobal) ? 1 : 0;
+	_PML1->Entry[_PML1Index].ExecuteDisable = (pExecuteDisable) ? 1 : 0;
+	_PML1->Entry[_PML1Index].NotSupervisor = (pUser) ? 1 : 0;
+	_PML1->Entry[_PML1Index].WriteThrough = (pCacheType & 0x1) ? 1 : 0;
+	_PML1->Entry[_PML1Index].CacheDisable = (pCacheType & 0x2) ? 1 : 0;
+	_PML1->Entry[_PML1Index].PAT = (pCacheType & 0x4) ? 1 : 0;
 	InvalidateAddress(pVirtualAddress);
 	
 	return RETVAL_OK;
@@ -449,7 +480,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 		if (pPageLevel != PAGELEVEL_PML4)
 			return RETVAL_ERROR_INVALID_PAGELEVEL;
 		
-		_PML4->Entry512G[_PML3Index].Present = 0;
+		_PML4->Entry512G[_PML4Index].Present = 0;
 		InvalidateAddress(pVirtualAddress);
 		return RETVAL_OK;
 	}
@@ -457,7 +488,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CConsole::Print("CPaging::UnnmapAddress() - _PML3=0x");
+ 	CConsole::Print("CPaging::UnmapAddress() - _PML3=0x");
 	CConsole::Print(htoa((uint64_t)_PML3, _TempText));
 	CConsole::Print("\n");
 #endif

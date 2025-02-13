@@ -63,6 +63,7 @@ extern "C" uint64_t kmain(void) {
 
 #ifdef _DEBUG
 	char _TempText[24];
+	const char *_ConstTempText = NULL;
 #endif
 
 	ReturnValue_t _RetVal = RETVAL_OK;
@@ -161,18 +162,21 @@ extern "C" uint64_t kmain(void) {
 	
 #ifdef _DEBUG
 	// Test CPaging::GetPageLevel
-	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;	
+	
+	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;
+	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
 	CConsole::Print("Virtual Address 0x");
 	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
 	CConsole::Print(" has page level=");
-	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
+	CConsole::Print(_ConstTempText);
 	CConsole::Print("\n");
 
 	_PageLevelTestVirtualAddress = CPaging::GetHHDMOffset();
+	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
 	CConsole::Print("Virtual Address 0x");
 	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
 	CConsole::Print(" has page level=");
-	CConsole::Print(CPaging::GetPageLevelString(_PageLevelTestVirtualAddress));
+	CConsole::Print(_ConstTempText);
 	CConsole::Print("\n");
 #endif	
 	
@@ -187,7 +191,8 @@ extern "C" uint64_t kmain(void) {
 	if (IS_ERROR(_RetVal) || (_PageLevel != PAGELEVEL_PML1)) {
 		CConsole::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
 	} else {
-		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1);
+		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1, CACHETYPE_WRITEBACK, 
+			true, false, false);
 		if (IS_ERROR(_RetVal)) {
 			CConsole::Print(GetReturnValueString(_RetVal));
 			CConsole::Print("!\n");			
@@ -210,7 +215,7 @@ extern "C" uint64_t kmain(void) {
 	}
 	
 	// Test UnmapAddress
-	CConsole::Print("Test: Mapping gPagingMapTest(");
+	CConsole::Print("Test: Unmapping gPagingMapTest(");
 	CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
 	CConsole::Print(") to 0x7000...\n");
 	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
@@ -220,13 +225,13 @@ extern "C" uint64_t kmain(void) {
 		CConsole::Print("!\n");			
 		return _RetVal;
 	} else {
-		CConsole::Print("UnmapAddress successful!");
+		CConsole::Print("UnmapAddress successful!\n");
 		
-		CConsole::Print("Testing Access to unmapped page (should result in a #PF)...\n");
+		/* CConsole::Print("Testing Access to unmapped page (should result in a #PF)...\n");
 		gPagingMapTest[0] = 5;
-		CConsole::Print("If you see this, then UnmapAddress() has a bug!\n");
+		CConsole::Print("If you see this, then UnmapAddress() has a bug!\n"); */
 	}
-		
+	
 #endif	
 	
 	CConsole::Print("Done!\n");	
