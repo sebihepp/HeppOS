@@ -10,11 +10,26 @@
 
 enum PageLevel_t {
 	PAGELEVEL_UNKNOWN = 0,
-	PAGELEVEL_PML1,
-	PAGELEVEL_PML2,
-	PAGELEVEL_PML3,
-	PAGELEVEL_PML4,
-	PAGELEVEL_PML5,
+	PAGELEVEL_PML1 = 1,
+	PAGELEVEL_PML2 = 2,
+	PAGELEVEL_PML3 = 3,
+	PAGELEVEL_PML4 = 4,
+	PAGELEVEL_PML5 = 5,
+};
+
+enum CachType_t {
+	CACHETYPE_WRITEBACK = 0,
+	CACHETYPE_WRITETHROUGH = 1,
+	CACHETYPE_UNCACHED = 2,
+	CACHETYPE_UNCACHABLE = 3,
+	CACHETYPE_WRITEPROTECT = 4,
+	CACHETYPE_WRITECOMBINING = 5,
+};
+
+enum PagingCapability_t {
+	PAGINGCAPABILITY_1GPAGES = 0,
+	PAGINGCAPABILITY_PML5,
+	PAGINGCAPABILITY_COUNT,
 };
 
 //////
@@ -220,26 +235,16 @@ struct PML1_t {
 	PML1Entry_t Entry[512];
 } __attribute__ (( packed, aligned(1024) ));
 
-
-
-enum CachType_t {
-	CACHETYPE_WRITEBACK = 0,
-	CACHETYPE_WRITETHROUGH = 1,
-	CACHETYPE_UNCACHED = 2,
-	CACHETYPE_UNCACHABLE = 3,
-	CACHETYPE_WRITEPROTECT = 4,
-	CACHETYPE_WRITECOMBINING = 5,
-};
-
 class CPaging {
 private:
 	CPaging();
 	~CPaging();
 
-	static bool mIsInitial;
-	static bool mUsesPML5;
-	static bool mSupports1GPages;
+
+	static bool mCapabilities[PAGINGCAPABILITY_COUNT];
+	static bool mActiveCapabilities[PAGINGCAPABILITY_COUNT];
 	
+	static bool mIsInitial;	
 	static void *mHHDMOffset;
 	
 public:
@@ -279,13 +284,14 @@ public:
 	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
 	static const char *GetPageLevelString(void *pVirtualAddress) __attribute__ (( nothrow ));
 	
-	static inline bool GetUsesPML5(void) __attribute__ (( nothrow )) {
-		return mUsesPML5;
+	static inline bool GetCapability(PagingCapability_t pCapability) __attribute__ (( nothrow )) {
+		return mCapabilities[pCapability];
 	}
 	
-	static inline bool GetSupports1GPages(void) __attribute__ (( nothrow )) {
-		return mSupports1GPages;
+	static bool GetActiveCapability(PagingCapability_t pCapability) __attribute__ (( nothrow )) {
+		return mActiveCapabilities[pCapability];
 	}
+
 };
 
 

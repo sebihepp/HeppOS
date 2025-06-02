@@ -11,10 +11,10 @@ char* utoa(unsigned num, char* str, int base);
 char *htoa(uint64_t num, char* str);
 
 bool CPaging::mIsInitial = true;
-bool CPaging::mUsesPML5 = false;
-bool CPaging::mSupports1GPages = false;
 void *CPaging::mHHDMOffset = NULL;
-
+bool CPaging::mCapabilities[PAGINGCAPABILITY_COUNT];
+bool CPaging::mActiveCapabilities[PAGINGCAPABILITY_COUNT];
+	
 /* void *CPaging::GetCR3(void) {
 	
 	void *_CR3 = NULL;
@@ -96,7 +96,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	
 	volatile PML4_t *_PML4 = NULL;
 	
-	if (CPaging::GetUsesPML5()) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5)) {
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
@@ -136,7 +136,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
 	
-	if (CPaging::GetUsesPML5() && _PML4->Entry[_PML4Index].PageSize) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5) && _PML4->Entry[_PML4Index].PageSize) {
 #ifdef _DEBUG
 		CConsole::Print("CPaging::GetPhysicalAddress() - 512G page size\n");
 #endif
@@ -217,12 +217,12 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	if (pPageLevel == PAGELEVEL_UNKNOWN) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
 	}
-	if (CPaging::GetUsesPML5() == false) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5) == false) {
 		if ((pPageLevel == PAGELEVEL_PML4) || (pPageLevel == PAGELEVEL_PML5)) {
 			return RETVAL_ERROR_INVALID_PAGELEVEL;
 		}
 	}
-	if ((pPageLevel == PAGELEVEL_PML3) && (CPaging::GetSupports1GPages() == false)) {
+	if ((pPageLevel == PAGELEVEL_PML3) && (CPaging::GetActiveCapability(PAGINGCAPABILITY_1GPAGES) == false)) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
 	}
 
@@ -252,7 +252,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	
 	volatile PML4_t *_PML4 = NULL;
 	
-	if (CPaging::GetUsesPML5()) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5)) {
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
@@ -297,7 +297,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	if (_PML4->Entry[_PML4Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
 	}
-	if (_PML4->Entry[_PML4Index].PageSize) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5) && _PML4->Entry[_PML4Index].PageSize) {
 		if (pPageLevel != PAGELEVEL_PML4)
 			return RETVAL_ERROR_INVALID_PAGELEVEL;
 		
@@ -404,12 +404,12 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	if (pPageLevel == PAGELEVEL_UNKNOWN) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
 	}
-	if (CPaging::GetUsesPML5() == false) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5) == false) {
 		if ((pPageLevel == PAGELEVEL_PML4) || (pPageLevel == PAGELEVEL_PML5)) {
 			return RETVAL_ERROR_INVALID_PAGELEVEL;
 		}
 	}
-	if ((pPageLevel == PAGELEVEL_PML3) && (CPaging::GetSupports1GPages() == false)) {
+	if ((pPageLevel == PAGELEVEL_PML3) && (CPaging::GetActiveCapability(PAGINGCAPABILITY_1GPAGES) == false)) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
 	}
 
@@ -439,7 +439,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	
 	volatile PML4_t *_PML4 = NULL;
 	
-	if (CPaging::GetUsesPML5()) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5)) {
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
@@ -577,7 +577,7 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	
 	volatile PML4_t *_PML4 = NULL;
 	
-	if (CPaging::GetUsesPML5()) {
+	if (CPaging::GetActiveCapability(PAGINGCAPABILITY_PML5)) {
 
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) +
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
@@ -670,11 +670,18 @@ ReturnValue_t CPaging::PreInit(void) {
 	cpuid_retval_t _CPURetVal;
 	uint64_t _CR4;
 	
+	for (uint32_t i = 0; i < PAGINGCAPABILITY_COUNT; ++i) {
+		mCapabilities[i] = false;
+		mActiveCapabilities[i] = false;
+	}
+	
 	// Check for PML5 support and if it is active
 	cpuid(0x00000000, _CPURetVal);
 	if (_CPURetVal.eax >= 0x00000007) {
 		cpuid(0x80000007, _CPURetVal);
 		if (_CPURetVal.ecx & (1 << 16)) {
+			
+			mCapabilities[PAGINGCAPABILITY_PML5] = true;
 			
 			// Check if PML5 is active
 			asm volatile (
@@ -685,32 +692,20 @@ ReturnValue_t CPaging::PreInit(void) {
 				: "rax"
 			);
 			if (_CR4 & (1 << 12)) {
-				mUsesPML5 = true;
-			} else {
-				mUsesPML5 = false;
-			}
-			
-		} else {
-			mUsesPML5 = false;
+				mActiveCapabilities[PAGINGCAPABILITY_PML5] = true;
+			}			
 		}
-	} else {
-		mUsesPML5 = false;
-	}
-		
+	}	
 	
 	// Check for 1G-pages support
 	cpuid(0x80000000, _CPURetVal);
 	if (_CPURetVal.eax >= 0x80000001) {
 		cpuid(0x80000001, _CPURetVal);
 		if (_CPURetVal.edx & (1 << 26)) {
-			mSupports1GPages = true;
-		} else {
-			mSupports1GPages = false;
+			mCapabilities[PAGINGCAPABILITY_1GPAGES] = true;
+			mActiveCapabilities[PAGINGCAPABILITY_1GPAGES] = true;
 		}
-	} else {
-		mSupports1GPages = false;
-	}
-	
+	}	
 	
 	// Save limine HHDM
 	mHHDMOffset = reinterpret_cast<void*>(CLimine::GetHHDMResponse()->offset);
