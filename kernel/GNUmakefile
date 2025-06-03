@@ -10,7 +10,8 @@ CXXFLAGS := \
 	-Wall -Wextra \
 	-ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit \
 	-mcmodel=kernel -mno-red-zone -mgeneral-regs-only \
-	-I"/usr/local/include" -I"./src"
+	-I"/usr/local/include" -I"./src" \
+	$(FLAGS)
 
 CCFLAGS := 
 
@@ -29,6 +30,7 @@ SOURCES := \
 	src/cstub.cpp \
 	src/liminestub.cpp \
 	src/retval.cpp \
+	src/serial.cpp \
 	\
 	src/video/stdfont.cpp \
 	src/video/console.cpp \

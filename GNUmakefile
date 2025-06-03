@@ -1,4 +1,5 @@
 
+
 .PHONY: all
 all: iso img
 
@@ -15,8 +16,7 @@ iso: HeppOS.iso
 img: HeppOS.img
 
 
-HeppOS.iso:
-	cd kernel && $(MAKE)
+HeppOS.iso: kernel/kernel
 	mkdir -p iso
 	mkdir -p iso/boot
 	mkdir -p iso/boot/limine
@@ -35,8 +35,7 @@ HeppOS.iso:
 	limine bios-install HeppOS.iso
 
 
-HeppOS.img:
-	cd kernel && $(MAKE)
+HeppOS.img: kernel/kernel
 	dd if=/dev/zero bs=1M count=128 of=HeppOS.img
 	sgdisk HeppOS.img -n 1:2048:131071 -t 1:ef00 -c 1:EFI
 	sgdisk HeppOS.img -n 2:131072 -t 2:0700 -c 2:FAT32
@@ -50,3 +49,7 @@ HeppOS.img:
 	mmd -i HeppOS.img@@64M ::/limine
 	mcopy -i HeppOS.img@@64M kernel/kernel ::/
 	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/
+
+
+kernel/kernel:
+	cd kernel && $(MAKE)
