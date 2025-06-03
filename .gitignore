@@ -45,3 +45,6 @@ iso/**
 
 # ignore the kernel itself
 kernel/kernel
+
+#ignore the produced logfiles
+*.log
