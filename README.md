@@ -33,6 +33,7 @@ initial drivers, supplied as modules.
 - installed g++ (configured with --target=x86_64-elf --disable-nls --enable-languages=c++ --without-headers --disable-hosted-libstdcxx --enable-initfini-array)
 - installed libgcc (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=kernel')
 - installed limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd
+- installed MTools
 - installed GNUmake
 - BOCHS for testing [Optional]
 - QEMU for testing [Optional]
