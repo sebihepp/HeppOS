@@ -14,6 +14,7 @@
 #include <memory/paging.h>
 #include <cpu/pic.h>
 #include <cpu/mmio.h>
+#include <serial.h>
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -28,6 +29,7 @@ ReturnValue_t InitStage1(void) __attribute__(( nothrow ));
 ReturnValue_t InitStage2(void) __attribute__(( nothrow ));
 ReturnValue_t InitStage3(void) __attribute__(( nothrow ));
 
+CSerial gSerial;
 
 // For Testing global Constructors
 class CGlobalCTORTest {
@@ -238,6 +240,17 @@ extern "C" uint64_t kmain(void) {
 	//Test MMIO
 	volatile uint8_t _MMIOTest = mmio_inb(reinterpret_cast<void*>(CConsole::GetFramebufferAddress()));
 	mmio_outb(reinterpret_cast<void*>(CConsole::GetFramebufferAddress()), _MMIOTest);
+	
+	// Test Serial Port
+	CConsole::Print("Test: Serial Port 0x3F8...");
+	_RetVal = gSerial.Init(0x3F8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
+	if (IS_ERROR(_RetVal)) {
+		CConsole::Print("ERROR!\n");
+		return _RetVal;
+	}
+	CConsole::Print("...OK!\n");
+	
+	gSerial.Send("HeppOS - Serial test!\n");
 	
 	CConsole::Print("Done!\n");	
 	return RETVAL_OK;
