@@ -50,7 +50,7 @@ ReturnValue_t CInterrupt::Init(void) {
 	// Exceptions
 	for (uint64_t i = 0; i < 32; i++) {
 		if (gISRHandlerAddressTable[i] != NULL) {
-			SetIDTEntry(i, gISRHandlerAddressTable[i], IDT_TYPE_TRAP);
+			SetIDTEntry(i, gISRHandlerAddressTable[i], IDT_TYPE_GATE);
 		}
 	}
 	
