@@ -85,82 +85,82 @@ extern "C" uint64_t kmain(void) {
 	//Debug Output
 	
 	// Print HHDM offset
-	CConsole::Print("HHDM offset=0x");
-	CConsole::Print(htoa((uint64_t)CPaging::GetHHDMOffset(), _TempText));
-	CConsole::Print("\n");
+	CLog::Print("HHDM offset=0x");
+	CLog::Print(htoa((uint64_t)CPaging::GetHHDMOffset(), _TempText));
+	CLog::Print("\n");
 	
 	
 	// Print Framebuffer Address
-	CConsole::Print("Framebuffer Address=0x");
-	CConsole::Print(htoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText));
-	CConsole::Print("\n");
+	/* CLog::Print("Framebuffer Address=0x");
+	CLog::Print(htoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText));
+	CLog::Print("\n"); */
 	
 	// Print CR3 Address
-	CConsole::Print("CR3=0x");
-	CConsole::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
-	CConsole::Print("\n");
+	CLog::Print("CR3=0x");
+	CLog::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
+	CLog::Print("\n");
 	
 	
 	// Print TSS Address
-	CConsole::Print("TSS=0x");
-	CConsole::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
-	CConsole::Print("\n");
+	CLog::Print("TSS=0x");
+	CLog::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
+	CLog::Print("\n");
 #endif
 	
 #ifdef _DEBUG
 	// Test GetPhysicalAddress
-	void *_TestVirtualAddress = CConsole::GetFramebufferAddress();
+	void *_TestVirtualAddress = (void*)gPagingMapTest;
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
 	void *_TestPhysicalAddress = NULL;
-	CConsole::Print("Virtual 0x");
-	CConsole::Print(htoa((uint64_t)_TestVirtualAddress, _TempText));
+	CLog::Print("Virtual 0x");
+	CLog::Print(htoa((uint64_t)_TestVirtualAddress, _TempText));
 	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print(GetReturnValueString(_RetVal));
-		CConsole::Print("!\n");
+		CLog::Print(GetReturnValueString(_RetVal));
+		CLog::Print("!\n");
 	} else {
-		CConsole::Print(" == Physical 0x");
-		CConsole::Print(htoa((uint64_t)_TestPhysicalAddress, _TempText));
-		CConsole::Print("\n");
+		CLog::Print(" == Physical 0x");
+		CLog::Print(htoa((uint64_t)_TestPhysicalAddress, _TempText));
+		CLog::Print("\n");
 	}
 #endif	
 	
 #ifdef _DEBUG
 	// Test CPaging::GetPageLevel
 	
-	void *_PageLevelTestVirtualAddress = (void*)&gCTORTest;
+	void *_PageLevelTestVirtualAddress = (void*)gPagingMapTest;
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
-	CConsole::Print("Virtual Address 0x");
-	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
-	CConsole::Print(" has page level=");
-	CConsole::Print(_ConstTempText);
-	CConsole::Print("\n");
+	CLog::Print("Virtual Address 0x");
+	CLog::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CLog::Print(" has page level=");
+	CLog::Print(_ConstTempText);
+	CLog::Print("\n");
 
 	_PageLevelTestVirtualAddress = CPaging::GetHHDMOffset();
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
-	CConsole::Print("Virtual Address 0x");
-	CConsole::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
-	CConsole::Print(" has page level=");
-	CConsole::Print(_ConstTempText);
-	CConsole::Print("\n");
+	CLog::Print("Virtual Address 0x");
+	CLog::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CLog::Print(" has page level=");
+	CLog::Print(_ConstTempText);
+	CLog::Print("\n");
 #endif	
 	
 #ifdef _DEBUG
 	//Test CPaging::MapAddress
-	CConsole::Print("Test: Mapping gPagingMapTest(");
-	CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
-	CConsole::Print(") to 0x7000...\n");
+	CLog::Print("Test: Mapping gPagingMapTest(");
+	CLog::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+	CLog::Print(") to 0x7000...\n");
 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
 	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
 	if (IS_ERROR(_RetVal) || (_PageLevel != PAGELEVEL_PML1)) {
-		CConsole::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
+		CLog::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
 	} else {
 		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1, CACHETYPE_WRITEBACK, 
 			true, false, false);
 		if (IS_ERROR(_RetVal)) {
-			CConsole::Print(GetReturnValueString(_RetVal));
-			CConsole::Print("!\n");			
+			CLog::Print(GetReturnValueString(_RetVal));
+			CLog::Print("!\n");			
 			return _RetVal;
 		}
 		
@@ -168,33 +168,33 @@ extern "C" uint64_t kmain(void) {
 		// Check if mapping worked
 		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress);
 		if (IS_ERROR(_RetVal)) {
-			CConsole::Print(GetReturnValueString(_RetVal));
-			CConsole::Print("!\n");
+			CLog::Print(GetReturnValueString(_RetVal));
+			CLog::Print("!\n");
 		} else {
-			CConsole::Print("Virtual 0x");
-			CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
-			CConsole::Print(" == Physical 0x");
-			CConsole::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
-			CConsole::Print("\n");
+			CLog::Print("Virtual 0x");
+			CLog::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+			CLog::Print(" == Physical 0x");
+			CLog::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
+			CLog::Print("\n");
 		} 
 	}
 	
 	// Test UnmapAddress
-	CConsole::Print("Test: Unmapping gPagingMapTest(");
-	CConsole::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
-	CConsole::Print(") to 0x7000...\n");
+	CLog::Print("Test: Unmapping gPagingMapTest(");
+	CLog::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+	CLog::Print(") to 0x7000...\n");
 	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
 	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR: UnmapAddress failed!\n");
-		CConsole::Print(GetReturnValueString(_RetVal));
-		CConsole::Print("!\n");			
+		CLog::Print("ERROR: UnmapAddress failed!\n");
+		CLog::Print(GetReturnValueString(_RetVal));
+		CLog::Print("!\n");			
 		return _RetVal;
 	} else {
-		CConsole::Print("UnmapAddress successful!\n");
+		CLog::Print("UnmapAddress successful!\n");
 		
-		/* CConsole::Print("Testing Access to unmapped page (should result in a #PF)...\n");
+		/* CLog::Print("Testing Access to unmapped page (should result in a #PF)...\n");
 		gPagingMapTest[0] = 5;
-		CConsole::Print("If you see this, then UnmapAddress() has a bug!\n"); */
+		CLog::Print("If you see this, then UnmapAddress() has a bug!\n"); */
 	}
 	
 #endif	
