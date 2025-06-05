@@ -50,6 +50,6 @@ HeppOS.img: kernel/kernel
 	mcopy -i HeppOS.img@@64M kernel/kernel ::/
 	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/
 
-
+.PHONY: kernel/kernel
 kernel/kernel:
 	cd kernel && $(MAKE)

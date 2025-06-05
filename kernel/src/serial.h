@@ -31,16 +31,17 @@ private:
 	SerialParity mParity;
 	
 
-
 public:	
 	CSerial();
 	~CSerial();
 	
 	ReturnValue_t Init(uint16_t pPort, uint32_t pBaudRate, uint8_t pCharSize, SerialStopSize pStopSize, SerialParity pParity) __attribute__ (( nothrow ));
-	void Send(const char pData) __attribute__ (( nothrow ));
+	void Send(char pData) __attribute__ (( nothrow ));
 	void Send(const char *pString) __attribute__ (( nothrow ));
 	char Receive(void) __attribute__ (( nothrow ));
 
+	bool CheckSendBufferEmpty(void) __attribute__ (( nothrow ));
+	bool CheckReceiveBufferEmpty(void) __attribute__ (( nothrow ));
 };
 
 #endif

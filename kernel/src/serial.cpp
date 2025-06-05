@@ -45,7 +45,7 @@ ReturnValue_t CSerial::Init(uint16_t pPort, uint32_t pBaudRate, uint8_t pCharSiz
 	//Set to Loopback mode for testing
 	outb(mPort + 4, 0x13);
 	//Send Test
-	Send((uint8_t)0x5A);
+	Send((char)0x5A);
 	if (Receive() != 0x5A) {
 		return RETVAL_ERROR_GENERAL;
 	}
@@ -55,9 +55,11 @@ ReturnValue_t CSerial::Init(uint16_t pPort, uint32_t pBaudRate, uint8_t pCharSiz
 	return RETVAL_OK;
 }
 
-void CSerial::Send(const char pData) {
+void CSerial::Send(char pData) {
 	//Wait for transmit FIFO to not be full
-	while ((inb(mPort + 5) & 0x20) == 0);
+	while (CheckSendBufferEmpty() == false)
+		;
+	
 	outb(mPort, pData);
 }
 
@@ -70,6 +72,16 @@ void CSerial::Send(const char *pString) {
 }
 
 char CSerial::Receive(void) {
-	while ((inb(mPort + 5) & 0x1) == 0);
+	while (CheckReceiveBufferEmpty() == false)
+		;
+	
 	return inb(mPort);
+}
+
+bool CSerial::CheckSendBufferEmpty(void) {
+	return ((inb(mPort + 5) & 0x20) == 0x20);
+}
+
+bool CSerial::CheckReceiveBufferEmpty(void) {
+	return ((inb(mPort + 5) & 0x01) == 0x01);
 }

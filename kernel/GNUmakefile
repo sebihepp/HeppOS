@@ -31,9 +31,8 @@ SOURCES := \
 	src/liminestub.cpp \
 	src/retval.cpp \
 	src/serial.cpp \
+	src/log.cpp \
 	\
-	src/video/stdfont.cpp \
-	src/video/console.cpp \
 	\
 	src/memory/paging.cpp \
 	src/memory/pmm.cpp \

@@ -1,12 +1,14 @@
 
 #include <cpu/interrupt.h>
 
-#include <video/console.h>
 #include <cpu/gdt.h>
 #include <cstub.h>
 #include <cpu/io.h>
 #include <cpu/msr.h>
 #include <cpu/pic.h>
+
+#include <log.h>
+
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -174,17 +176,12 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	
 	CInterrupt::mInterruptCount[pInt] += 1;
 	
-	CConsole::SetTitleText("HeppOS - Exception Handler");
-	CConsole::SetBGColor(0x000000AA);
-	CConsole::SetFGColor(0x0000FFFF);
-	
-	CConsole::Clear();
-	CConsole::Print("\n");
-	CConsole::Print("ERROR - Exception 0x");
-	CConsole::Print(utoa(pInt, _TempString, 16));
-	CConsole::Print(" (");
-	CConsole::Print(utoa(pInt, _TempString, 10));
-	CConsole::Print(") occured! (");
+	CLog::Print("\n");
+	CLog::Print("ERROR - Exception 0x");
+	CLog::Print(utoa(pInt, _TempString, 16));
+	CLog::Print(" (");
+	CLog::Print(utoa(pInt, _TempString, 10));
+	CLog::Print(") occured! (");
 
 	switch (pInt) {
 		case 0x00:
@@ -204,21 +201,21 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 		case 0x15:
 		case 0x1C:
 		case 0x1D:
-			CConsole::Print("Fault");
+			CLog::Print("Fault");
 			break;
 		case 0x03:
 		case 0x04:
-			CConsole::Print("Trap");
+			CLog::Print("Trap");
 			break;
 		case 0x01:
-			CConsole::Print("Fault/Trap");
+			CLog::Print("Fault/Trap");
 			break;
 		case 0x02:
-			CConsole::Print("NMI");
+			CLog::Print("NMI");
 			break;
 		case 0x08:
 		case 0x12:
-			CConsole::Print("Abort");
+			CLog::Print("Abort");
 			break;
 		case 0x0F:
 		case 0x16:
@@ -228,134 +225,134 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 		case 0x1A:
 		case 0x1B:
 		case 0x1F:
-			CConsole::Print("Reserved");
+			CLog::Print("Reserved");
 			break;
 
 
 		default:
-			CConsole::Print("Unknown");
+			CLog::Print("Unknown");
 	}
 	
-	CConsole::Print(")\n");
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print(")\n");
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
 	CInterrupt::PrintErrorCode(pInt, pState->error_code);
 	
-	CConsole::Print("RFLAGS=0x");
-	CConsole::Print(htoa(pState->rflags, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("RFLAGS=0x");
+	CLog::Print(htoa(pState->rflags, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
 	
-	CConsole::Print("RAX=0x");
-	CConsole::Print(htoa(pState->rax, _TempString));
-	CConsole::Print(" \tRBX=0x");
-	CConsole::Print(htoa(pState->rbx, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("RAX=0x");
+	CLog::Print(htoa(pState->rax, _TempString));
+	CLog::Print(" \tRBX=0x");
+	CLog::Print(htoa(pState->rbx, _TempString));
+	CLog::Print("\n");
 	
-	CConsole::Print("RCX=0x");
-	CConsole::Print(htoa(pState->rcx, _TempString));
-	CConsole::Print(" \tRDX=0x");
-	CConsole::Print(htoa(pState->rdx, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("RCX=0x");
+	CLog::Print(htoa(pState->rcx, _TempString));
+	CLog::Print(" \tRDX=0x");
+	CLog::Print(htoa(pState->rdx, _TempString));
+	CLog::Print("\n");
 	
-	CConsole::Print("RSI=0x");
-	CConsole::Print(htoa(pState->rsi, _TempString));
-	CConsole::Print(" \tRDI=0x");
-	CConsole::Print(htoa(pState->rdi, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("RSI=0x");
+	CLog::Print(htoa(pState->rsi, _TempString));
+	CLog::Print(" \tRDI=0x");
+	CLog::Print(htoa(pState->rdi, _TempString));
+	CLog::Print("\n");
 	
-	CConsole::Print("RSP=0x");
-	CConsole::Print(htoa(pState->rsp, _TempString));
-	CConsole::Print(" \tRBP=0x");
-	CConsole::Print(htoa(pState->rbp, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("RSP=0x");
+	CLog::Print(htoa(pState->rsp, _TempString));
+	CLog::Print(" \tRBP=0x");
+	CLog::Print(htoa(pState->rbp, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 
 
 
-	CConsole::Print("R8 =0x");
-	CConsole::Print(htoa(pState->r8, _TempString));
-	CConsole::Print(" \tR9 =0x");
-	CConsole::Print(htoa(pState->r9, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("R8 =0x");
+	CLog::Print(htoa(pState->r8, _TempString));
+	CLog::Print(" \tR9 =0x");
+	CLog::Print(htoa(pState->r9, _TempString));
+	CLog::Print("\n");
 	
-	CConsole::Print("R10=0x");
-	CConsole::Print(htoa(pState->r10, _TempString));
-	CConsole::Print(" \tR11=0x");
-	CConsole::Print(htoa(pState->r11, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("R10=0x");
+	CLog::Print(htoa(pState->r10, _TempString));
+	CLog::Print(" \tR11=0x");
+	CLog::Print(htoa(pState->r11, _TempString));
+	CLog::Print("\n");
 	
-	CConsole::Print("R12=0x");
-	CConsole::Print(htoa(pState->r12, _TempString));
-	CConsole::Print(" \tR13=0x");
-	CConsole::Print(htoa(pState->r13, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("R12=0x");
+	CLog::Print(htoa(pState->r12, _TempString));
+	CLog::Print(" \tR13=0x");
+	CLog::Print(htoa(pState->r13, _TempString));
+	CLog::Print("\n");
 	
-	CConsole::Print("R14=0x");
-	CConsole::Print(htoa(pState->r14, _TempString));
-	CConsole::Print(" \tR15=0x");
-	CConsole::Print(htoa(pState->r15, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("R14=0x");
+	CLog::Print(htoa(pState->r14, _TempString));
+	CLog::Print(" \tR15=0x");
+	CLog::Print(htoa(pState->r15, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
 	
-	CConsole::Print("RIP=0x");
-	CConsole::Print(htoa(pState->rip, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("RIP=0x");
+	CLog::Print(htoa(pState->rip, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
-	CConsole::Print("CS =0x");
-	CConsole::Print(htoa(pState->cs, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("SS =0x");
-	CConsole::Print(htoa(pState->ss, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("DS =0x");
-	CConsole::Print(htoa(pState->ds, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("ES =0x");
-	CConsole::Print(htoa(pState->es, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("FS =0x");
-	CConsole::Print(htoa(pState->fs, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("GS =0x");
-	CConsole::Print(htoa(pState->gs, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("CS =0x");
+	CLog::Print(htoa(pState->cs, _TempString));
+	CLog::Print("\n");
+	CLog::Print("SS =0x");
+	CLog::Print(htoa(pState->ss, _TempString));
+	CLog::Print("\n");
+	CLog::Print("DS =0x");
+	CLog::Print(htoa(pState->ds, _TempString));
+	CLog::Print("\n");
+	CLog::Print("ES =0x");
+	CLog::Print(htoa(pState->es, _TempString));
+	CLog::Print("\n");
+	CLog::Print("FS =0x");
+	CLog::Print(htoa(pState->fs, _TempString));
+	CLog::Print("\n");
+	CLog::Print("GS =0x");
+	CLog::Print(htoa(pState->gs, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 
 
-	CConsole::Print("CR0=0x");
-	CConsole::Print(htoa(_CR0, _TempString));
-	CConsole::Print(" \tCR2=0x");
-	CConsole::Print(htoa(_CR2, _TempString));
-	CConsole::Print("\n");
+	CLog::Print("CR0=0x");
+	CLog::Print(htoa(_CR0, _TempString));
+	CLog::Print(" \tCR2=0x");
+	CLog::Print(htoa(_CR2, _TempString));
+	CLog::Print("\n");
 
-	CConsole::Print("CR3=0x");
-	CConsole::Print(htoa(_CR3, _TempString));
-	CConsole::Print(" \tCR4=0x");
-	CConsole::Print(htoa(_CR4, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("CR3=0x");
+	CLog::Print(htoa(_CR3, _TempString));
+	CLog::Print(" \tCR4=0x");
+	CLog::Print(htoa(_CR4, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 
-	CConsole::Print("CR8=0x");
-	CConsole::Print(htoa(_CR8, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("CR8=0x");
+	CLog::Print(htoa(_CR8, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
-	CConsole::Print("EFER=0x");
-	CConsole::Print(htoa(_EFER, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("EFER=0x");
+	CLog::Print(htoa(_EFER, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
-	CConsole::Print("DR6=0x");
-	CConsole::Print(htoa(_DR6, _TempString));
-	CConsole::Print(" \tDR7=0x");
-	CConsole::Print(htoa(_DR7, _TempString));
-	CConsole::Print("\n");
-	CConsole::Print("\n");
+	CLog::Print("DR6=0x");
+	CLog::Print(htoa(_DR6, _TempString));
+	CLog::Print(" \tDR7=0x");
+	CLog::Print(htoa(_DR7, _TempString));
+	CLog::Print("\n");
+	CLog::Print("\n");
 	
 	// Loop forever because of Exception
 	asm volatile ("cli;\n");
@@ -368,55 +365,55 @@ void CInterrupt::PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) {
 	
 	char _TempString[32];
 	
-	CConsole::Print("Error code=0x");
-	CConsole::Print(utoa(pErrorCode, _TempString, 16));
-	CConsole::Print(" (");
-	CConsole::Print(utoa(pErrorCode, _TempString, 10));
-	CConsole::Print(")\n");
+	CLog::Print("Error code=0x");
+	CLog::Print(utoa(pErrorCode, _TempString, 16));
+	CLog::Print(" (");
+	CLog::Print(utoa(pErrorCode, _TempString, 10));
+	CLog::Print(")\n");
 	
-	CConsole::Print("Meaning:\n");
+	CLog::Print("Meaning:\n");
 	switch (pInt) {
 		
 		case 0x0e:
 			if (pErrorCode & 0x01) {
-				CConsole::Print(" Protection fault\n");
+				CLog::Print(" Protection fault\n");
 			} else {
-				CConsole::Print(" Page not present\n");
+				CLog::Print(" Page not present\n");
 			}
 			if (pErrorCode & 0x02) {
-				CConsole::Print(" Write access\n");
+				CLog::Print(" Write access\n");
 			} else {
-				CConsole::Print(" Read access\n");
+				CLog::Print(" Read access\n");
 			}
 			if (pErrorCode & 0x04) {
-				CConsole::Print(" User access\n");
+				CLog::Print(" User access\n");
 			} else {
-				CConsole::Print(" Superuser access\n");
+				CLog::Print(" Superuser access\n");
 			}
 			if (pErrorCode & 0x08) {
-				CConsole::Print(" Reserved bit set\n");
+				CLog::Print(" Reserved bit set\n");
 			}
 			if (pErrorCode & 0x10) {
-				CConsole::Print(" Instruction fetch\n");
+				CLog::Print(" Instruction fetch\n");
 			} else {
-				CConsole::Print(" Data access\n");
+				CLog::Print(" Data access\n");
 			}
 			if (pErrorCode & 0x20) {
-				CConsole::Print(" Protection key violation\n");
+				CLog::Print(" Protection key violation\n");
 			}
 			if (pErrorCode & 0x40) {
-				CConsole::Print(" Shadow-stack access fault\n");
+				CLog::Print(" Shadow-stack access fault\n");
 			}
 			if (pErrorCode & 0x8000) {
-				CConsole::Print(" SGX violation\n");
+				CLog::Print(" SGX violation\n");
 			}
 			
 			break;
 			
 		default:
-			CConsole::Print("---\n");
+			CLog::Print("---\n");
 	}
-	CConsole::Print("\n");
+	CLog::Print("\n");
 	
 }
 

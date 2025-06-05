@@ -8,13 +8,12 @@
 #include <cstub.h>
 
 #include <retval.h>
-#include <video/console.h>
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>
 #include <memory/paging.h>
 #include <cpu/pic.h>
 #include <cpu/mmio.h>
-#include <serial.h>
+#include <log.h>
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -24,38 +23,6 @@ char *htoa(uint64_t num, char* str);
 
 
 extern "C" uint64_t kmain(void) __attribute__(( nothrow ));
-ReturnValue_t InitStage0(void) __attribute__(( nothrow ));
-ReturnValue_t InitStage1(void) __attribute__(( nothrow ));
-ReturnValue_t InitStage2(void) __attribute__(( nothrow ));
-ReturnValue_t InitStage3(void) __attribute__(( nothrow ));
-
-CSerial gSerial;
-
-// For Testing global Constructors
-class CGlobalCTORTest {
-private:
-	volatile uint32_t mTest;
-
-public:
-	CGlobalCTORTest() {
-		mTest = 5;
-	};
-	~CGlobalCTORTest() {
-		mTest = 2;
-	};
-	
-	uint32_t GetTest(void) {
-		return mTest;
-	};
-	
-	void PrintTest(void) {
-		char _TempText[24];
-		CConsole::Print(itoa(mTest, _TempText, 10));
-	};
-	
-};
-
-CGlobalCTORTest gCTORTest;
 
 // For Testing CPaging::MapAddress()
 volatile uint8_t gPagingMapTest[4096] __attribute__ (( aligned(4096) ));
@@ -71,35 +38,48 @@ extern "C" uint64_t kmain(void) {
 
 	ReturnValue_t _RetVal = RETVAL_OK;
 	
+	// Initialize Logging
+	CLog::Init();
+	CLog::Print("\n\nHeppOS\n");
 	
 	// First check for correct limine protocol.
 	// Everything builds up from this
+	CLog::Print("Init CLimine...");
 	_RetVal = CLimine::Init();
-	if (IS_ERROR(_RetVal)) {
-		return _RetVal;
-	}
-		
-	// Init Stages
-	_RetVal = InitStage0();
-	if (IS_ERROR(_RetVal)) {
-		return _RetVal;
-	}
-
-	_RetVal = InitStage1();
+	CLog::Print(GetReturnValueString(_RetVal));
+	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 	
-	_RetVal = InitStage2();
+	// PreInitialize Paging
+	CLog::Print("PreInit CPaging...");
+	_RetVal = CPaging::PreInit();
+	CLog::Print(GetReturnValueString(_RetVal));
+	CLog::Print("\n");
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	
+	// Initialize GDT
+	CLog::Print("PreInit CGDT...");
+	_RetVal = CGDT::Init();
+	CLog::Print(GetReturnValueString(_RetVal));
+	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
 
-	_RetVal = InitStage3();
+	// PreInitialize IDT and Interrupts
+	CLog::Print("PreInit CInterrupt...");
+	_RetVal = CInterrupt::Init();
+	CLog::Print(GetReturnValueString(_RetVal));
+	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
-
+	
+	
 	
 #ifdef _DEBUG
 	//Debug Output
@@ -128,13 +108,6 @@ extern "C" uint64_t kmain(void) {
 #endif
 	
 #ifdef _DEBUG
-	// Interrupt Test
-	//asm volatile ("int $0x20;\n");
-	// Exception Test
-	//asm volatile ("int $0x06;\n");
-#endif
-
-#ifdef _DEBUG
 	// Test GetPhysicalAddress
 	void *_TestVirtualAddress = CConsole::GetFramebufferAddress();
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
@@ -151,17 +124,6 @@ extern "C" uint64_t kmain(void) {
 		CConsole::Print("\n");
 	}
 #endif	
-	
-#ifdef _DEBUG
-	// Test global CTORs
-	CConsole::Print("Global CTOR test=");
-	CConsole::Print(itoa(gCTORTest.GetTest(), _TempText, 10));
-	CConsole::Print("\n");
-
-	CConsole::Print("Global CTOR test=");
-	gCTORTest.PrintTest();
-	CConsole::Print("\n");
-#endif
 	
 #ifdef _DEBUG
 	// Test CPaging::GetPageLevel
@@ -236,116 +198,10 @@ extern "C" uint64_t kmain(void) {
 	}
 	
 #endif	
-	
-	//Test MMIO
-	volatile uint8_t _MMIOTest = mmio_inb(reinterpret_cast<void*>(CConsole::GetFramebufferAddress()));
-	mmio_outb(reinterpret_cast<void*>(CConsole::GetFramebufferAddress()), _MMIOTest);
-	
-	// Test Serial Port
-	CConsole::Print("Test: Serial Port 0x3F8...");
-	_RetVal = gSerial.Init(0x3F8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
-	if (IS_ERROR(_RetVal)) {
-		CConsole::Print("ERROR!\n");
-		return _RetVal;
-	}
-	CConsole::Print("...OK!\n");
-	
-	gSerial.Send("HeppOS - Serial test!\n");
-	
-	CConsole::Print("Done!\n");	
+		
+	CLog::Print("Done!\n");
 	return RETVAL_OK;
 }
-
-//////
-
-ReturnValue_t InitStage0(void) {
-	
-	//char _TempText[24];
-	ReturnValue_t _RetVal = RETVAL_OK;
-	
-	_RetVal = CPaging::PreInit();
-	if (IS_ERROR(_RetVal)) {
-		return _RetVal;
-	}
-	
-	
-	return RETVAL_OK;
-	
-}
-
-//////
-
-ReturnValue_t InitStage1(void) {
-
-	char _TempText[24];
-	ReturnValue_t _RetVal = RETVAL_OK;
-	
-	_RetVal = CConsole::Init(CLimine::GetFramebufferResponse());
-	if (IS_ERROR(_RetVal)) {
-		return _RetVal;
-	}
-	
-	CConsole::SetFGColor(0x00AAAAAA);
-	CConsole::SetBGColor(0x00000000);
-	CConsole::SetTitleFGColor(0x0000FFFF);
-	CConsole::SetTitleBGColor(0x000000AA);
-	CConsole::SetTitleText("HeppOS");
-	CConsole::Clear();
-	
-	// Print Video Mode
-	CConsole::Print("Video Format: ");
-	CConsole::Print(utoa(CConsole::GetWidth(), _TempText, 10));
-	CConsole::Print("x");
-	CConsole::Print(utoa(CConsole::GetHeight(), _TempText, 10));
-	CConsole::Print("x");
-	CConsole::Print(utoa(CConsole::GetBPP(), _TempText, 10));
-	CConsole::Print(" (Pitch=");
-	CConsole::Print(utoa(CConsole::GetPitch(), _TempText, 10));
-	CConsole::Print(")\n");
-	
-	return RETVAL_OK;
-	
-}
-
-//////
-
-ReturnValue_t InitStage2(void) {
-	
-	//char _TempText[24];
-	ReturnValue_t _RetVal = RETVAL_OK;
-	
-	CConsole::Print("Initializing GDT.........................");
-	_RetVal = CGDT::Init();
-	if (IS_ERROR(_RetVal)) {
-		CConsole::Print(GetReturnValueString(_RetVal));
-		CConsole::Print("!\n");
-		return _RetVal;
-	}
-	CConsole::Print("...OK!\n");
-	
-	return RETVAL_OK;
-}
-
-//////
-
-ReturnValue_t InitStage3(void) {
-	
-	//char _TempText[24];
-	ReturnValue_t _RetVal = RETVAL_OK;
-	
-	CConsole::Print("Initializing IDT.........................");
-	_RetVal = CInterrupt::Init();
-	if (IS_ERROR(_RetVal)) {
-		CConsole::Print(GetReturnValueString(_RetVal));
-		CConsole::Print("!\n");
-		return _RetVal;
-	}
-	CConsole::Print("...OK!\n");	
-	
-	return RETVAL_OK;
-}
-
-//////
 
 void reverse(char str[], int length)
 {
