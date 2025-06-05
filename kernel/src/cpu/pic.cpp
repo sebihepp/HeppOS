@@ -2,9 +2,6 @@
 #include <cpu/pic.h>
 #include <cpu/io.h>
 
-#include <video/console.h>
-
-
 uint8_t CPIC::mOffset = 0;
 uint64_t CPIC::mSpuriousCount = 0;
 uint16_t CPIC::mMask = 0;
@@ -45,12 +42,6 @@ ReturnValue_t CPIC::Init(uint8_t pOffset) {
 
 void CPIC::SendEOI(uint8_t pInt) {
 		
-/*	char _TempString[20];
-	
- 	CConsole::Print("called SendEOI with _Int=");
-	CConsole::Print(utoa(_Int, _TempString, 10));
-	CConsole::Print("\n"); */
-	
 	uint8_t _Int = pInt - mOffset;
 	
 	if (_Int >= GetIntLineCount())
