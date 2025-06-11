@@ -32,6 +32,7 @@ SOURCES := \
 	src/retval.cpp \
 	src/serial.cpp \
 	src/log.cpp \
+	src/kstring.cpp \
 	\
 	\
 	src/memory/paging.cpp \
