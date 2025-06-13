@@ -14,6 +14,7 @@
 #include <cpu/pic.h>
 #include <cpu/mmio.h>
 #include <log.h>
+#include <kstring.h>
 
 
 // For quick testing - needs to be put in a string.h or something similar
@@ -199,6 +200,38 @@ extern "C" uint64_t kmain(void) {
 	
 #endif	
 		
+#ifdef _DEBUG	
+	// Test kstring
+	
+	const char *_KStringTest = "Hello World!";
+	CLog::Print("Size of \"");
+	CLog::Print(_KStringTest);
+	CLog::Print("\" is ");
+	CLog::Print(itoa(kstrlen(_KStringTest), _TempText, 10));
+	CLog::Print("!\n");
+	
+	char _KStringTest2[64];
+	CLog::Print("Output of strcpy and strcat: ");
+	kstrcpy(_KStringTest2, "Hello ");
+	CLog::Print(kstrcat(_KStringTest2, "World!"));
+	CLog::Print("\n");
+	
+	CLog::Print("Comparing the two strings= ");
+	CLog::Print(itoa(kstrcmp(_KStringTest, _KStringTest2), _TempText, 10));
+	CLog::Print("!\n");
+	
+	_KStringTest2[0] = 'h';
+	CLog::Print("Comparing \"");
+	CLog::Print(_KStringTest);
+	CLog::Print("\" with \"");
+	CLog::Print(_KStringTest2);
+	CLog::Print("\" = ");
+	CLog::Print(itoa(kstricmp(_KStringTest, _KStringTest2), _TempText, 10));
+	CLog::Print("!\n");
+
+	
+#endif
+
 	CLog::Print("Done!\n");
 	return RETVAL_OK;
 }

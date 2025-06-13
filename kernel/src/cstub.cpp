@@ -4,6 +4,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#
+
+void *memchr(const void *pSource, int8_t pValue, size_t pSize) {
+	uint64_t i;
+	if (pSize == 0)
+		return NULL;
+	while (i < pSize) {
+		if (((int8_t*)pSource)[i] == pValue) {
+			return &((int8_t*)pSource)[i];
+		}
+		++i;
+	}
+	return NULL;
+}
 
 int32_t memcmp(const void *a, const void *b, size_t length)
 {
@@ -49,7 +63,7 @@ void *memmove(void *dest, const void *source, size_t length)
 	return dest;
 }
 
-void *memset(void *s, int value, size_t length)
+void *memset(void *s, int8_t value, size_t length)
 {
 	uint8_t *_target = (uint8_t*)s;
 	for (size_t i = 0; i < length; i++)
