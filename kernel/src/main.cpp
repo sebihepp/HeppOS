@@ -17,12 +17,6 @@
 #include <kstring.h>
 
 
-// For quick testing - needs to be put in a string.h or something similar
-char* itoa(int num, char* str, int base);
-char* utoa(unsigned num, char* str, int base);
-char *htoa(uint64_t num, char* str);
-
-
 extern "C" uint64_t kmain(void) __attribute__(( nothrow ));
 
 // For Testing CPaging::MapAddress()
@@ -87,24 +81,24 @@ extern "C" uint64_t kmain(void) {
 	
 	// Print HHDM offset
 	CLog::Print("HHDM offset=0x");
-	CLog::Print(htoa((uint64_t)CPaging::GetHHDMOffset(), _TempText));
+	CLog::Print(utoa((uint64_t)CPaging::GetHHDMOffset(), _TempText, 16));
 	CLog::Print("\n");
 	
 	
 	// Print Framebuffer Address
 	/* CLog::Print("Framebuffer Address=0x");
-	CLog::Print(htoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText));
+	CLog::Print(utoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText, 16));
 	CLog::Print("\n"); */
 	
 	// Print CR3 Address
 	CLog::Print("CR3=0x");
-	CLog::Print(htoa((uint64_t)CPaging::GetCR3(), _TempText));
+	CLog::Print(utoa((uint64_t)CPaging::GetCR3(), _TempText, 16));
 	CLog::Print("\n");
 	
 	
 	// Print TSS Address
 	CLog::Print("TSS=0x");
-	CLog::Print(htoa((uint64_t)CGDT::GetTSS(), _TempText));
+	CLog::Print(utoa((uint64_t)CGDT::GetTSS(), _TempText, 16));
 	CLog::Print("\n");
 #endif
 	
@@ -114,14 +108,14 @@ extern "C" uint64_t kmain(void) {
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
 	void *_TestPhysicalAddress = NULL;
 	CLog::Print("Virtual 0x");
-	CLog::Print(htoa((uint64_t)_TestVirtualAddress, _TempText));
+	CLog::Print(utoa((uint64_t)_TestVirtualAddress, _TempText, 16));
 	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
 		CLog::Print(GetReturnValueString(_RetVal));
 		CLog::Print("!\n");
 	} else {
 		CLog::Print(" == Physical 0x");
-		CLog::Print(htoa((uint64_t)_TestPhysicalAddress, _TempText));
+		CLog::Print(utoa((uint64_t)_TestPhysicalAddress, _TempText, 16));
 		CLog::Print("\n");
 	}
 #endif	
@@ -132,7 +126,7 @@ extern "C" uint64_t kmain(void) {
 	void *_PageLevelTestVirtualAddress = (void*)gPagingMapTest;
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
 	CLog::Print("Virtual Address 0x");
-	CLog::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CLog::Print(utoa((uint64_t)_PageLevelTestVirtualAddress, _TempText, 16));
 	CLog::Print(" has page level=");
 	CLog::Print(_ConstTempText);
 	CLog::Print("\n");
@@ -140,7 +134,7 @@ extern "C" uint64_t kmain(void) {
 	_PageLevelTestVirtualAddress = CPaging::GetHHDMOffset();
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
 	CLog::Print("Virtual Address 0x");
-	CLog::Print(htoa((uint64_t)_PageLevelTestVirtualAddress, _TempText));
+	CLog::Print(utoa((uint64_t)_PageLevelTestVirtualAddress, _TempText, 16));
 	CLog::Print(" has page level=");
 	CLog::Print(_ConstTempText);
 	CLog::Print("\n");
@@ -149,7 +143,7 @@ extern "C" uint64_t kmain(void) {
 #ifdef _DEBUG
 	//Test CPaging::MapAddress
 	CLog::Print("Test: Mapping gPagingMapTest(");
-	CLog::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+	CLog::Print(utoa((uint64_t)&gPagingMapTest, _TempText, 16));
 	CLog::Print(") to 0x7000...\n");
 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
@@ -173,16 +167,16 @@ extern "C" uint64_t kmain(void) {
 			CLog::Print("!\n");
 		} else {
 			CLog::Print("Virtual 0x");
-			CLog::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+			CLog::Print(utoa((uint64_t)&gPagingMapTest, _TempText, 16));
 			CLog::Print(" == Physical 0x");
-			CLog::Print(htoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText));
+			CLog::Print(utoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText, 16));
 			CLog::Print("\n");
 		} 
 	}
 	
 	// Test UnmapAddress
 	CLog::Print("Test: Unmapping gPagingMapTest(");
-	CLog::Print(htoa((uint64_t)&gPagingMapTest, _TempText));
+	CLog::Print(utoa((uint64_t)&gPagingMapTest, _TempText, 16));
 	CLog::Print(") to 0x7000...\n");
 	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
 	if (IS_ERROR(_RetVal)) {
@@ -207,7 +201,7 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print("Size of \"");
 	CLog::Print(_KStringTest);
 	CLog::Print("\" is ");
-	CLog::Print(itoa(kstrlen(_KStringTest), _TempText, 10));
+	CLog::Print(utoa(kstrlen(_KStringTest), _TempText, 10));
 	CLog::Print("!\n");
 	
 	char _KStringTest2[64];
@@ -236,101 +230,3 @@ extern "C" uint64_t kmain(void) {
 	return RETVAL_OK;
 }
 
-void reverse(char str[], int length)
-{
-    int start = 0;
-    int end = length - 1;
-    while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        end--;
-        start++;
-    }
-}
-
-char* itoa(int num, char* str, int base)
-{
-	int i = 0;
-	bool isNegative = false;
-	
-	/* Handle 0 explicitly, otherwise empty string is
-	* printed for 0 */
-	if (num == 0) {
-		str[i++] = '0';
-		str[i] = '\0';
-		return str;
-	}
-	
-	// In standard itoa(), negative numbers are handled
-	// only with base 10. Otherwise numbers are
-	// considered unsigned.
-	if (num < 0 && base == 10) {
-		isNegative = true;
-		num = -num;
-	}
-	
-	// Process individual digits
-	while (num != 0) {
-		int rem = num % base;
-		str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-		num = num / base;
-	}
-	
-	// If number is negative, append '-'
-	if (isNegative)
-		str[i++] = '-';
-	
-	str[i] = '\0'; // Append string terminator
-	
-	// Reverse the string
-	reverse(str, i);
- 
-	return str;
-}
-
-char *utoa (unsigned value, char *str, int base) {
-  const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-  int i, j;
-  unsigned remainder;
-  char c;
-  
-  /* Check base is supported. */
-  if ((base < 2) || (base > 36))
-    { 
-      str[0] = '\0';
-      return NULL;
-    }  
-    
-  /* Convert to string. Digits are in reverse order.  */
-  i = 0;
-  do 
-    {
-      remainder = value % base;
-      str[i++] = digits[remainder];
-      value = value / base;
-    } while (value != 0);  
-  str[i] = '\0'; 
-  
-  /* Reverse string.  */
-  for (j = 0, i--; j < i; j++, i--)
-    {
-      c = str[j];
-      str[j] = str[i];
-      str[i] = c; 
-    }       
-  
-  return str;
-}
-
-char *htoa(uint64_t num, char* str) {
-	
-	const char digits[] = "0123456789abcdef";
-	
-	for (uint8_t i = 0; i < 16; i++) {
-		uint32_t _val = (num >> (60 - (i * 4))) & 0xF;
-		str[i] = digits[_val];
-	}
-	str [16] = '\0';
-	return str;
-}

@@ -8,13 +8,8 @@
 #include <cpu/pic.h>
 
 #include <log.h>
+#include <kstring.h>
 
-
-
-// For quick testing - needs to be put in a string.h or something similar
-char* itoa(int num, char* str, int base);
-char* utoa(unsigned num, char* str, int base);
-char *htoa(uint64_t num, char* str);
 
 
 extern "C" void *gISRHandlerAddressTable[INTERRUPT_MAX_COUNT];
@@ -240,117 +235,117 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	CInterrupt::PrintErrorCode(pInt, pState->error_code);
 	
 	CLog::Print("RFLAGS=0x");
-	CLog::Print(htoa(pState->rflags, _TempString));
+	CLog::Print(utoa(pState->rflags, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	
 	CLog::Print("RAX=0x");
-	CLog::Print(htoa(pState->rax, _TempString));
+	CLog::Print(utoa(pState->rax, _TempString, 16));
 	CLog::Print(" \tRBX=0x");
-	CLog::Print(htoa(pState->rbx, _TempString));
+	CLog::Print(utoa(pState->rbx, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("RCX=0x");
-	CLog::Print(htoa(pState->rcx, _TempString));
+	CLog::Print(utoa(pState->rcx, _TempString, 16));
 	CLog::Print(" \tRDX=0x");
-	CLog::Print(htoa(pState->rdx, _TempString));
+	CLog::Print(utoa(pState->rdx, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("RSI=0x");
-	CLog::Print(htoa(pState->rsi, _TempString));
+	CLog::Print(utoa(pState->rsi, _TempString, 16));
 	CLog::Print(" \tRDI=0x");
-	CLog::Print(htoa(pState->rdi, _TempString));
+	CLog::Print(utoa(pState->rdi, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("RSP=0x");
-	CLog::Print(htoa(pState->rsp, _TempString));
+	CLog::Print(utoa(pState->rsp, _TempString, 16));
 	CLog::Print(" \tRBP=0x");
-	CLog::Print(htoa(pState->rbp, _TempString));
+	CLog::Print(utoa(pState->rbp, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 
 
 
 	CLog::Print("R8 =0x");
-	CLog::Print(htoa(pState->r8, _TempString));
+	CLog::Print(utoa(pState->r8, _TempString, 16));
 	CLog::Print(" \tR9 =0x");
-	CLog::Print(htoa(pState->r9, _TempString));
+	CLog::Print(utoa(pState->r9, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("R10=0x");
-	CLog::Print(htoa(pState->r10, _TempString));
+	CLog::Print(utoa(pState->r10, _TempString, 16));
 	CLog::Print(" \tR11=0x");
-	CLog::Print(htoa(pState->r11, _TempString));
+	CLog::Print(utoa(pState->r11, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("R12=0x");
-	CLog::Print(htoa(pState->r12, _TempString));
+	CLog::Print(utoa(pState->r12, _TempString, 16));
 	CLog::Print(" \tR13=0x");
-	CLog::Print(htoa(pState->r13, _TempString));
+	CLog::Print(utoa(pState->r13, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("R14=0x");
-	CLog::Print(htoa(pState->r14, _TempString));
+	CLog::Print(utoa(pState->r14, _TempString, 16));
 	CLog::Print(" \tR15=0x");
-	CLog::Print(htoa(pState->r15, _TempString));
+	CLog::Print(utoa(pState->r15, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	
 	CLog::Print("RIP=0x");
-	CLog::Print(htoa(pState->rip, _TempString));
+	CLog::Print(utoa(pState->rip, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CLog::Print("CS =0x");
-	CLog::Print(htoa(pState->cs, _TempString));
+	CLog::Print(utoa(pState->cs, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("SS =0x");
-	CLog::Print(htoa(pState->ss, _TempString));
+	CLog::Print(utoa(pState->ss, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("DS =0x");
-	CLog::Print(htoa(pState->ds, _TempString));
+	CLog::Print(utoa(pState->ds, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("ES =0x");
-	CLog::Print(htoa(pState->es, _TempString));
+	CLog::Print(utoa(pState->es, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("FS =0x");
-	CLog::Print(htoa(pState->fs, _TempString));
+	CLog::Print(utoa(pState->fs, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("GS =0x");
-	CLog::Print(htoa(pState->gs, _TempString));
+	CLog::Print(utoa(pState->gs, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 
 
 	CLog::Print("CR0=0x");
-	CLog::Print(htoa(_CR0, _TempString));
+	CLog::Print(utoa(_CR0, _TempString, 16));
 	CLog::Print(" \tCR2=0x");
-	CLog::Print(htoa(_CR2, _TempString));
+	CLog::Print(utoa(_CR2, _TempString, 16));
 	CLog::Print("\n");
 
 	CLog::Print("CR3=0x");
-	CLog::Print(htoa(_CR3, _TempString));
+	CLog::Print(utoa(_CR3, _TempString, 16));
 	CLog::Print(" \tCR4=0x");
-	CLog::Print(htoa(_CR4, _TempString));
+	CLog::Print(utoa(_CR4, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 
 	CLog::Print("CR8=0x");
-	CLog::Print(htoa(_CR8, _TempString));
+	CLog::Print(utoa(_CR8, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CLog::Print("EFER=0x");
-	CLog::Print(htoa(_EFER, _TempString));
+	CLog::Print(utoa(_EFER, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CLog::Print("DR6=0x");
-	CLog::Print(htoa(_DR6, _TempString));
+	CLog::Print(utoa(_DR6, _TempString, 16));
 	CLog::Print(" \tDR7=0x");
-	CLog::Print(htoa(_DR7, _TempString));
+	CLog::Print(utoa(_DR7, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	

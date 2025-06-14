@@ -25,5 +25,10 @@ char *kstrncat(char *pDest, const char *pSource, size_t pLength) __attribute__ (
 
 char *kstrchr(const char *pSource, char pChar) __attribute__ (( nothrow ));
 
+void reverse(char str[], int length) __attribute__ (( nothrow ));
+char* itoa(int64_t num, char* str, int base) __attribute__ (( nothrow ));
+char* utoa(uint64_t num, char* str, int base) __attribute__ (( nothrow ));
+
+
 #endif
 
