@@ -40,19 +40,6 @@ int32_t kstrnicmp(const char *pString1, const char *pString2, size_t pLength) {
 	return pString1[i] - pString2[i];
 }
 
-char kto_lower(char pChar) {
-	if ((pChar > 0x40) && (pChar < 0x5B)) {
-		return pChar + 0x20;
-	}
-	return pChar;
-}
-
-char kto_upper(char pChar) {
-	if ((pChar > 0x60) && (pChar < 0x7B)) {
-		return pChar - 0x20;
-	}
-	return pChar;
-}
 
 char *kstrncat(char *pDest, const char *pSource, size_t pLength) {
 	char *_target = pDest + kstrlen(pDest);
@@ -73,6 +60,22 @@ char *kstrchr(const char *pSource, char pChar) {
 		++i;
 	}
 	return NULL;
+}
+
+
+
+char kto_lower(char pChar) {
+	if ((pChar > 0x40) && (pChar < 0x5B)) {
+		return pChar + 0x20;
+	}
+	return pChar;
+}
+
+char kto_upper(char pChar) {
+	if ((pChar > 0x60) && (pChar < 0x7B)) {
+		return pChar - 0x20;
+	}
+	return pChar;
 }
 
 char* itoa(int64_t num, char* str, int base)
