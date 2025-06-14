@@ -9,16 +9,6 @@ size_t kstrlen(const char *pString) {
 	return _Count;
 }
 
-char *kstrcpy(char *pDest, const char *pSource) {
-	uint64_t i = 0;
-	while (pSource[i] != 0) {
-		pDest[i] = pSource[i];
-		++i;
-	}
-	pDest[i] = 0;
-	return pDest;
-}
-
 char *kstrncpy(char *pDest, const char *pSource, size_t pLength) {
 	uint64_t i = 0;
 	while (i < pLength) {
@@ -30,27 +20,11 @@ char *kstrncpy(char *pDest, const char *pSource, size_t pLength) {
 	return pDest;	
 }
 
-int32_t kstrcmp(const char *pString1, const char *pString2) {
-	uint64_t i = 0;
-	while ((pString1[i] == pString2[i]) && (pString1[i] != 0)) {
-		++i;
-	}
-	return pString1[i] - pString2[i];
-}
-
 int32_t kstrncmp(const char *pString1, const char *pString2, size_t pLength) {
 	uint64_t i = 0;
 	while ((pString1[i] == pString2[i]) && (pString1[i] != 0)) {
 		if (i >= pLength)
 			break;
-		++i;
-	}
-	return pString1[i] - pString2[i];
-}
-
-int32_t kstricmp(const char *pString1, const char *pString2) {
-	uint64_t i = 0;
-	while ((kto_lower(pString1[i]) == kto_lower(pString2[i])) && (pString1[i] != 0)) {
 		++i;
 	}
 	return pString1[i] - pString2[i];
@@ -78,17 +52,6 @@ char kto_upper(char pChar) {
 		return pChar - 0x20;
 	}
 	return pChar;
-}
-
-char *kstrcat(char *pDest, const char *pSource) {
-	char *_target = pDest + kstrlen(pDest);
-	uint64_t i = 0;
-	while (pSource[i] != 0) {
-		_target[i] = pSource[i];
-		++i;
-	}
-	_target[i] = 0;
-	return pDest;
 }
 
 char *kstrncat(char *pDest, const char *pSource, size_t pLength) {

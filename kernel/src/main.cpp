@@ -57,7 +57,7 @@ extern "C" uint64_t kmain(void) {
 	}
 	
 	// Initialize GDT
-	CLog::Print("PreInit CGDT...");
+	CLog::Print("Init CGDT...");
 	_RetVal = CGDT::Init();
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
@@ -66,7 +66,7 @@ extern "C" uint64_t kmain(void) {
 	}
 
 	// PreInitialize IDT and Interrupts
-	CLog::Print("PreInit CInterrupt...");
+	CLog::Print("Init CInterrupt...");
 	_RetVal = CInterrupt::Init();
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
