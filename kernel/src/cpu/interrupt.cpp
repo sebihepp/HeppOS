@@ -2,7 +2,6 @@
 #include <cpu/interrupt.h>
 
 #include <cpu/gdt.h>
-#include <cstub.h>
 #include <cpu/io.h>
 #include <cpu/msr.h>
 #include <cpu/pic.h>

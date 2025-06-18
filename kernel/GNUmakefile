@@ -27,7 +27,6 @@ SOURCES := \
 	src/init.cpp \
 	src/fini.cpp \
 	src/main.cpp \
-	src/cstub.cpp \
 	src/liminestub.cpp \
 	src/retval.cpp \
 	src/serial.cpp \

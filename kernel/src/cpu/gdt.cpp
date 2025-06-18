@@ -1,8 +1,8 @@
 
 #include <cpu/gdt.h>
 #include <limine.h>
+#include <kstring.h>
 
-#include <cstub.h>
 
 GDTD_t CGDT::mGlobalDescriptorTableDescriptor;
 GDTEntry_t CGDT::mGlobalDescriptorTable[GDT_TOTAL_COUNT];

@@ -1,11 +1,9 @@
 
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 #include <liminestub.h>
-#include <cstub.h>
 
 #include <retval.h>
 #include <cpu/gdt.h>
@@ -206,11 +204,11 @@ extern "C" uint64_t kmain(void) {
 	
 	char _KStringTest2[64];
 	CLog::Print("Output of strcpy and strcat: ");
-	kstrcpy(_KStringTest2, "Hello ");
+	kstrncpy(_KStringTest2, "Hello ", 64);
 	CLog::Print(kstrcat(_KStringTest2, "World!"));
 	CLog::Print("\n");
 	
-	CLog::Print("Comparing the two strings= ");
+	CLog::Print("Comparing the two strings = ");
 	CLog::Print(itoa(kstrcmp(_KStringTest, _KStringTest2), _TempText, 10));
 	CLog::Print("!\n");
 	
@@ -223,6 +221,20 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(itoa(kstricmp(_KStringTest, _KStringTest2), _TempText, 10));
 	CLog::Print("!\n");
 
+	const char *_KStringTest3 = kstrpbrk(_KStringTest2, " !");
+	CLog::Print("KStringTest3 = ");
+	CLog::Print(_KStringTest3);
+	CLog::Print("\n");
+	
+	const char *_KStringTest4 = _KStringTest2 + kstrspn(_KStringTest2, "abcdefghijklmnopqrstuvwxyz");
+	CLog::Print("KStringTest4 = ");
+	CLog::Print(_KStringTest4);
+	CLog::Print("\n");
+
+	const char *_KStringTest5 = _KStringTest2 + kstrcspn(_KStringTest2, " ");
+	CLog::Print("KStringTest5 = ");
+	CLog::Print(_KStringTest5);
+	CLog::Print("\n");
 	
 #endif
 
