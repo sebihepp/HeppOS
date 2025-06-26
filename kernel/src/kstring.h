@@ -40,9 +40,12 @@ char kto_lower(char pChar) __attribute__ (( nothrow ));
 char kto_upper(char pChar) __attribute__ (( nothrow ));
 
 
-void reverse(char str[], int length) __attribute__ (( nothrow ));
-char* itoa(int64_t num, char* str, int base) __attribute__ (( nothrow ));
-char* utoa(uint64_t num, char* str, int base) __attribute__ (( nothrow ));
+
+void kreverse(char *pString) __attribute__ (( nothrow ));
+char* kitoa(int64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
+char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
+
+
 
 #ifdef __cplusplus
 extern "C" {

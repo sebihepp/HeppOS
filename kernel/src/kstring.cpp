@@ -266,56 +266,58 @@ char kto_upper(char pChar) {
 	return pChar;
 }
 
-char* itoa(int64_t num, char* str, int base)
+
+
+char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
 {
 	int i = 0;
 	bool isNegative = false;
 	
 	/* Handle 0 explicitly, otherwise empty string is
 	* printed for 0 */
-	if (num == 0) {
-		str[i++] = '0';
-		str[i] = '\0';
-		return str;
+	if (pValue == 0) {
+		pString[i++] = '0';
+		pString[i] = '\0';
+		return pString;
 	}
 	
 	// In standard itoa(), negative numbers are handled
 	// only with base 10. Otherwise numbers are
 	// considered unsigned.
-	if (num < 0 && base == 10) {
+	if (pValue < 0 && pBase == 10) {
 		isNegative = true;
-		num = -num;
+		pValue = -pValue;
 	}
 	
 	// Process individual digits
-	while (num != 0) {
-		int rem = num % base;
-		str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-		num = num / base;
+	while (pValue != 0) {
+		int rem = pValue % pBase;
+		pString[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+		pValue = pValue / pBase;
 	}
 	
 	// If number is negative, append '-'
 	if (isNegative)
-		str[i++] = '-';
+		pString[i++] = '-';
 	
-	str[i] = '\0'; // Append string terminator
+	pString[i] = '\0'; // Append string terminator
 	
 	// Reverse the string
-	reverse(str, i);
+	kreverse(pString);
  
-	return str;
+	return pString;
 }
 
-char *utoa (uint64_t value, char *str, int base) {
+char *kutoa (uint64_t pNumber, char *pString, uint32_t pBase) {
   const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
   int i, j;
   unsigned remainder;
   char c;
   
   /* Check base is supported. */
-  if ((base < 2) || (base > 36))
+  if ((pBase < 2) || (pBase > 36))
     { 
-      str[0] = '\0';
+      pString[0] = '\0';
       return NULL;
     }  
     
@@ -323,31 +325,31 @@ char *utoa (uint64_t value, char *str, int base) {
   i = 0;
   do 
     {
-      remainder = value % base;
-      str[i++] = digits[remainder];
-      value = value / base;
-    } while (value != 0);  
-  str[i] = '\0'; 
+      remainder = pNumber % pBase;
+      pString[i++] = digits[remainder];
+      pNumber = pNumber / pBase;
+    } while (pNumber != 0);  
+  pString[i] = '\0'; 
   
   /* Reverse string.  */
   for (j = 0, i--; j < i; j++, i--)
     {
-      c = str[j];
-      str[j] = str[i];
-      str[i] = c; 
+      c = pString[j];
+      pString[j] = pString[i];
+      pString[i] = c; 
     }       
   
-  return str;
+  return pString;
 }
 
-void reverse(char str[], int length)
+void kreverse(char *pString)
 {
     int start = 0;
-    int end = length - 1;
+    int end = kstrlen(pString) - 1;
     while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
+        char temp = pString[start];
+        pString[start] = pString[end];
+        pString[end] = temp;
         end--;
         start++;
     }

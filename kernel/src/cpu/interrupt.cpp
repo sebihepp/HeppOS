@@ -121,9 +121,9 @@ extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState) {
 	//char _TempString[16];
 	
 /* 	CConsole::Print("Interrupt ");
-	CConsole::Print(utoa(pInt, _TempString, 10));
+	CConsole::Print(kutoa(pInt, _TempString, 10));
 	CConsole::Print(" occured ");
-	CConsole::Print(utoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
+	CConsole::Print(kutoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
 	CConsole::Print(" times!\n"); */
 	
 	CInterrupt::mInterruptCount[pInt] += 1;
@@ -172,9 +172,9 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	
 	CLog::Print("\n");
 	CLog::Print("ERROR - Exception 0x");
-	CLog::Print(utoa(pInt, _TempString, 16));
+	CLog::Print(kutoa(pInt, _TempString, 16));
 	CLog::Print(" (");
-	CLog::Print(utoa(pInt, _TempString, 10));
+	CLog::Print(kutoa(pInt, _TempString, 10));
 	CLog::Print(") occured! (");
 
 	switch (pInt) {
@@ -234,117 +234,117 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	CInterrupt::PrintErrorCode(pInt, pState->error_code);
 	
 	CLog::Print("RFLAGS=0x");
-	CLog::Print(utoa(pState->rflags, _TempString, 16));
+	CLog::Print(kutoa(pState->rflags, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	
 	CLog::Print("RAX=0x");
-	CLog::Print(utoa(pState->rax, _TempString, 16));
+	CLog::Print(kutoa(pState->rax, _TempString, 16));
 	CLog::Print(" \tRBX=0x");
-	CLog::Print(utoa(pState->rbx, _TempString, 16));
+	CLog::Print(kutoa(pState->rbx, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("RCX=0x");
-	CLog::Print(utoa(pState->rcx, _TempString, 16));
+	CLog::Print(kutoa(pState->rcx, _TempString, 16));
 	CLog::Print(" \tRDX=0x");
-	CLog::Print(utoa(pState->rdx, _TempString, 16));
+	CLog::Print(kutoa(pState->rdx, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("RSI=0x");
-	CLog::Print(utoa(pState->rsi, _TempString, 16));
+	CLog::Print(kutoa(pState->rsi, _TempString, 16));
 	CLog::Print(" \tRDI=0x");
-	CLog::Print(utoa(pState->rdi, _TempString, 16));
+	CLog::Print(kutoa(pState->rdi, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("RSP=0x");
-	CLog::Print(utoa(pState->rsp, _TempString, 16));
+	CLog::Print(kutoa(pState->rsp, _TempString, 16));
 	CLog::Print(" \tRBP=0x");
-	CLog::Print(utoa(pState->rbp, _TempString, 16));
+	CLog::Print(kutoa(pState->rbp, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 
 
 
 	CLog::Print("R8 =0x");
-	CLog::Print(utoa(pState->r8, _TempString, 16));
+	CLog::Print(kutoa(pState->r8, _TempString, 16));
 	CLog::Print(" \tR9 =0x");
-	CLog::Print(utoa(pState->r9, _TempString, 16));
+	CLog::Print(kutoa(pState->r9, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("R10=0x");
-	CLog::Print(utoa(pState->r10, _TempString, 16));
+	CLog::Print(kutoa(pState->r10, _TempString, 16));
 	CLog::Print(" \tR11=0x");
-	CLog::Print(utoa(pState->r11, _TempString, 16));
+	CLog::Print(kutoa(pState->r11, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("R12=0x");
-	CLog::Print(utoa(pState->r12, _TempString, 16));
+	CLog::Print(kutoa(pState->r12, _TempString, 16));
 	CLog::Print(" \tR13=0x");
-	CLog::Print(utoa(pState->r13, _TempString, 16));
+	CLog::Print(kutoa(pState->r13, _TempString, 16));
 	CLog::Print("\n");
 	
 	CLog::Print("R14=0x");
-	CLog::Print(utoa(pState->r14, _TempString, 16));
+	CLog::Print(kutoa(pState->r14, _TempString, 16));
 	CLog::Print(" \tR15=0x");
-	CLog::Print(utoa(pState->r15, _TempString, 16));
+	CLog::Print(kutoa(pState->r15, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	
 	CLog::Print("RIP=0x");
-	CLog::Print(utoa(pState->rip, _TempString, 16));
+	CLog::Print(kutoa(pState->rip, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CLog::Print("CS =0x");
-	CLog::Print(utoa(pState->cs, _TempString, 16));
+	CLog::Print(kutoa(pState->cs, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("SS =0x");
-	CLog::Print(utoa(pState->ss, _TempString, 16));
+	CLog::Print(kutoa(pState->ss, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("DS =0x");
-	CLog::Print(utoa(pState->ds, _TempString, 16));
+	CLog::Print(kutoa(pState->ds, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("ES =0x");
-	CLog::Print(utoa(pState->es, _TempString, 16));
+	CLog::Print(kutoa(pState->es, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("FS =0x");
-	CLog::Print(utoa(pState->fs, _TempString, 16));
+	CLog::Print(kutoa(pState->fs, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("GS =0x");
-	CLog::Print(utoa(pState->gs, _TempString, 16));
+	CLog::Print(kutoa(pState->gs, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 
 
 	CLog::Print("CR0=0x");
-	CLog::Print(utoa(_CR0, _TempString, 16));
+	CLog::Print(kutoa(_CR0, _TempString, 16));
 	CLog::Print(" \tCR2=0x");
-	CLog::Print(utoa(_CR2, _TempString, 16));
+	CLog::Print(kutoa(_CR2, _TempString, 16));
 	CLog::Print("\n");
 
 	CLog::Print("CR3=0x");
-	CLog::Print(utoa(_CR3, _TempString, 16));
+	CLog::Print(kutoa(_CR3, _TempString, 16));
 	CLog::Print(" \tCR4=0x");
-	CLog::Print(utoa(_CR4, _TempString, 16));
+	CLog::Print(kutoa(_CR4, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 
 	CLog::Print("CR8=0x");
-	CLog::Print(utoa(_CR8, _TempString, 16));
+	CLog::Print(kutoa(_CR8, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CLog::Print("EFER=0x");
-	CLog::Print(utoa(_EFER, _TempString, 16));
+	CLog::Print(kutoa(_EFER, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CLog::Print("DR6=0x");
-	CLog::Print(utoa(_DR6, _TempString, 16));
+	CLog::Print(kutoa(_DR6, _TempString, 16));
 	CLog::Print(" \tDR7=0x");
-	CLog::Print(utoa(_DR7, _TempString, 16));
+	CLog::Print(kutoa(_DR7, _TempString, 16));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
@@ -360,9 +360,9 @@ void CInterrupt::PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) {
 	char _TempString[32];
 	
 	CLog::Print("Error code=0x");
-	CLog::Print(utoa(pErrorCode, _TempString, 16));
+	CLog::Print(kutoa(pErrorCode, _TempString, 16));
 	CLog::Print(" (");
-	CLog::Print(utoa(pErrorCode, _TempString, 10));
+	CLog::Print(kutoa(pErrorCode, _TempString, 10));
 	CLog::Print(")\n");
 	
 	CLog::Print("Meaning:\n");
