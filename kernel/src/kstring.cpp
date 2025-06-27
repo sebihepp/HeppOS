@@ -44,6 +44,11 @@ size_t kstrnlen(const char *pString, size_t pLength) {
 }
 
 char *kstrcpy(char *pDest, const char *pSource) {
+	if (pDest == NULL)
+		return NULL;
+	if (pSource == NULL)
+		return pDest;
+	
 	size_t i = 0;
 	while (pSource[i] != 0) {
 		pDest[i] = pSource[i];
@@ -54,6 +59,11 @@ char *kstrcpy(char *pDest, const char *pSource) {
 }
 
 char *kstrncpy(char *pDest, const char *pSource, size_t pLength) {
+	if (pDest == NULL)
+		return NULL;
+	if (pSource == NULL)
+		return pDest;
+
 	size_t i = 0;
 	while (i < pLength) {
 		pDest[i] = pSource[i];
