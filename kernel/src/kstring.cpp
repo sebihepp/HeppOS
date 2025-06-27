@@ -20,6 +20,9 @@
 
 
 size_t kstrlen(const char *pString) {
+	if (pString == NULL)
+		return 0;
+	
 	size_t i = 0;
 	while (pString[i] != 0) {
 		++i;
@@ -28,6 +31,9 @@ size_t kstrlen(const char *pString) {
 }
 
 size_t kstrnlen(const char *pString, size_t pLength) {
+	if (pString == NULL)
+		return 0;
+	
 	size_t _Count = 0;
 	while (_Count < pLength) {
 		if (pString[_Count] == 0)
