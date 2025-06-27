@@ -60,7 +60,9 @@ ReturnValue_t CLog::Init(void) {
 void CLog::Print(const char *pString) {
 	if (mInitialized == false)
 		return;
-	
+	if (pString == NULL)
+		return;
+
 	mSerial.Send(pString);
 }
 
@@ -68,6 +70,9 @@ void CLog::PrintF(const char *pString, ...) {
 	
 	if (mInitialized == false)
 		return;
+	if (pString == NULL)
+		return;
+
 	
 	mSerial.Send(pString);
 }

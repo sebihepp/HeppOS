@@ -32,6 +32,7 @@ SOURCES := \
 	src/serial.cpp \
 	src/log.cpp \
 	src/kstring.cpp \
+	src/ktype.cpp \
 	\
 	\
 	src/memory/paging.cpp \

@@ -257,6 +257,10 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(kstrrev(_KStringTest2));
 	CLog::Print("\n");
 
+	CLog::Print("kstrstr = ");
+	CLog::Print(kstrstr(_KStringTest, "rl"));
+	CLog::Print("\n");
+
 	
 #endif
 

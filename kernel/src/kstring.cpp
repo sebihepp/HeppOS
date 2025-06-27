@@ -17,6 +17,7 @@
 
 
 #include <kstring.h>
+#include <ktype.h>
 
 
 size_t kstrlen(const char *pString) {
@@ -100,7 +101,7 @@ int32_t kstrncmp(const char *pString1, const char *pString2, size_t pLength) {
 
 int32_t kstricmp(const char *pString1, const char *pString2) {
 	size_t i = 0;
-	while ((kto_lower(pString1[i]) == kto_lower(pString2[i])) && (pString1[i] != 0)) {
+	while ((ktolower(pString1[i]) == ktolower(pString2[i])) && (pString1[i] != 0)) {
 		++i;
 	}
 	return pString1[i] - pString2[i];
@@ -108,7 +109,7 @@ int32_t kstricmp(const char *pString1, const char *pString2) {
 
 int32_t kstrnicmp(const char *pString1, const char *pString2, size_t pLength) {
 	size_t i = 0;
-	while ((kto_lower(pString1[i]) == kto_lower(pString2[i])) && (pString1[i] != 0)) {
+	while ((ktolower(pString1[i]) == ktolower(pString2[i])) && (pString1[i] != 0)) {
 		if (i >= pLength)
 			break;
 		++i;
@@ -180,82 +181,24 @@ char *kstrrchr(const char *pSource, char pChar) {
 
 
 
-char *kstrpbrk(char *pSource, const char *pDelimiter) {
+char *kstrpbrk(const char *pSource, const char *pDelimiter) {
 	if (pSource == NULL)
 		return NULL;
 	if (pDelimiter == NULL)
-		return pSource;
+		return (char*)pSource;
 	
 	size_t i = 0;
 	size_t _DelimiterLength = kstrlen(pDelimiter);
 	while (pSource[i] != 0) {
 		for (size_t k = 0; k < _DelimiterLength; ++k) {
 			if (pSource[i] == pDelimiter[k]) {
-				return &pSource[i];
+				return (char*)(&pSource[i]);
 			}
 		}
 		++i;
 	}
 	return NULL;
 }
-
-const char *kstrpbrk(const char *pSource, const char *pDelimiter) {
-	if (pSource == NULL)
-		return NULL;
-	if (pDelimiter == NULL)
-		return pSource;
-
-	size_t i = 0;
-	size_t _DelimiterLength = kstrlen(pDelimiter);
-	while (pSource[i] != 0) {
-		for (size_t k = 0; k < _DelimiterLength; ++k) {
-			if (pSource[i] == pDelimiter[k]) {
-				return &pSource[i];
-			}
-		}
-		++i;
-	}
-	return NULL;
-}
-
-char *kstrnpbrk(char *pSource, const char *pDelimiter, size_t pLength) {
-	if (pSource == NULL)
-		return NULL;
-	if (pDelimiter == NULL)
-		return pSource;
-
-	size_t i = 0;
-	size_t _DelimiterLength = kstrlen(pDelimiter);
-	while ((pSource[i] != 0) && (i < pLength)) {
-		for (size_t k = 0; k < _DelimiterLength; ++k) {
-			if (pSource[i] == pDelimiter[k]) {
-				return &pSource[i];
-			}
-		}
-		++i;
-	}
-	return NULL;
-}
-
-const char *kstrnpbrk(const char *pSource, const char *pDelimiter, size_t pLength) {
-	if (pSource == NULL)
-		return NULL;
-	if (pDelimiter == NULL)
-		return pSource;
-
-	size_t i = 0;
-	size_t _DelimiterLength = kstrlen(pDelimiter);
-	while ((pSource[i] != 0) && (i < pLength)) {
-		for (size_t k = 0; k < _DelimiterLength; ++k) {
-			if (pSource[i] == pDelimiter[k]) {
-				return &pSource[i];
-			}
-		}
-		++i;
-	}
-	return NULL;
-}
-
 
 
 size_t kstrspn(const char *pSource, const char *pDelimiter) {
@@ -267,26 +210,6 @@ size_t kstrspn(const char *pSource, const char *pDelimiter) {
 	size_t i = 0;
 	size_t k = 0;
 	while (pSource[i] != 0) {
-		for (k = 0; k < kstrlen(pDelimiter); ++k) {
-			if (pSource[i] == pDelimiter[k])
-				break;
-		}
-		if (k >= kstrlen(pDelimiter))
-			break;
-		++i;
-	}
-	return i;
-}
-
-size_t kstrnspn(const char *pSource, const char *pDelimiter, size_t pLength) {
-	if (pSource == NULL)
-		return 0;
-	if (pDelimiter == NULL)
-		return kstrnlen(pSource, pLength);
-
-	size_t i = 0;
-	size_t k = 0;
-	while ((pSource[i] != 0) && (i < pLength)) {
 		for (k = 0; k < kstrlen(pDelimiter); ++k) {
 			if (pSource[i] == pDelimiter[k])
 				break;
@@ -319,42 +242,24 @@ size_t kstrcspn(const char *pSource, const char *pDelimiter) {
 	return i;
 }
 
-size_t kstrncspn(const char *pSource, const char *pDelimiter, size_t pLength) {
-	if (pSource == NULL)
-		return 0;
-	if (pDelimiter == NULL)
-		return 0;
-
+char *kstrstr(const char *pString, const char *pSubString) {
+	if (pString == NULL)
+		return NULL;
+	if (pSubString == NULL)
+		return NULL;
+	
 	size_t i = 0;
-	size_t k = 0;
-	while ((pSource[i] != 0) && (i < pLength)) {
-		for (k = 0; k < kstrlen(pDelimiter); ++k) {
-			if (pSource[i] == pDelimiter[k])
-				break;
-		}
-		if (k < kstrlen(pDelimiter))
-			break;
+	
+	while (pString[i] != 0) {
+		
+		if (kstrncmp(&pString[i], pSubString, kstrlen(pSubString) - 1) == 0)
+			return ((char*)pString+i);
+			
 		++i;
 	}
-	return i;
+	
+	return NULL;
 }
-
-
-
-char kto_lower(char pChar) {
-	if ((pChar > 0x40) && (pChar < 0x5B)) {
-		return pChar + 0x20;
-	}
-	return pChar;
-}
-
-char kto_upper(char pChar) {
-	if ((pChar > 0x60) && (pChar < 0x7B)) {
-		return pChar - 0x20;
-	}
-	return pChar;
-}
-
 
 
 char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
