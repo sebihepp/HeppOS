@@ -118,6 +118,11 @@ int32_t kstrnicmp(const char *pString1, const char *pString2, size_t pLength) {
 
 
 char *kstrcat(char *pDest, const char *pSource) {
+	if (pDest == NULL)
+		return NULL;
+	if (pSource == NULL)
+		return pDest;
+	
 	char *_target = pDest + kstrlen(pDest);
 	size_t i = 0;
 	while (pSource[i] != 0) {
@@ -129,6 +134,11 @@ char *kstrcat(char *pDest, const char *pSource) {
 
 
 char *kstrncat(char *pDest, const char *pSource, size_t pLength) {
+	if (pDest == NULL)
+		return NULL;
+	if (pSource == NULL)
+		return pDest;
+
 	char *_target = pDest + kstrlen(pDest);
 	size_t i = 0;
 	while ((pSource[i] != 0) && (i < pLength)) {
