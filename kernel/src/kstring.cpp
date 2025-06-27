@@ -259,6 +259,11 @@ const char *kstrnpbrk(const char *pSource, const char *pDelimiter, size_t pLengt
 
 
 size_t kstrspn(const char *pSource, const char *pDelimiter) {
+	if (pSource == NULL)
+		return 0;
+	if (pDelimiter == NULL)
+		return kstrlen(pSource);
+
 	size_t i = 0;
 	size_t k = 0;
 	while (pSource[i] != 0) {
@@ -274,6 +279,11 @@ size_t kstrspn(const char *pSource, const char *pDelimiter) {
 }
 
 size_t kstrnspn(const char *pSource, const char *pDelimiter, size_t pLength) {
+	if (pSource == NULL)
+		return 0;
+	if (pDelimiter == NULL)
+		return kstrnlen(pSource, pLength);
+
 	size_t i = 0;
 	size_t k = 0;
 	while ((pSource[i] != 0) && (i < pLength)) {
@@ -290,6 +300,11 @@ size_t kstrnspn(const char *pSource, const char *pDelimiter, size_t pLength) {
 
 
 size_t kstrcspn(const char *pSource, const char *pDelimiter) {
+	if (pSource == NULL)
+		return 0;
+	if (pDelimiter == NULL)
+		return 0;
+
 	size_t i = 0;
 	size_t k = 0;
 	while (pSource[i] != 0) {
@@ -305,6 +320,11 @@ size_t kstrcspn(const char *pSource, const char *pDelimiter) {
 }
 
 size_t kstrncspn(const char *pSource, const char *pDelimiter, size_t pLength) {
+	if (pSource == NULL)
+		return 0;
+	if (pDelimiter == NULL)
+		return 0;
+
 	size_t i = 0;
 	size_t k = 0;
 	while ((pSource[i] != 0) && (i < pLength)) {
