@@ -153,6 +153,9 @@ char *kstrncat(char *pDest, const char *pSource, size_t pLength) {
 }
 
 char *kstrchr(const char *pSource, char pChar) {
+	if (pSource == NULL)
+		return NULL;
+	
 	size_t i = 0;
 	while (pSource[i] != 0) {
 		if (pSource[i] == pChar)
@@ -163,6 +166,9 @@ char *kstrchr(const char *pSource, char pChar) {
 }
 
 char *kstrrchr(const char *pSource, char pChar) {
+	if (pSource == NULL)
+		return NULL;
+	
 	size_t i = kstrlen(pSource) - 1;
 	while (i > 0) {
 		if (pSource[i] == pChar)
