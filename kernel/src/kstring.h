@@ -57,7 +57,9 @@ char kto_upper(char pChar) __attribute__ (( nothrow ));
 
 
 
-void kreverse(char *pString) __attribute__ (( nothrow ));
+char *kstrrev(char *pString) __attribute__ (( nothrow ));
+char *kstrnrev(char *pString, size_t pLength) __attribute__ (( nothrow ));
+
 char* kitoa(int64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
 char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
 

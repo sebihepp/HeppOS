@@ -392,16 +392,15 @@ char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
 	pString[i] = '\0'; // Append string terminator
 	
 	// Reverse the string
-	kreverse(pString);
+	kstrrev(pString);
  
 	return pString;
 }
 
 char *kutoa (uint64_t pNumber, char *pString, uint32_t pBase) {
   const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-  int i, j;
+  int i;
   unsigned remainder;
-  char c;
   
   /* Check base is supported. */
   if ((pBase < 2) || (pBase > 36))
@@ -421,28 +420,52 @@ char *kutoa (uint64_t pNumber, char *pString, uint32_t pBase) {
   pString[i] = '\0'; 
   
   /* Reverse string.  */
-  for (j = 0, i--; j < i; j++, i--)
-    {
-      c = pString[j];
-      pString[j] = pString[i];
-      pString[i] = c; 
-    }       
+  kstrrev(pString);      
   
   return pString;
 }
 
-void kreverse(char *pString)
-{
-    int start = 0;
-    int end = kstrlen(pString) - 1;
-    while (start < end) {
-        char temp = pString[start];
-        pString[start] = pString[end];
-        pString[end] = temp;
-        end--;
-        start++;
-    }
+
+char *kstrrev(char *pString) {
+	if (pString == NULL)
+		return NULL;
+	
+	size_t i = 0;
+	size_t k = kstrlen(pString) - 1;
+	char c;
+	
+	while (i < k) {
+		c = pString[i];
+		pString[i] = pString[k];
+		pString[k] = c;
+		
+		++i;
+		--k;
+	}
+	
+	return pString;
 }
+
+char *kstrnrev(char *pString, size_t pLength) {
+	if (pString == NULL)
+		return NULL;
+	
+	size_t i = 0;
+	size_t k = kstrnlen(pString, pLength) - 1;
+	char c;
+	
+	while (i < k) {
+		c = pString[i];
+		pString[i] = pString[k];
+		pString[k] = c;
+		
+		++i;
+		--k;
+	}
+	
+	return pString;	
+}
+
 
 
 

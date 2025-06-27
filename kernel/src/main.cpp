@@ -239,19 +239,24 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print("!\n");
 
 	const char *_KStringTest3 = kstrpbrk(_KStringTest2, " !");
-	CLog::Print("KStringTest3 = ");
+	CLog::Print("kstrpbrk = ");
 	CLog::Print(_KStringTest3);
 	CLog::Print("\n");
 	
 	const char *_KStringTest4 = _KStringTest2 + kstrspn(_KStringTest2, "abcdefghijklmnopqrstuvwxyz");
-	CLog::Print("KStringTest4 = ");
+	CLog::Print("kstrspn = ");
 	CLog::Print(_KStringTest4);
 	CLog::Print("\n");
 
-	const char *_KStringTest5 = _KStringTest2 + kstrcspn(_KStringTest2, " ");
-	CLog::Print("KStringTest5 = ");
+	const char *_KStringTest5 = _KStringTest2 + kstrcspn(_KStringTest2, "abcdefghijklmnopqrstuvwxyz");
+	CLog::Print("kstrcspn = ");
 	CLog::Print(_KStringTest5);
 	CLog::Print("\n");
+	
+	CLog::Print("kstrrev = ");
+	CLog::Print(kstrrev(_KStringTest2));
+	CLog::Print("\n");
+
 	
 #endif
 
