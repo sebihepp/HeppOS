@@ -181,6 +181,11 @@ char *kstrrchr(const char *pSource, char pChar) {
 
 
 char *kstrpbrk(char *pSource, const char *pDelimiter) {
+	if (pSource == NULL)
+		return NULL;
+	if (pDelimiter == NULL)
+		return pSource;
+	
 	size_t i = 0;
 	size_t _DelimiterLength = kstrlen(pDelimiter);
 	while (pSource[i] != 0) {
@@ -195,6 +200,11 @@ char *kstrpbrk(char *pSource, const char *pDelimiter) {
 }
 
 const char *kstrpbrk(const char *pSource, const char *pDelimiter) {
+	if (pSource == NULL)
+		return NULL;
+	if (pDelimiter == NULL)
+		return pSource;
+
 	size_t i = 0;
 	size_t _DelimiterLength = kstrlen(pDelimiter);
 	while (pSource[i] != 0) {
@@ -209,6 +219,11 @@ const char *kstrpbrk(const char *pSource, const char *pDelimiter) {
 }
 
 char *kstrnpbrk(char *pSource, const char *pDelimiter, size_t pLength) {
+	if (pSource == NULL)
+		return NULL;
+	if (pDelimiter == NULL)
+		return pSource;
+
 	size_t i = 0;
 	size_t _DelimiterLength = kstrlen(pDelimiter);
 	while ((pSource[i] != 0) && (i < pLength)) {
@@ -223,6 +238,11 @@ char *kstrnpbrk(char *pSource, const char *pDelimiter, size_t pLength) {
 }
 
 const char *kstrnpbrk(const char *pSource, const char *pDelimiter, size_t pLength) {
+	if (pSource == NULL)
+		return NULL;
+	if (pDelimiter == NULL)
+		return pSource;
+
 	size_t i = 0;
 	size_t _DelimiterLength = kstrlen(pDelimiter);
 	while ((pSource[i] != 0) && (i < pLength)) {
