@@ -52,7 +52,6 @@ char *kstrnrev(char *pString, size_t pLength) __attribute__ (( nothrow ));
 
 
 char* kitoa(int64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow , const ));
-char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow , const ));
 
 
 void *memchr(const void *pSource, int8_t pValue, size_t pSize) __attribute__(( nothrow ));

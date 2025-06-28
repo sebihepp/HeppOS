@@ -302,34 +302,6 @@ char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
 	return pString;
 }
 
-char *kutoa (uint64_t pNumber, char *pString, uint32_t pBase) {
-  const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-  int i;
-  unsigned remainder;
-  
-  /* Check base is supported. */
-  if ((pBase < 2) || (pBase > 36))
-    { 
-      pString[0] = '\0';
-      return NULL;
-    }  
-    
-  /* Convert to string. Digits are in reverse order.  */
-  i = 0;
-  do 
-    {
-      remainder = pNumber % pBase;
-      pString[i++] = digits[remainder];
-      pNumber = pNumber / pBase;
-    } while (pNumber != 0);  
-  pString[i] = '\0'; 
-  
-  /* Reverse string.  */
-  kstrrev(pString);      
-  
-  return pString;
-}
-
 
 char *kstrrev(char *pString) {
 	if (pString == NULL)
