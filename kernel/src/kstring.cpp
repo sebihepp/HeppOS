@@ -132,6 +132,7 @@ char *kstrcat(char *pDest, const char *pSource) {
 		_target[i] = pSource[i];
 		++i;
 	}
+	_target[i] = 0;
 	return pDest;
 }
 
@@ -365,7 +366,8 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Special = false;
 					break;
 				case 's':
-					kstrcat(&pDest[k], va_arg(pArgs, const char*));
+					pDest[k] = 0;
+					kstrcat(pDest, va_arg(pArgs, const char*));
 					k = kstrlen(pDest);
 					_Special = false;
 					break;
