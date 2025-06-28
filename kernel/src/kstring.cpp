@@ -264,33 +264,30 @@ char *kstrstr(const char *pString, const char *pSubString) {
 }
 
 
-char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
-{
+char *kitoa(int64_t pValue, char *pString, uint32_t pBase) {
+	
 	const char *_Digit = "0123456789abcdefghijklmnopqrstuvwxyz";
 	bool _Negative = false;
 	size_t i = 0;
-	uint64_t _Value = 0;
 	
 	if ((pBase < 2) || (pBase > 36))
 		return NULL;
  
-	if ((pBase == 10) && (pValue < 0)) {
+	if (pValue < 0) {
 		_Negative = true;
-		_Value = -pValue;
-	} else {
-		_Value = (uint64_t)pValue;
+		pValue = -pValue;
 	}
 	
-	if (_Value == 0) {
+	if (pValue == 0) {
 		pString[i++] = '0';
 		pString[i] = 0;
 		return pString;
 	}
 	
-	while (_Value != 0) {
-		int64_t _Remainder = _Value % pBase;
+	while (pValue != 0) {
+		int64_t _Remainder = pValue % pBase;
 		pString[i++] = _Digit[_Remainder];
-		_Value /= pBase;
+		pValue /= pBase;
 	}
 	
 	if (_Negative) {
@@ -301,6 +298,33 @@ char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
 	return kstrrev(pString);
 }
 
+char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) {
+	
+	const char *_Digit = "0123456789abcdefghijklmnopqrstuvwxyz";
+	size_t i = 0;
+	
+	if ((pBase < 2) || (pBase > 36))
+		return NULL;
+ 
+	
+	if (pNumber == 0) {
+		pString[i++] = '0';
+		pString[i] = 0;
+		return pString;
+	}
+	
+	while (pNumber != 0) {
+		int64_t _Remainder = pNumber % pBase;
+		pString[i++] = _Digit[_Remainder];
+		pNumber /= pBase;
+	}
+	
+	pString[i] = 0;
+	
+	return kstrrev(pString);
+}
+
+
 char *ksprintf(char *pDest, const char *pFormat, ...) {
 	if (pDest == NULL)
 		return NULL;
@@ -309,12 +333,22 @@ char *ksprintf(char *pDest, const char *pFormat, ...) {
 	
 	va_list _ap;
 	va_start(_ap, pFormat);
+	kvsprintf(pDest, pFormat, _ap);
+	va_end(_ap);
 	
-	static char _Buffer[64];
+	return pDest;
+}
+
+char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
+	if (pDest == NULL)
+		return NULL;
+	if (pFormat == NULL)
+		return pDest;
+		
+	static char _Buffer[128];
 	size_t i = 0;
 	size_t k = 0;
 	bool _Special = false;
-	const char *_String = NULL;
 	
 	while (pFormat[i] != 0) {
 		
@@ -327,16 +361,16 @@ char *ksprintf(char *pDest, const char *pFormat, ...) {
 					_Special = false;
 					break;
 				case 'c':
-					pDest[k++] = va_arg(_ap, int);
+					pDest[k++] = va_arg(pArgs, int);
 					_Special = false;
 					break;
 				case 's':
-					_String = va_arg(_ap, const char*);
-					kstrcat(&pDest[k], _String);
-					k += kstrlen(_String) - 1;
+					kstrcat(&pDest[k], va_arg(pArgs, const char*));
+					k = kstrlen(pDest);
 					_Special = false;
 					break;
 				default:
+					_Special = false;
 					break;
 			}
 			
@@ -355,9 +389,10 @@ char *ksprintf(char *pDest, const char *pFormat, ...) {
 	
 	pDest[k] = 0;
 	
-	va_end(_ap);
 	return pDest;
+	
 }
+
 
 char *kstrupr(char *pString) {
 	if (pString == NULL)

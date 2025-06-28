@@ -1,6 +1,14 @@
 
+
 .PHONY: all
+all: FLAGS = -O2
 all: iso img
+
+.PHONY: debug
+debug: FLAGS = -D_DEBUG -g
+debug: iso img
+
+export FLAGS
 
 .PHONY: clean
 clean: 
@@ -49,6 +57,15 @@ HeppOS.img: kernel/kernel
 	mcopy -i HeppOS.img@@64M kernel/kernel ::/
 	mcopy -i HeppOS.img@@64M kernel/limine.conf ::/
 
+
 .PHONY: kernel/kernel
 kernel/kernel:
 	cd kernel && $(MAKE)
+	
+.PHONY: flags_release
+flags_release:
+	export FLAGS = -O2
+	
+.PHONY: flags_debug
+flags_debug:
+	export FLAGS = -D_DEBUG -g

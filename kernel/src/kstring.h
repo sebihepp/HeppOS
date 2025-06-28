@@ -20,6 +20,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <stdarg.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif 
@@ -53,9 +55,11 @@ char *kstrnrev(char *pString, size_t pLength) __attribute__ (( nothrow ));
 char *kstrupr(char *pString) __attribute__ (( nothrow ));
 char *kstrlwr(char *pString) __attribute__ (( nothrow ));
 
-char* kitoa(int64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow , const ));
+char* kitoa(int64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
+char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
 
-char *ksprintf(char *pDest, const char *pFormat, ...) __attribute__ (( nothrow , const ));
+char *ksprintf(char *pDest, const char *pFormat, ...) __attribute__ (( nothrow ));
+char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) __attribute__ (( nothrow ));
 
 void *memchr(const void *pSource, int8_t pValue, size_t pSize) __attribute__(( nothrow ));
 int32_t memcmp(const void* pData1, const void* pData2, size_t pLength) __attribute__(( nothrow ));

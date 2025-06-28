@@ -80,9 +80,9 @@ void CLog::PrintF(const char *pString, ...) {
 	va_list _ap;
 	va_start(_ap, pString);
 	
-	static char _Buffer[512];
+	static char _Buffer[4096] __attribute__ (( aligned (4096) ));
 	
-	mSerial.Send(ksprintf(_Buffer, pString, _ap));
+	mSerial.Send(kvsprintf(_Buffer, pString, _ap));
 	
 	va_end(_ap);
 }
