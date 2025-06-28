@@ -265,7 +265,13 @@ extern "C" uint64_t kmain(void) {
 	CLog::PrintF("%%c = %c\n", 'a');
 	CLog::PrintF("%%s = %s\n", "Hallo 123...");
 	CLog::PrintF("%%s = %s\n", "Another Test");
+	CLog::PrintF("%%d = %d\n", -15);
+	CLog::PrintF("%%o = %o\n", 12);
+	CLog::PrintF("%%X = %X\n", 0xAA55AA55);
+	CLog::PrintF("%%p = %p\n", (void*)_KStringTest2);
 	
+CLog::PrintF("Last kstring test:\nkstrlen(_KStringTest2 <%p>)=%d\n\n", (void*)_KStringTest2, kstrlen(_KStringTest2));
+		
 #endif
 
 

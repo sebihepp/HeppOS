@@ -286,7 +286,7 @@ char *kitoa(int64_t pValue, char *pString, uint32_t pBase) {
 	}
 	
 	while (pValue != 0) {
-		int64_t _Remainder = pValue % pBase;
+		uint64_t _Remainder = pValue % pBase;
 		pString[i++] = _Digit[_Remainder];
 		pValue /= pBase;
 	}
@@ -315,7 +315,7 @@ char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) {
 	}
 	
 	while (pNumber != 0) {
-		int64_t _Remainder = pNumber % pBase;
+		uint64_t _Remainder = pNumber % pBase;
 		pString[i++] = _Digit[_Remainder];
 		pNumber /= pBase;
 	}
@@ -371,6 +371,44 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					k = kstrlen(pDest);
 					_Special = false;
 					break;
+				case 'i':
+				case 'd':
+					kitoa(va_arg(pArgs, int), _Buffer, 10);
+					pDest[k] = 0;
+					kstrcat(pDest, _Buffer);
+					k = kstrlen(pDest);
+					_Special = false;
+					break;
+				case 'p':
+					pDest[k++] = '0';
+					pDest[k++] = 'x';
+					kutoa((uintptr_t)va_arg(pArgs, uintptr_t), _Buffer, 16);
+					pDest[k] = 0;
+					kstrcat(pDest, kstrlwr(_Buffer));
+					k = kstrlen(pDest);
+					_Special = false;
+					break;				
+				case 'x':
+					kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+					pDest[k] = 0;
+					kstrcat(pDest, kstrlwr(_Buffer));
+					k = kstrlen(pDest);
+					_Special = false;
+					break;
+				case 'X':
+					kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+					pDest[k] = 0;
+					kstrcat(pDest, kstrupr(_Buffer));
+					k = kstrlen(pDest);
+					_Special = false;
+					break;
+				case 'o':
+					kitoa(va_arg(pArgs, int), _Buffer, 8);
+					pDest[k] = 0;
+					kstrcat(pDest, _Buffer);
+					k = kstrlen(pDest);
+					_Special = false;
+					break;
 				default:
 					_Special = false;
 					break;
@@ -403,6 +441,7 @@ char *kstrupr(char *pString) {
 	size_t i = 0;
 	while (pString[i] != 0) {
 		pString[i] = ktoupper(pString[i]);
+		++i;
 	}
 	
 	return pString;
@@ -415,6 +454,7 @@ char *kstrlwr(char *pString) {
 	size_t i = 0;
 	while (pString[i] != 0) {
 		pString[i] = ktolower(pString[i]);
+		++i;
 	}
 	
 	return pString;	
