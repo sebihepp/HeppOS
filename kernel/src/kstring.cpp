@@ -264,42 +264,39 @@ char *kstrstr(const char *pString, const char *pSubString) {
 
 char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
 {
-	int i = 0;
-	bool isNegative = false;
+	const char *_Digit = "0123456789abcdefghijklmnopqrstuvwxyz";
+	bool _Negative = false;
+	size_t i = 0;
+	uint64_t _Value = 0;
 	
-	/* Handle 0 explicitly, otherwise empty string is
-	* printed for 0 */
-	if (pValue == 0) {
+	if ((pBase < 2) || (pBase > 36))
+		return NULL;
+ 
+	if ((pBase == 10) && (pValue < 0)) {
+		_Negative = true;
+		_Value = -pValue;
+	} else {
+		_Value = (uint64_t)pValue;
+	}
+	
+	if (_Value == 0) {
 		pString[i++] = '0';
-		pString[i] = '\0';
+		pString[i] = 0;
 		return pString;
 	}
 	
-	// In standard itoa(), negative numbers are handled
-	// only with base 10. Otherwise numbers are
-	// considered unsigned.
-	if (pValue < 0 && pBase == 10) {
-		isNegative = true;
-		pValue = -pValue;
+	while (_Value != 0) {
+		int64_t _Remainder = _Value % pBase;
+		pString[i++] = _Digit[_Remainder];
+		_Value /= pBase;
 	}
 	
-	// Process individual digits
-	while (pValue != 0) {
-		int rem = pValue % pBase;
-		pString[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-		pValue = pValue / pBase;
-	}
-	
-	// If number is negative, append '-'
-	if (isNegative)
+	if (_Negative) {
 		pString[i++] = '-';
+	}
+	pString[i] = 0;
 	
-	pString[i] = '\0'; // Append string terminator
-	
-	// Reverse the string
-	kstrrev(pString);
- 
-	return pString;
+	return kstrrev(pString);
 }
 
 
