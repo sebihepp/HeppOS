@@ -15,6 +15,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdarg.h>
+
 
 #include <kstring.h>
 #include <ktype.h>
@@ -298,6 +300,89 @@ char *kitoa(int64_t pValue, char *pString, uint32_t pBase)
 	
 	return kstrrev(pString);
 }
+
+char *ksprintf(char *pDest, const char *pFormat, ...) {
+	if (pDest == NULL)
+		return NULL;
+	if (pFormat == NULL)
+		return pDest;
+	
+	va_list _ap;
+	va_start(_ap, pFormat);
+	
+	static char _Buffer[64];
+	size_t i = 0;
+	size_t k = 0;
+	bool _Special = false;
+	const char *_String = NULL;
+	
+	while (pFormat[i] != 0) {
+		
+	// ToDo: Implement
+		if (_Special) {
+			
+			switch (pFormat[i]) {
+				case '%':
+					pDest[k++] = '%';
+					_Special = false;
+					break;
+				case 'c':
+					pDest[k++] = va_arg(_ap, int);
+					_Special = false;
+					break;
+				case 's':
+					_String = va_arg(_ap, const char*);
+					kstrcat(&pDest[k], _String);
+					k += kstrlen(_String) - 1;
+					_Special = false;
+					break;
+				default:
+					break;
+			}
+			
+		} else {
+			
+			if (pFormat[i] == '%') {
+				_Special = true;
+			} else {
+				pDest[k++] = pFormat[i];
+			}
+			
+		}
+	
+		++i;
+	}
+	
+	pDest[k] = 0;
+	
+	va_end(_ap);
+	return pDest;
+}
+
+char *kstrupr(char *pString) {
+	if (pString == NULL)
+		return NULL;
+	
+	size_t i = 0;
+	while (pString[i] != 0) {
+		pString[i] = ktoupper(pString[i]);
+	}
+	
+	return pString;
+}
+
+char *kstrlwr(char *pString) {
+	if (pString == NULL)
+		return NULL;
+	
+	size_t i = 0;
+	while (pString[i] != 0) {
+		pString[i] = ktolower(pString[i]);
+	}
+	
+	return pString;	
+}
+
 
 
 char *kstrrev(char *pString) {

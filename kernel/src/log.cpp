@@ -17,6 +17,10 @@
 
 #include <log.h>
 
+#include <stdarg.h>
+#include <kstring.h>
+
+
 CSerial CLog::mSerial;
 bool CLog::mInitialized = false;
 
@@ -73,6 +77,12 @@ void CLog::PrintF(const char *pString, ...) {
 	if (pString == NULL)
 		return;
 
+	va_list _ap;
+	va_start(_ap, pString);
 	
-	mSerial.Send(pString);
+	static char _Buffer[512];
+	
+	mSerial.Send(ksprintf(_Buffer, pString, _ap));
+	
+	va_end(_ap);
 }

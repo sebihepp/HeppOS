@@ -4,9 +4,7 @@ CC := x86_64-elf-g++
 LD := x86_64-elf-g++
 AS := x86_64-elf-as
 
-
 CXXFLAGS := \
-	-g -O2 \
 	-Wall -Wextra \
 	-ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit \
 	-mcmodel=kernel -mno-red-zone -mgeneral-regs-only \
@@ -18,9 +16,10 @@ CCFLAGS :=
 ASFLAGS := 
 
 LDFLAGS := \
-	-g -O2 \
 	-T "./linker.ld" \
-	-nostdlib -lgcc
+	-nostdlib -lgcc \
+	$(FLAGS)
+
 
 SOURCES := \
 	src/boot.S \
