@@ -99,7 +99,7 @@ struct CPUState_t {
 typedef void (*ISRHandler_t)(uint64_t pInt, CPUState_t *pState);
 
 extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState);
-extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
+void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
 
 
 class CInterrupt {

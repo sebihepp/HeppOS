@@ -111,7 +111,7 @@ exception_wrapper_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call ExceptionHandler
+	call ISRHandler
 	
 	interrupt_restore
 	
@@ -132,7 +132,7 @@ exception_wrapper_error_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call ExceptionHandler
+	call ISRHandler
 	
 	interrupt_restore
 	

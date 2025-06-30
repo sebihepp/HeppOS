@@ -61,6 +61,7 @@ ReturnValue_t CInterrupt::Init(void) {
 	for (uint64_t i = 0; i < 32; i++) {
 		if (gISRHandlerAddressTable[i] != NULL) {
 			SetIDTEntry(i, gISRHandlerAddressTable[i], IDT_TYPE_GATE);
+			RegisterHandler(i, ExceptionHandler);
 		}
 	}
 	
@@ -134,14 +135,6 @@ uint64_t CInterrupt::GetInterruptCount(uint8_t pInt) {
 
 extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState) {
 
-	//char _TempString[16];
-	
-/* 	CConsole::Print("Interrupt ");
-	CConsole::Print(kitoa(pInt, _TempString, 10));
-	CConsole::Print(" occured ");
-	CConsole::Print(kitoa(Interrupt::mInterruptCount[pInt], _TempString, 10));
-	CConsole::Print(" times!\n"); */
-	
 	CInterrupt::mInterruptCount[pInt] += 1;
 	
 	//Check for spurious interrupt and return if yes
@@ -159,14 +152,17 @@ extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState) {
 	CPIC::SendEOI(pInt);
 }
 
-extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
+void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	
-	char _TempString[32];
 	uint64_t _CR0 = 0;
 	uint64_t _CR2 = 0;
 	uint64_t _CR3 = 0;
 	uint64_t _CR4 = 0;
 	uint64_t _CR8 = 0;
+	uint64_t _DR0 = 0;
+	uint64_t _DR1 = 0;
+	uint64_t _DR2 = 0;
+	uint64_t _DR3 = 0;
 	uint64_t _DR6 = 0;
 	uint64_t _DR7 = 0;
 	uint64_t _EFER = 0;
@@ -177,9 +173,14 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 		"mov %%cr3, %2;\n"
 		"mov %%cr4, %3;\n"
 		"mov %%cr8, %4;\n"
-		"mov %%dr6, %5;\n"
-		"mov %%dr7, %6;\n"
-		: "=r" (_CR0), "=r" (_CR2), "=r" (_CR3), "=r" (_CR4), "=r" (_CR8), "=r" (_DR6), "=r" (_DR7)
+		"mov %%dr0, %5;\n"
+		"mov %%dr1, %6;\n"
+		"mov %%dr2, %7;\n"
+		"mov %%dr3, %8;\n"
+		"mov %%dr6, %9;\n"
+		"mov %%dr7, %10;\n"
+		: "=r" (_CR0), "=r" (_CR2), "=r" (_CR3), "=r" (_CR4), "=r" (_CR8),
+			"=r" (_DR0), "=r" (_DR1), "=r" (_DR2), "=r" (_DR3), "=r" (_DR6), "=r" (_DR7)
 	);
 	
 	ReadMSR(MSR_EFER, &_EFER);
@@ -187,181 +188,51 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	CInterrupt::mInterruptCount[pInt] += 1;
 	
 	CLog::Print("\n");
-	CLog::Print("ERROR - Exception 0x");
-	CLog::Print(kitoa(pInt, _TempString, 16));
-	CLog::Print(" (");
-	CLog::Print(kitoa(pInt, _TempString, 10));
-	CLog::Print(") occured! (");
-
-	switch (pInt) {
-		case 0x00:
-		case 0x05:
-		case 0x06:
-		case 0x07:
-		case 0x09:
-		case 0x0A:
-		case 0x0B:
-		case 0x0C:
-		case 0x0D:
-		case 0x0E:
-		case 0x10:
-		case 0x11:
-		case 0x13:
-		case 0x14:
-		case 0x15:
-		case 0x1C:
-		case 0x1D:
-			CLog::Print("Fault");
-			break;
-		case 0x03:
-		case 0x04:
-			CLog::Print("Trap");
-			break;
-		case 0x01:
-			CLog::Print("Fault/Trap");
-			break;
-		case 0x02:
-			CLog::Print("NMI");
-			break;
-		case 0x08:
-		case 0x12:
-			CLog::Print("Abort");
-			break;
-		case 0x0F:
-		case 0x16:
-		case 0x17:
-		case 0x18:
-		case 0x19:
-		case 0x1A:
-		case 0x1B:
-		case 0x1F:
-			CLog::Print("Reserved");
-			break;
-
-
-		default:
-			CLog::Print("Unknown");
-	}
-	
-	CLog::Print(")\n");
+	CLog::PrintF("ERROR - Exception 0x%02X (%d) - ", pInt, pInt);
+	// ToDo: Implement Printing of the exception name
+	CLog::Print("!\n");
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CInterrupt::PrintErrorCode(pInt, pState->error_code);
 	
-	CLog::Print("RFLAGS=0x");
-	CLog::Print(kitoa(pState->rflags, _TempString, 16));
-	CLog::Print("\n");
+	CLog::PrintF("RFLAGS=0x%016lX\n", pState->rflags);
 	CLog::Print("\n");
 	
 	
-	CLog::Print("RAX=0x");
-	CLog::Print(kitoa(pState->rax, _TempString, 16));
-	CLog::Print(" \tRBX=0x");
-	CLog::Print(kitoa(pState->rbx, _TempString, 16));
+	CLog::PrintF("RAX=0x%016lX \tRBX=0x%016lX\n", pState->rax, pState->rbx);
+	CLog::PrintF("RCX=0x%016lX \tRDX=0x%016lX\n", pState->rcx, pState->rdx);
+	CLog::PrintF("RSI=0x%016lX \tRDI=0x%016lX\n", pState->rsi, pState->rdi);
+	CLog::PrintF("RSP=0x%016lX \tRBP=0x%016lX\n", pState->rsp, pState->rbp);
 	CLog::Print("\n");
 	
-	CLog::Print("RCX=0x");
-	CLog::Print(kitoa(pState->rcx, _TempString, 16));
-	CLog::Print(" \tRDX=0x");
-	CLog::Print(kitoa(pState->rdx, _TempString, 16));
+	CLog::PrintF("R8 =0x%016lX \tR9 =0x%016lX\n", pState->r8, pState->r9);
+	CLog::PrintF("R10=0x%016lX \tR11=0x%016lX\n", pState->r10, pState->r11);
+	CLog::PrintF("R12=0x%016lX \tR13=0x%016lX\n", pState->r12, pState->r13);
+	CLog::PrintF("R14=0x%016lX \tR15=0x%016lX\n", pState->r14, pState->r15);
 	CLog::Print("\n");
 	
-	CLog::Print("RSI=0x");
-	CLog::Print(kitoa(pState->rsi, _TempString, 16));
-	CLog::Print(" \tRDI=0x");
-	CLog::Print(kitoa(pState->rdi, _TempString, 16));
+	
+	CLog::PrintF("RIP=0x%016lX\n", pState->rip);
 	CLog::Print("\n");
 	
-	CLog::Print("RSP=0x");
-	CLog::Print(kitoa(pState->rsp, _TempString, 16));
-	CLog::Print(" \tRBP=0x");
-	CLog::Print(kitoa(pState->rbp, _TempString, 16));
-	CLog::Print("\n");
+	CLog::PrintF("CS=0x%04X \tSS=0x%04X\n", pState->cs, pState->ss);
+	CLog::PrintF("DS=0x%04X \tES=0x%04X\n", pState->ds, pState->es);
+	CLog::PrintF("FS=0x%04X \tGS=0x%04X\n", pState->fs, pState->gs);
 	CLog::Print("\n");
 
-
-
-	CLog::Print("R8 =0x");
-	CLog::Print(kitoa(pState->r8, _TempString, 16));
-	CLog::Print(" \tR9 =0x");
-	CLog::Print(kitoa(pState->r9, _TempString, 16));
+	CLog::PrintF("CR0=0x%016lX \tCR2=0x%016lX\n", _CR0, _CR2);
+	CLog::PrintF("CR3=0x%016lX \tCR4=0x%016lX\n", _CR3, _CR4);
+	CLog::Print("\n");
+	CLog::PrintF("CR8=0x%016lX\n", _CR8);
 	CLog::Print("\n");
 	
-	CLog::Print("R10=0x");
-	CLog::Print(kitoa(pState->r10, _TempString, 16));
-	CLog::Print(" \tR11=0x");
-	CLog::Print(kitoa(pState->r11, _TempString, 16));
+	CLog::PrintF("EFER=0x%016lX\n", _EFER);	
 	CLog::Print("\n");
 	
-	CLog::Print("R12=0x");
-	CLog::Print(kitoa(pState->r12, _TempString, 16));
-	CLog::Print(" \tR13=0x");
-	CLog::Print(kitoa(pState->r13, _TempString, 16));
-	CLog::Print("\n");
-	
-	CLog::Print("R14=0x");
-	CLog::Print(kitoa(pState->r14, _TempString, 16));
-	CLog::Print(" \tR15=0x");
-	CLog::Print(kitoa(pState->r15, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("\n");
-	
-	
-	CLog::Print("RIP=0x");
-	CLog::Print(kitoa(pState->rip, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("\n");
-	
-	CLog::Print("CS =0x");
-	CLog::Print(kitoa(pState->cs, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("SS =0x");
-	CLog::Print(kitoa(pState->ss, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("DS =0x");
-	CLog::Print(kitoa(pState->ds, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("ES =0x");
-	CLog::Print(kitoa(pState->es, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("FS =0x");
-	CLog::Print(kitoa(pState->fs, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("GS =0x");
-	CLog::Print(kitoa(pState->gs, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("\n");
-
-
-	CLog::Print("CR0=0x");
-	CLog::Print(kitoa(_CR0, _TempString, 16));
-	CLog::Print(" \tCR2=0x");
-	CLog::Print(kitoa(_CR2, _TempString, 16));
-	CLog::Print("\n");
-
-	CLog::Print("CR3=0x");
-	CLog::Print(kitoa(_CR3, _TempString, 16));
-	CLog::Print(" \tCR4=0x");
-	CLog::Print(kitoa(_CR4, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("\n");
-
-	CLog::Print("CR8=0x");
-	CLog::Print(kitoa(_CR8, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("\n");
-	
-	CLog::Print("EFER=0x");
-	CLog::Print(kitoa(_EFER, _TempString, 16));
-	CLog::Print("\n");
-	CLog::Print("\n");
-	
-	CLog::Print("DR6=0x");
-	CLog::Print(kitoa(_DR6, _TempString, 16));
-	CLog::Print(" \tDR7=0x");
-	CLog::Print(kitoa(_DR7, _TempString, 16));
-	CLog::Print("\n");
+	CLog::PrintF("DR0=0x%016lX \tDR1=0x%016lX\n", _DR0, _DR1);
+	CLog::PrintF("DR2=0x%016lX \tDR3=0x%016lX\n", _DR2, _DR3);
+	CLog::PrintF("DR6=0x%016lX \tDR7=0x%016lX\n", _DR6, _DR7);
 	CLog::Print("\n");
 	
 	// Loop forever because of Exception
@@ -373,13 +244,7 @@ extern "C" void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 
 void CInterrupt::PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) {
 	
-	char _TempString[32];
-	
-	CLog::Print("Error code=0x");
-	CLog::Print(kitoa(pErrorCode, _TempString, 16));
-	CLog::Print(" (");
-	CLog::Print(kitoa(pErrorCode, _TempString, 10));
-	CLog::Print(")\n");
+	CLog::PrintF("Error code=0x%lX (%ld)\n", pErrorCode, pErrorCode);
 	
 	CLog::Print("Meaning:\n");
 	switch (pInt) {

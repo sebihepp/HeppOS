@@ -277,6 +277,7 @@ extern "C" uint64_t kmain(void) {
 	
 	CLog::PrintF("Last kstring test:\nkstrlen(_KStringTest2 <%p>)=%d\n\n", (void*)_KStringTest2, kstrlen(_KStringTest2));
 	
+	asm volatile ("int $0x06;\n");
 		
 #endif
 
