@@ -350,6 +350,11 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 	size_t i = 0;
 	size_t k = 0;
 	bool _Special = false;
+	bool _Long = false;
+	int64_t _Width = 0;
+	bool _LeadingZero = false;
+	int64_t _LeadingWidth = 0;
+	int64_t _NumberLength = 0;
 	
 	while (pFormat[i] != 0) {
 		
@@ -357,27 +362,88 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 		if (_Special) {
 			
 			switch (pFormat[i]) {
+				case '0':
+					if (_Width == 0) {
+						_LeadingZero = true;
+					} else {
+						_Width *= 10;
+					}
+					break;
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					_Width *= 10;
+					_Width += pFormat[i] - '0';
+					break;
+				case 'l':
+					_Long = true;
+					break;
 				case '%':
 					pDest[k++] = '%';
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				case 'c':
 					pDest[k++] = va_arg(pArgs, int);
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				case 's':
 					pDest[k] = 0;
 					kstrcat(pDest, va_arg(pArgs, const char*));
 					k = kstrlen(pDest);
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				case 'i':
 				case 'd':
-					kitoa(va_arg(pArgs, int), _Buffer, 10);
+					if (_Long) {
+						kitoa(va_arg(pArgs, int64_t), _Buffer, 10);
+					} else {
+						kitoa(va_arg(pArgs, int), _Buffer, 10);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+						}
+					}
 					pDest[k] = 0;
 					kstrcat(pDest, _Buffer);
 					k = kstrlen(pDest);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+						}						
+					}
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				case 'p':
 					pDest[k++] = '0';
@@ -386,31 +452,104 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					pDest[k] = 0;
 					kstrcat(pDest, kstrlwr(_Buffer));
 					k = kstrlen(pDest);
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;				
 				case 'x':
-					kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+					if (_Long) {
+						kutoa(va_arg(pArgs, uint64_t), _Buffer, 16);
+					} else {
+						kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+						}
+					}
 					pDest[k] = 0;
 					kstrcat(pDest, kstrlwr(_Buffer));
 					k = kstrlen(pDest);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+						}						
+					}
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				case 'X':
-					kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+					if (_Long) {
+						kutoa(va_arg(pArgs, uint64_t), _Buffer, 16);
+					} else {
+						kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+						}
+					}
 					pDest[k] = 0;
 					kstrcat(pDest, kstrupr(_Buffer));
 					k = kstrlen(pDest);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+						}						
+					}
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				case 'o':
-					kitoa(va_arg(pArgs, int), _Buffer, 8);
+					if (_Long) {
+						kitoa(va_arg(pArgs, int64_t), _Buffer, 8);
+					} else {
+						kitoa(va_arg(pArgs, int), _Buffer, 8);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+						}
+					}
 					pDest[k] = 0;
 					kstrcat(pDest, _Buffer);
 					k = kstrlen(pDest);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+						}						
+					}
+					
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 				default:
 					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					_NumberLength = 0;
 					break;
 			}
 			
@@ -418,6 +557,10 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 			
 			if (pFormat[i] == '%') {
 				_Special = true;
+				_Width = 0;
+				_Long = false;
+				_LeadingZero = false;
+				_NumberLength = 0;
 			} else {
 				pDest[k++] = pFormat[i];
 			}

@@ -270,7 +270,13 @@ extern "C" uint64_t kmain(void) {
 	CLog::PrintF("%%X = %X\n", 0xAA55AA55);
 	CLog::PrintF("%%p = %p\n", (void*)_KStringTest2);
 	
-CLog::PrintF("Last kstring test:\nkstrlen(_KStringTest2 <%p>)=%d\n\n", (void*)_KStringTest2, kstrlen(_KStringTest2));
+	CLog::PrintF("Width Test: 0x%4x!\n", 7);
+	CLog::PrintF("Leading Zero Test: 0x%04x!\n", 7);
+	CLog::PrintF("Leading Zero Test: 0o%04o!\n", -9);
+	CLog::PrintF("Leading Zero Test: %04d!\n", -9);
+	
+	CLog::PrintF("Last kstring test:\nkstrlen(_KStringTest2 <%p>)=%d\n\n", (void*)_KStringTest2, kstrlen(_KStringTest2));
+	
 		
 #endif
 
