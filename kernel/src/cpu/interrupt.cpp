@@ -188,9 +188,7 @@ void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	CInterrupt::mInterruptCount[pInt] += 1;
 	
 	CLog::Print("\n");
-	CLog::PrintF("ERROR - Exception 0x%02X (%d) - ", pInt, pInt);
-	// ToDo: Implement Printing of the exception name
-	CLog::Print("!\n");
+	CLog::PrintF("ERROR - Exception 0x%02X (%d) - %s!\n", pInt, pInt, GetExceptionName(pInt));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
@@ -292,3 +290,92 @@ void CInterrupt::PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) {
 	
 }
 
+const char *GetExceptionName(uint64_t pInt) {
+
+	switch (pInt) {
+		case 0x00:
+			return "Division Error (#DE)";
+			break;
+		case 0x01:
+			return "Debug (#DB)";
+			break;
+		case 0x02:
+			return "Non-maskable Interrupt (#NMI)";
+			break;
+		case 0x03:
+			return "Breakpoint (#BP)";
+			break;
+		case 0x04:
+			return "Overflow (#OF)";
+			break;
+		case 0x05:
+			return "Bound range exceeded (#BR)";
+			break;
+		case 0x06:
+			return "Invalid Opcode (#UD)";
+			break;
+		case 0x07:
+			return "Device not available (#NM)";
+			break;
+		case 0x08:
+			return "Double Fault (#DF)";
+			break;
+		case 0x09:
+			return "Coprocessor Segment Overrun";
+			break;
+		case 0x0A:
+			return "Invalid TSS (#TS)";
+			break;
+		case 0x0B:
+			return "Segment not present (#NP)";
+			break;
+		case 0x0C:
+			return "Stack-Segment Fault (#SS)";
+			break;
+		case 0x0D:
+			return "General Protection Fault (#GP)";
+			break;
+		case 0x0E:
+			return "Page Fault (#PF)";
+			break;
+		case 0x0F:
+			return "Reserved";
+			break;
+		case 0x10:
+			return "x87 Floating-Point Exception (#MF)";
+			break;
+		case 0x11:
+			return "Alignment Check (#AC)";
+			break;
+		case 0x12:
+			return "Machine Check (#MC)";
+			break;
+		case 0x13:
+			return "SIMD Floating-Point Exception (#XF)";
+			break;
+		case 0x14:
+			return "Virtualization Exception (#VE)";
+			break;
+		case 0x15:
+			return "Control Protection Exception (#CP)";
+			break;
+		case 0x1C:
+			return "Hypervisor Injection Exception (#HV)";
+			break;
+		case 0x1D:
+			return "VMM Communication Exception (#VC)";
+			break;
+		case 0x1E:
+			return "Security Exception (#SX)";
+			break;
+		case 0x1F:
+			return "Reserved";
+			break;
+
+
+		default:
+			return "Unknown";
+			break;
+	}
+	return "";
+}
