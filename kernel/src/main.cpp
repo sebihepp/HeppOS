@@ -41,7 +41,6 @@ volatile uint8_t gPagingMapTest[4096] __attribute__ (( aligned(4096) ));
 extern "C" uint64_t kmain(void) {
 
 #ifdef _DEBUG
-	char _TempText[24];
 	const char *_ConstTempText = NULL;
 #endif
 
@@ -94,26 +93,13 @@ extern "C" uint64_t kmain(void) {
 	//Debug Output
 	
 	// Print HHDM offset
-	CLog::Print("HHDM offset=0x");
-	CLog::Print(kitoa((uint64_t)CPaging::GetHHDMOffset(), _TempText, 16));
-	CLog::Print("\n");
-	
-	
-	// Print Framebuffer Address
-	/* CLog::Print("Framebuffer Address=0x");
-	CLog::Print(kitoa((uint64_t)CConsole::GetFramebufferAddress(), _TempText, 16));
-	CLog::Print("\n"); */
+	CLog::PrintF("HHDM offset=%p\n", CPaging::GetHHDMOffset());	
 	
 	// Print CR3 Address
-	CLog::Print("CR3=0x");
-	CLog::Print(kitoa((uint64_t)CPaging::GetCR3(), _TempText, 16));
-	CLog::Print("\n");
-	
+	CLog::PrintF("CR3=%p\n", CPaging::GetCR3());	
 	
 	// Print TSS Address
-	CLog::Print("TSS=0x");
-	CLog::Print(kitoa((uint64_t)CGDT::GetTSS(), _TempText, 16));
-	CLog::Print("\n");
+	CLog::PrintF("TSS=%p\n", CGDT::GetTSS());
 #endif
 	
 #ifdef _DEBUG
@@ -121,16 +107,12 @@ extern "C" uint64_t kmain(void) {
 	void *_TestVirtualAddress = (void*)gPagingMapTest;
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
 	void *_TestPhysicalAddress = NULL;
-	CLog::Print("Virtual 0x");
-	CLog::Print(kitoa((uint64_t)_TestVirtualAddress, _TempText, 16));
+	CLog::PrintF("Virtual %p", _TestVirtualAddress);
 	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
-		CLog::Print(GetReturnValueString(_RetVal));
-		CLog::Print("!\n");
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 	} else {
-		CLog::Print(" == Physical 0x");
-		CLog::Print(kitoa((uint64_t)_TestPhysicalAddress, _TempText, 16));
-		CLog::Print("\n");
+		CLog::PrintF(" == Physical %p\n", _TestPhysicalAddress);
 	}
 #endif	
 	
@@ -139,26 +121,16 @@ extern "C" uint64_t kmain(void) {
 	
 	void *_PageLevelTestVirtualAddress = (void*)gPagingMapTest;
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
-	CLog::Print("Virtual Address 0x");
-	CLog::Print(kitoa((uint64_t)_PageLevelTestVirtualAddress, _TempText, 16));
-	CLog::Print(" has page level=");
-	CLog::Print(_ConstTempText);
-	CLog::Print("\n");
+	CLog::PrintF("Virtual Address %p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
 
 	_PageLevelTestVirtualAddress = CPaging::GetHHDMOffset();
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
-	CLog::Print("Virtual Address 0x");
-	CLog::Print(kitoa((uint64_t)_PageLevelTestVirtualAddress, _TempText, 16));
-	CLog::Print(" has page level=");
-	CLog::Print(_ConstTempText);
-	CLog::Print("\n");
+	CLog::PrintF("Virtual Address %p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
 #endif	
 	
 #ifdef _DEBUG
 	//Test CPaging::MapAddress
-	CLog::Print("Test: Mapping gPagingMapTest(");
-	CLog::Print(kitoa((uint64_t)&gPagingMapTest, _TempText, 16));
-	CLog::Print(") to 0x7000...\n");
+	CLog::PrintF("Test: Mapping gPagingMapTest(%p) to 0x7000...\n", &gPagingMapTest);
 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
 	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
@@ -168,8 +140,7 @@ extern "C" uint64_t kmain(void) {
 		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1, CACHETYPE_WRITEBACK, 
 			true, false, false);
 		if (IS_ERROR(_RetVal)) {
-			CLog::Print(GetReturnValueString(_RetVal));
-			CLog::Print("!\n");			
+			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));		
 			return _RetVal;
 		}
 		
@@ -177,26 +148,18 @@ extern "C" uint64_t kmain(void) {
 		// Check if mapping worked
 		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress);
 		if (IS_ERROR(_RetVal)) {
-			CLog::Print(GetReturnValueString(_RetVal));
-			CLog::Print("!\n");
+			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		} else {
-			CLog::Print("Virtual 0x");
-			CLog::Print(kitoa((uint64_t)&gPagingMapTest, _TempText, 16));
-			CLog::Print(" == Physical 0x");
-			CLog::Print(kitoa((uint64_t)_PagingMapTestPhysicalAddress, _TempText, 16));
-			CLog::Print("\n");
+			CLog::PrintF("Virtual %p == Physical %p\n", &gPagingMapTest, _PagingMapTestPhysicalAddress);
 		} 
 	}
 	
 	// Test UnmapAddress
-	CLog::Print("Test: Unmapping gPagingMapTest(");
-	CLog::Print(kitoa((uint64_t)&gPagingMapTest, _TempText, 16));
-	CLog::Print(") to 0x7000...\n");
+	CLog::PrintF("Test: Unmapping gPagingMapTest(%p) to 0x7000...\n", &gPagingMapTest);
 	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
 	if (IS_ERROR(_RetVal)) {
 		CLog::Print("ERROR: UnmapAddress failed!\n");
-		CLog::Print(GetReturnValueString(_RetVal));
-		CLog::Print("!\n");			
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		return _RetVal;
 	} else {
 		CLog::Print("UnmapAddress successful!\n");
@@ -212,55 +175,30 @@ extern "C" uint64_t kmain(void) {
 	// Test kstring
 	
 	const char *_KStringTest = "Hello World!";
-	CLog::Print("Size of \"");
-	CLog::Print(_KStringTest);
-	CLog::Print("\" is ");
-	CLog::Print(kitoa(kstrlen(_KStringTest), _TempText, 10));
-	CLog::Print("!\n");
+	CLog::PrintF("Size of \"%s\" is %d!\n", _KStringTest, kstrlen(_KStringTest));
 	
 	char _KStringTest2[64];
-	CLog::Print("Output of strcpy and strcat: ");
 	kstrncpy(_KStringTest2, "Hello ", 64);
-	CLog::Print(kstrcat(_KStringTest2, "World!"));
-	CLog::Print("\n");
+	CLog::PrintF("Output of strcpy and strcat: %s\n", kstrcat(_KStringTest2, "World!"));
 	
-	CLog::Print("Comparing the two strings = ");
-	CLog::Print(kitoa(kstrcmp(_KStringTest, _KStringTest2), _TempText, 10));
-	CLog::Print("!\n");
+	CLog::PrintF("Comparing the two strings = %d!\n", kstrcmp(_KStringTest, _KStringTest2));
 	
 	_KStringTest2[0] = 'h';
-	CLog::Print("Comparing \"");
-	CLog::Print(_KStringTest);
-	CLog::Print("\" with \"");
-	CLog::Print(_KStringTest2);
-	CLog::Print("\" = ");
-	CLog::Print(kitoa(kstricmp(_KStringTest, _KStringTest2), _TempText, 10));
-	CLog::Print("!\n");
+	CLog::PrintF("Comparing \"%s\" with \"%s\" = %d!\n", _KStringTest, _KStringTest2, kstricmp(_KStringTest, _KStringTest2));
 
 	const char *_KStringTest3 = kstrpbrk(_KStringTest2, " !");
-	CLog::Print("kstrpbrk = ");
-	CLog::Print(_KStringTest3);
-	CLog::Print("\n");
+	CLog::PrintF("kstrpbrk = %s\n", _KStringTest3);
 	
 	const char *_KStringTest4 = _KStringTest2 + kstrspn(_KStringTest2, "abcdefghijklmnopqrstuvwxyz");
-	CLog::Print("kstrspn = ");
-	CLog::Print(_KStringTest4);
-	CLog::Print("\n");
+	CLog::PrintF("kstrspn = %s\n", _KStringTest4);
 
 	const char *_KStringTest5 = _KStringTest2 + kstrcspn(_KStringTest2, "abcdefghijklmnopqrstuvwxyz");
-	CLog::Print("kstrcspn = ");
-	CLog::Print(_KStringTest5);
-	CLog::Print("\n");
+	CLog::PrintF("kstrcspn = %s\n", _KStringTest5);
 	
-	CLog::Print("kstrrev = ");
-	CLog::Print(kstrrev(_KStringTest2));
-	CLog::Print("\n");
+	CLog::PrintF("kstrrev = %s\n", kstrrev(_KStringTest2));
 
-	CLog::Print("kstrstr = ");
-	CLog::Print(kstrstr(_KStringTest, "rl"));
-	CLog::Print("\n");
+	CLog::PrintF("kstrstr = %s\n", kstrstr(_KStringTest, "rl"));
 
-	CLog::Print("CLog::PrintF() test:\n");
 	
 	CLog::PrintF("%%c = %c\n", 'a');
 	CLog::PrintF("%%s = %s\n", "Hallo 123...");
