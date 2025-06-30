@@ -2,7 +2,7 @@
 CXX := x86_64-elf-g++
 CC := x86_64-elf-g++
 LD := x86_64-elf-g++
-AS := x86_64-elf-as
+AS := x86_64-elf-g++
 
 CXXFLAGS := \
 	-Wall -Wextra \
@@ -11,9 +11,9 @@ CXXFLAGS := \
 	-I"/usr/local/include" -I"./src" \
 	$(FLAGS)
 
-CCFLAGS := 
+CCFLAGS := $(FLAGS)
 
-ASFLAGS := 
+ASFLAGS := $(FLAGS)
 
 LDFLAGS := \
 	-T "./linker.ld" \
@@ -55,7 +55,7 @@ clean:
 	rm -f $(OBJECTS)
 	
 %.o:%.S
-	$(AS) $(ASFLAGS) -o $@ $<
+	$(AS) $(ASFLAGS) -c -o $@ $<
 
 %.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
