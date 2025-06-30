@@ -77,10 +77,6 @@ const char *CPaging::GetPageLevelString(PageLevel_t pPageLevel) {
 
 ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) {
 	
-#ifdef _DEBUG
-	char _TempText[24];
-#endif
-	
 	uint32_t _PML5Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 48) & 0x1FF;
 	uint32_t _PML4Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 39) & 0x1FF;
 	uint32_t _PML3Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 30) & 0x1FF;
@@ -88,21 +84,11 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
 	
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPhysicalAddress() - _PML5Index=");
-	CLog::Print(kitoa(_PML5Index, _TempText, 10));
-	CLog::Print("\n");
- 	CLog::Print("CPaging::GetPhysicalAddress() - _PML4Index=");
-	CLog::Print(kitoa(_PML4Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::GetPhysicalAddress() - _PML3Index=");
-	CLog::Print(kitoa(_PML3Index, _TempText, 10));
-	CLog::Print("\n"); 
-	CLog::Print("CPaging::GetPhysicalAddress() - _PML2Index=");
-	CLog::Print(kitoa(_PML2Index, _TempText, 10));
-	CLog::Print("\n");
- 	CLog::Print("CPaging::GetPhysicalAddress() - _PML1Index=");
-	CLog::Print(kitoa(_PML1Index, _TempText, 10));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML5Index=%d\n", _PML5Index);
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML4Index=%d\n", _PML4Index);
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML3Index=%d\n", _PML3Index);
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML2Index=%d\n", _PML2Index);
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML1Index=%d\n", _PML1Index);
 #endif
 	
 	
@@ -114,9 +100,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
 
 #ifdef _DEBUG
-		CLog::Print("CPaging::GetPhysicalAddress() - _PML5=0x");
-		CLog::Print(kitoa((uint64_t)_PML5, _TempText, 16));
-		CLog::Print("\n"); 
+		CLog::PrintF("CPaging::GetPhysicalAddress() - _PML5=%p\n", _PML5);
 #endif
 		if (_PML5->Entry[_PML5Index].Present == 0) {
 			return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -140,9 +124,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	}
 	
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPhysicalAddress() - _PML4=0x");
-	CLog::Print(kitoa((uint64_t)_PML4, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML4=%p\n", _PML4);
 #endif
 	if (_PML4->Entry[_PML4Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -161,9 +143,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) +
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPhysicalAddress() - _PML3=0x");
-	CLog::Print(kitoa((uint64_t)_PML3, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML3=%p\n", _PML3);
 #endif
 	if (_PML3->Entry[_PML3Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -182,9 +162,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
-	CLog::Print("CPaging::GetPhysicalAddress() - _PML2=0x");
-	CLog::Print(kitoa((uint64_t)_PML2, _TempText,16));
-	CLog::Print("\n");
+	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML2=%p\n", _PML2);
 #endif
 	if (_PML2->Entry[_PML2Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -202,9 +180,7 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) +
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPhysicalAddress() - _PML1=0x");
-	CLog::Print(kitoa((uint64_t)_PML1, _TempText, 16));
-	CLog::Print("\n"); 
+ 	CLog::PrintF("CPaging::GetPhysicalAddress() - _PML1=%p\n", _PML1);
 #endif
 	if (_PML1->Entry[_PML1Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -221,10 +197,6 @@ ReturnValue_t CPaging::GetPhysicalAddress(void *pVirtualAddress, void *&pPhysica
 
 ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel, CachType_t pCacheType, 
 		bool pGlobal, bool pExecuteDisable, bool pUser) {
-	
-#ifdef _DEBUG
-	char _TempText[24];
-#endif
 
 	if (pPageLevel == PAGELEVEL_UNKNOWN) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
@@ -245,21 +217,11 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
 	
 #ifdef _DEBUG
-	CLog::Print("CPaging::MapAddress() - _PML5Index=");
-	CLog::Print(kitoa(_PML5Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::MapAddress() - _PML4Index=");
-	CLog::Print(kitoa(_PML4Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::MapAddress() - _PML3Index=");
-	CLog::Print(kitoa(_PML3Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::MapAddress() - _PML2Index=");
-	CLog::Print(kitoa(_PML2Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::MapAddress() - _PML1Index=");
-	CLog::Print(kitoa(_PML1Index, _TempText, 10));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::MapAddress() - _PML5Index=%d\n", _PML5Index);
+ 	CLog::PrintF("CPaging::MapAddress() - _PML4Index=%d\n", _PML4Index);
+ 	CLog::PrintF("CPaging::MapAddress() - _PML3Index=%d\n", _PML3Index);
+ 	CLog::PrintF("CPaging::MapAddress() - _PML2Index=%d\n", _PML2Index);
+ 	CLog::PrintF("CPaging::MapAddress() - _PML1Index=%d\n", _PML1Index);
 #endif	
 	
 	volatile PML4_t *_PML4 = NULL;
@@ -269,9 +231,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
-		CLog::Print("CPaging::MapAddress() - _PML5=0x");
-		CLog::Print(kitoa((uint64_t)_PML5, _TempText, 16));
-		CLog::Print("\n"); 
+		CLog::PrintF("CPaging::MapAddress() - _PML5=%p\n", _PML5); 
 #endif
 		
 		if (_PML5->Entry[_PML5Index].Present == 0) {
@@ -302,9 +262,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	}
 	
 #ifdef _DEBUG
- 	CLog::Print("CPaging::MapAddress() - _PML4=0x");
-	CLog::Print(kitoa((uint64_t)_PML4, _TempText, 16));
-	CLog::Print("\n"); 
+ 	CLog::PrintF("CPaging::MapAddress() - _PML4=%p\n", _PML4);
 #endif
 	if (_PML4->Entry[_PML4Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -328,9 +286,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::MapAddress() - _PML3=0x");
-	CLog::Print(kitoa((uint64_t)_PML3, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::MapAddress() - _PML3=%p\n", _PML3);
 #endif
 	if (_PML3->Entry[_PML3Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -355,9 +311,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::MapAddress() - _PML2=0x");
-	CLog::Print(kitoa((uint64_t)_PML2, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::MapAddress() - _PML2=%p\n", _PML2);
 #endif
 	
 	if (_PML2->Entry[_PML2Index].Present == 0) {
@@ -383,9 +337,7 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::MapAddress() - _PML1=0x");
-	CLog::Print(kitoa((uint64_t)_PML1, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::MapAddress() - _PML1=%p\n", _PML1);
 #endif
 	if (_PML1->Entry[_PML1Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -408,10 +360,6 @@ ReturnValue_t CPaging::MapAddress(void *pVirtualAddress, void *pPhysicalAddress,
 }
 
 ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLevel) {
-	
-#ifdef _DEBUG
-	char _TempText[24];
-#endif
 
 	if (pPageLevel == PAGELEVEL_UNKNOWN) {
 		return RETVAL_ERROR_INVALID_PAGELEVEL;
@@ -432,21 +380,11 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
 	
 #ifdef _DEBUG
-	CLog::Print("CPaging::UnmapAddress() - _PML5Index=");
-	CLog::Print(kitoa(_PML5Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::UnmapAddress() - _PML4Index=");
-	CLog::Print(kitoa(_PML4Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::UnmapAddress() - _PML3Index=");
-	CLog::Print(kitoa(_PML3Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::UnmapAddress() - _PML2Index=");
-	CLog::Print(kitoa(_PML2Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::UnmapAddress() - _PML1Index=");
-	CLog::Print(kitoa(_PML1Index, _TempText, 10));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML5Index=%d\n", _PML5Index);
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML4Index=%d\n", _PML4Index);
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML3Index=%d\n", _PML3Index);
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML2Index=%d\n", _PML2Index);
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML1Index=%d\n", _PML1Index);
 #endif	
 	
 	volatile PML4_t *_PML4 = NULL;
@@ -456,9 +394,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) + 
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
-		 CLog::Print("CPaging::UnmapAddress() - _PML5=0x");
-		CLog::Print(kitoa((uint64_t)_PML5, _TempText, 16));
-		CLog::Print("\n"); 
+		CLog::PrintF("CPaging::UnmapAddress() - _PML5=%p\n", _PML5);
 #endif
 		if (_PML5->Entry[_PML5Index].Present == 0) {
 			return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -481,9 +417,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	}
 	
 #ifdef _DEBUG
- 	CLog::Print("CPaging::UnmapAddress() - _PML4=0x");
-	CLog::Print(kitoa((uint64_t)_PML4, _TempText, 16));
-	CLog::Print("\n"); 
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML4=%p\n", _PML4);
 #endif
 	if (_PML4->Entry[_PML4Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -500,9 +434,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::UnmapAddress() - _PML3=0x");
-	CLog::Print(kitoa((uint64_t)_PML3, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML3=%p\n", _PML3);
 #endif
 	if (_PML3->Entry[_PML3Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -520,9 +452,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::UnmapAddress() - _PML2=0x");
-	CLog::Print(kitoa((uint64_t)_PML2, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML2=%p\n", _PML2);
 #endif
 	
 	if (_PML2->Entry[_PML2Index].Present == 0) {
@@ -541,9 +471,7 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::UnmapAddress() - _PML1=0x");
-	CLog::Print(kitoa((uint64_t)_PML1, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::UnmapAddress() - _PML1=%p\n", _PML1);
 #endif
 	if (_PML1->Entry[_PML1Index].Present == 0) {
 		return RETVAL_ERROR_PAGE_NOT_PRESENT;
@@ -558,10 +486,6 @@ ReturnValue_t CPaging::UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLeve
 }
 
 ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) {
-	
-#ifdef _DEBUG	
-	char _TempText[24];
-#endif	
 
 	uint32_t _PML5Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 48) & 0x1FF;
 	uint32_t _PML4Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 39) & 0x1FF;
@@ -570,21 +494,11 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	uint32_t _PML1Index = (reinterpret_cast<uintptr_t>(pVirtualAddress) >> 12) & 0x1FF;
 	
 #ifdef _DEBUG
-	CLog::Print("CPaging::GetPageLevel() - _PML5Index=");
-	CLog::Print(kitoa(_PML5Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::GetPageLevel() - _PML4Index=");
-	CLog::Print(kitoa(_PML4Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::GetPageLevel() - _PML3Index=");
-	CLog::Print(kitoa(_PML3Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::GetPageLevel() - _PML2Index=");
-	CLog::Print(kitoa(_PML2Index, _TempText, 10));
-	CLog::Print("\n");
-	CLog::Print("CPaging::GetPageLevel() - _PML1Index=");
-	CLog::Print(kitoa(_PML1Index, _TempText, 10));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML5Index=%d\n", _PML5Index);
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML4Index=%d\n", _PML4Index);
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML3Index=%d\n", _PML3Index);
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML2Index=%d\n", _PML2Index);
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML1Index=%d\n", _PML1Index);
 #endif
 	
 	volatile PML4_t *_PML4 = NULL;
@@ -594,9 +508,7 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 		volatile PML5_t *_PML5 = reinterpret_cast<volatile PML5_t*>(reinterpret_cast<uintptr_t>(CPaging::GetCR3()) +
 			reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
-		CLog::Print("CPaging::GetPageLevel() - _PML5=0x");
-		CLog::Print(kitoa((uint64_t)_PML5, _TempText, 16));
-		CLog::Print("\n");
+		CLog::PrintF("CPaging::GetPageLevel() - _PML5=%p\n", _PML5);
 #endif
 
 		pPageLevel = PAGELEVEL_PML5;
@@ -616,9 +528,7 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	}
 	
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPageLevel() - _PML4=0x");
-	CLog::Print(kitoa((uint64_t)_PML4, _TempText, 16));
-	CLog::Print("\n"); 
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML4=%p\n", _PML4);
 #endif
 	
 	pPageLevel = PAGELEVEL_PML4;
@@ -633,9 +543,7 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	volatile PML3_t *_PML3 = reinterpret_cast<volatile PML3_t*>((reinterpret_cast<uintptr_t>(_PML4->Entry[_PML4Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPageLevel() - _PML3=0x");
-	CLog::Print(kitoa((uint64_t)_PML3, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML3=%p\n", _PML3);
 #endif
 	
 	pPageLevel = PAGELEVEL_PML3;
@@ -649,9 +557,7 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	volatile PML2_t *_PML2 = reinterpret_cast<volatile PML2_t*>((reinterpret_cast<uintptr_t>(_PML3->Entry[_PML3Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPageLevel() - _PML2=0x");
-	CLog::Print(kitoa((uint64_t)_PML2, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML2=%p\n", _PML2);
 #endif
 	pPageLevel = PAGELEVEL_PML2;
 	
@@ -666,9 +572,7 @@ ReturnValue_t CPaging::GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLev
 	volatile PML1_t *_PML1 = reinterpret_cast<volatile PML1_t*>((reinterpret_cast<uintptr_t>(_PML2->Entry[_PML2Index].Address) << 12) + 
 		reinterpret_cast<uintptr_t>(mHHDMOffset));
 #ifdef _DEBUG
- 	CLog::Print("CPaging::GetPageLevel() - _PML1=0x");
-	CLog::Print(kitoa((uint64_t)_PML1, _TempText, 16));
-	CLog::Print("\n");
+ 	CLog::PrintF("CPaging::GetPageLevel() - _PML1=%p\n", _PML1);
 #endif
 	pPageLevel = PAGELEVEL_PML1;
 	if (_PML1->Entry[_PML1Index].Present)
