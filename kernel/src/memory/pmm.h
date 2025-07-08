@@ -15,15 +15,28 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PMM
-#define HEADER_PMM
+#pragma once
+
+#include <stddef.h>
+#include <stdint.h>
 
 #include <retval.h>
 #include <memory/paging.h>
 #include <liminestub.h>
 
+
+struct MemoryRange_t {
+	MemoryRange_t *prev;
+	MemoryRange_t *next;
+	size_t size;
+};
+
 class CPMM {
 private:
+	
+	static MemoryRange_t *mMemoryISAList;
+	static MemoryRange_t *mMemoryLowList;
+	static MemoryRange_t *mMemoryHighList;
 	
 	CPMM() = delete;
 	~CPMM() = delete;
@@ -33,5 +46,3 @@ public:
 	static ReturnValue_t Init(void) __attribute__ (( nothrow ));
 	
 };
-
-#endif

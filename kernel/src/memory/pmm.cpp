@@ -17,6 +17,11 @@
 
 #include <memory/pmm.h>
 
+MemoryRange_t *CPMM::mMemoryISAList = NULL;
+MemoryRange_t *CPMM::mMemoryLowList = NULL;
+MemoryRange_t *CPMM::mMemoryHighList = NULL;
+
+
 ReturnValue_t CPMM::PreInit(void) {
 
 	return RETVAL_ERROR_GENERAL;
