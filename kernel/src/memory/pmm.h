@@ -26,17 +26,17 @@
 
 
 struct MemoryRange_t {
-	MemoryRange_t *prev;
-	MemoryRange_t *next;
+	MemoryRange_t *ListNext;
+	MemoryRange_t *ListPrev;
 	size_t size;
 };
 
 class CPMM {
 private:
 	
-	static MemoryRange_t *mMemoryISAList;
-	static MemoryRange_t *mMemoryLowList;
-	static MemoryRange_t *mMemoryHighList;
+	static MemoryRange_t *mMemoryISAList;	//Memory below 1MB
+	static MemoryRange_t *mMemoryLowList;	//Memory between 1MB and 4GB
+	static MemoryRange_t *mMemoryHighList;	//Memory above 4GB
 	
 	CPMM() = delete;
 	~CPMM() = delete;
