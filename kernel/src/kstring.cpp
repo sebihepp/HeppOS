@@ -354,7 +354,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 	int64_t _Width = 0;
 	bool _LeadingZero = false;
 	int64_t _LeadingWidth = 0;
-	int64_t _NumberLength = 0;
 	
 	while (pFormat[i] != 0) {
 		
@@ -391,7 +390,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				case 'c':
 					pDest[k++] = va_arg(pArgs, int);
@@ -400,7 +398,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				case 's':
 					pDest[k] = 0;
@@ -411,7 +408,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				case 'i':
 				case 'd':
@@ -443,7 +439,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				case 'p':
 					pDest[k++] = '0';
@@ -457,7 +452,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;				
 				case 'x':
 					if (_Long) {
@@ -484,7 +478,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				case 'X':
 					if (_Long) {
@@ -511,7 +504,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				case 'o':
 					if (_Long) {
@@ -542,14 +534,12 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 				default:
 					_Special = false;
 					_Width = 0;
 					_Long = false;
 					_LeadingZero = false;
-					_NumberLength = 0;
 					break;
 			}
 			
@@ -560,7 +550,6 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 				_Width = 0;
 				_Long = false;
 				_LeadingZero = false;
-				_NumberLength = 0;
 			} else {
 				pDest[k++] = pFormat[i];
 			}
