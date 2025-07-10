@@ -25,6 +25,7 @@
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>
 #include <memory/paging.h>
+#include <memory/pmm.h>
 #include <cpu/pic.h>
 #include <cpu/mmio.h>
 #include <log.h>
@@ -68,6 +69,19 @@ extern "C" uint64_t kmain(void) {
 	if (IS_ERROR(_RetVal)) {
 		return _RetVal;
 	}
+	
+	// PreInitialize PhysicalMemoryManager
+	CLog::Print("PreInit CPMM...");
+	_RetVal = CPMM::PreInit();
+	CLog::Print(GetReturnValueString(_RetVal));
+	CLog::Print("\n");
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+
+#ifdef _DEBUG
+	CPMM::PrintMemoryMap();
+#endif
 	
 	// Initialize GDT
 	CLog::Print("Init CGDT...");

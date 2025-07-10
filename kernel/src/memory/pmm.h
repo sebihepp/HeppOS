@@ -22,20 +22,22 @@
 
 #include <retval.h>
 #include <memory/paging.h>
-#include <liminestub.h>
 
+#define MEMORY_ISA_END (1024*1024*16)
+#define MEMORY_LOW_END (1024*1024*1024*4)
 
 struct MemoryRange_t {
+	
+	size_t Size;
 	MemoryRange_t *ListNext;
 	MemoryRange_t *ListPrev;
-	size_t size;
 };
 
 class CPMM {
 private:
 	
-	static MemoryRange_t *mMemoryISAList;	//Memory below 1MB
-	static MemoryRange_t *mMemoryLowList;	//Memory between 1MB and 4GB
+	static MemoryRange_t *mMemoryISAList;	//Memory below 16MB
+	static MemoryRange_t *mMemoryLowList;	//Memory between 16MB and 4GB
 	static MemoryRange_t *mMemoryHighList;	//Memory above 4GB
 	
 	CPMM() = delete;
@@ -44,5 +46,7 @@ public:
 
 	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
 	static ReturnValue_t Init(void) __attribute__ (( nothrow ));
+	
+	static void PrintMemoryMap(void) __attribute__ (( nothrow ));
 	
 };
