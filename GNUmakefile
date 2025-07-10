@@ -5,7 +5,7 @@ all: FLAGS = -O2
 all: iso img
 
 .PHONY: debug
-debug: FLAGS = -D_DEBUG -g
+debug: FLAGS = -D_DEBUG -g -Og
 debug: iso img
 
 export FLAGS
