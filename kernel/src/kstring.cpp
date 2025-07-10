@@ -653,12 +653,12 @@ extern "C" {
 #endif
 
 
-void *memchr(const void *pSource, int8_t pValue, size_t pSize) {
-	uint64_t i;
+void *memchr(const void *pSource, int pValue, size_t pSize) {
+	uint64_t i = 0;
 	if (pSize == 0)
 		return NULL;
 	while (i < pSize) {
-		if (((int8_t*)pSource)[i] == pValue) {
+		if (((int8_t*)pSource)[i] == (int8_t)pValue) {
 			return &((int8_t*)pSource)[i];
 		}
 		++i;
@@ -666,12 +666,12 @@ void *memchr(const void *pSource, int8_t pValue, size_t pSize) {
 	return NULL;
 }
 
-int32_t memcmp(const void *a, const void *b, size_t length)
+int32_t memcmp(const void *pData1, const void *pData2, size_t pLength)
 {
-	const uint8_t *_a = (const uint8_t*)a;
-	const uint8_t *_b = (const uint8_t*)b;
+	const uint8_t *_a = (const uint8_t*)pData1;
+	const uint8_t *_b = (const uint8_t*)pData2;
 	
-	for (size_t i = 0; i < length; i++)
+	for (size_t i = 0; i < pLength; i++)
 	{
 		if (_a[i] < _b[i]) {
 			return -1;
@@ -682,42 +682,42 @@ int32_t memcmp(const void *a, const void *b, size_t length)
 	return 0;
 }
 
-void *memcpy(void *dest, const void *src, size_t length)
+void *memcpy(void *pDest, const void *pSource, size_t pLength)
 {
-	uint8_t *_target = (uint8_t*)dest;
-	for (size_t i = 0; i < length; i++)
+	uint8_t *_target = (uint8_t*)pDest;
+	for (size_t i = 0; i < pLength; i++)
 	{
-		_target[i] = ((uint8_t*)src)[i];
+		_target[i] = ((uint8_t*)pSource)[i];
 	}
-	return dest;
+	return pDest;
 }
 
-void *memmove(void *dest, const void *source, size_t length)
+void *memmove(void *pDest, const void *pSource, size_t pLength)
 {
-	uint8_t *_target = (uint8_t*)dest;
-	if (dest < source) 
+	uint8_t *_target = (uint8_t*)pDest;
+	if (pDest < pSource) 
 	{
-		for (size_t i = 0; i < length; i++)
+		for (size_t i = 0; i < pLength; i++)
 		{
-			_target[i] = ((uint8_t*)source)[i];
+			_target[i] = ((uint8_t*)pSource)[i];
 		}
 	} else {
-		for (size_t i = length; i != 0; i--)
+		for (size_t i = pLength; i != 0; i--)
 		{
-			_target[i-1] = ((uint8_t*)source)[i-1];
+			_target[i-1] = ((uint8_t*)pSource)[i-1];
 		}		
 	}
-	return dest;
+	return pDest;
 }
 
-void *memset(void *s, int8_t value, size_t length)
+void *memset(void *pDest, int pValue, size_t pLength)
 {
-	uint8_t *_target = (uint8_t*)s;
-	for (size_t i = 0; i < length; i++)
+	uint8_t *_target = (uint8_t*)pDest;
+	for (size_t i = 0; i < pLength; i++)
 	{
-		_target[i] = (uint8_t) value;
+		_target[i] = (uint8_t)pValue;
 	}
-	return s;
+	return pDest;
 }
 
 

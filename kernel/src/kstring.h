@@ -61,11 +61,11 @@ char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( no
 char *ksprintf(char *pDest, const char *pFormat, ...) __attribute__ (( nothrow ));
 char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) __attribute__ (( nothrow ));
 
-void *memchr(const void *pSource, int8_t pValue, size_t pSize) __attribute__(( nothrow ));
+void *memchr(const void *pSource, int pValue, size_t pSize) __attribute__(( nothrow ));
 int32_t memcmp(const void* pData1, const void* pData2, size_t pLength) __attribute__(( nothrow ));
 void* memcpy(void *pDest, const void *pSource, size_t pLength) __attribute__(( nothrow ));
 void* memmove(void *pDest, const void *pSource, size_t pLength) __attribute__(( nothrow ));
-void* memset(void *pDest, int8_t pValue, size_t pLength) __attribute__(( nothrow ));
+void* memset(void *pDest, int pValue, size_t pLength) __attribute__(( nothrow ));
 
 #ifdef __cplusplus
 }
