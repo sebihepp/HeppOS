@@ -95,6 +95,29 @@ void CPMM::PrintMemoryMap(void) {
 		}
 	}
 
+	if (mMemoryLowList != NULL) {
+		_CurrentRange = mMemoryLowList;
+		while (_CurrentRange != NULL) {
+			
+			CLog::PrintF("0x%016lX | 0x%016lX | 0x%016lX\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
+				(uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
+				_CurrentRange->Size);
+			_CurrentRange = _CurrentRange->ListNext;
+			
+		}
+	}
+	
+	if (mMemoryHighList != NULL) {
+		_CurrentRange = mMemoryHighList;
+		while (_CurrentRange != NULL) {
+			
+			CLog::PrintF("0x%016lX | 0x%016lX | 0x%016lX\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
+				(uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
+				_CurrentRange->Size);
+			_CurrentRange = _CurrentRange->ListNext;
+			
+		}
+	}
 }
 
 ReturnValue_t CPMM::Init(void) {
