@@ -37,36 +37,32 @@ ReturnValue_t CPMM::PreInit(void) {
 		if (_LimineMemoryMapEntry->type != LIMINE_MEMMAP_USABLE)
 			continue;
 		
-		// Skip if Memory starts above 1MB
-		if (_LimineMemoryMapEntry->base >= MEMORY_ISA_END)
-			continue;
 		
-		// Create MemoryRange Entry
-		MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(_LimineMemoryMapEntry->base + (uintptr_t)CPaging::GetHHDMOffset());
-		_NewMemoryRangeEntry->Size = _LimineMemoryMapEntry->length;
-		_NewMemoryRangeEntry->ListNext = NULL;
-		_NewMemoryRangeEntry->ListPrev = NULL;
-		
-		// Cut size over 1MB
-		if (((uintptr_t)_NewMemoryRangeEntry - (uintptr_t)CPaging::GetHHDMOffset() + _NewMemoryRangeEntry->Size) > MEMORY_ISA_END) {
-			_NewMemoryRangeEntry->Size = MEMORY_ISA_END - ((uintptr_t)_NewMemoryRangeEntry - (uintptr_t)CPaging::GetHHDMOffset());
-		}
+		// Handle ISA Memory
+		//if (_LimineMemoryMapEntry->base < MEMORY_ISA_END)
+			SetISAFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
 		
 		
-		// Add Entry to the list
-		if (mMemoryISAList == NULL) {
-			mMemoryISAList = _NewMemoryRangeEntry;
-		} else {
-			//Search for end of list
-			MemoryRange_t *_LastEntry = mMemoryISAList;
-			while (_LastEntry->ListNext != NULL)
-				_LastEntry = _LastEntry->ListNext;
-			
-			//Add to end of list
-			_LastEntry->ListNext = _NewMemoryRangeEntry;
-			_NewMemoryRangeEntry->ListPrev = _LastEntry;
-		}
-
+		// Handle Low Memory
+		//if ((_LimineMemoryMapEntry->base < MEMORY_ISA_END) &&
+		//		((_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length) >= MEMORY_ISA_END)) {
+			SetLowFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		//}
+		//if ((_LimineMemoryMapEntry->base < MEMORY_LOW_END) &&
+		//		((_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length) >= MEMORY_LOW_END)) {
+		//	SetLowFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		//}
+		
+		
+		// Handle High Memory
+		//if ((_LimineMemoryMapEntry->base < MEMORY_LOW_END) &&
+		//"		((_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length) >= MEMORY_LOW_END)) {
+			SetHighFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		//}
+		//if (_LimineMemoryMapEntry->base >= MEMORY_LOW_END) {
+		//	SetHighFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		//}
+		
 	}
 	
 	if (mMemoryISAList == NULL)
@@ -123,4 +119,242 @@ void CPMM::PrintMemoryMap(void) {
 ReturnValue_t CPMM::Init(void) {
 	
 	return RETVAL_ERROR_GENERAL;
+}
+
+void CPMM::SetISAFree(void *pBase, size_t pSize) {
+
+	// Ignore if above 1MB
+	if ((uintptr_t)pBase >= MEMORY_ISA_END)
+		return;
+	
+	// Cut Range above 1MB
+	if (((uintptr_t)pBase + pSize) > MEMORY_ISA_END) {
+		pSize = MEMORY_ISA_END - (uintptr_t)pBase;
+	}
+
+	//Check if Entry already exists
+	MemoryRange_t *_CurrentEntry = mMemoryISAList;
+	while (_CurrentEntry != NULL) {
+		
+		//Case: Base is the same
+		if (_CurrentEntry == (MemoryRange_t*)((uintptr_t)pBase + (uintptr_t)CPaging::GetHHDMOffset())) {
+			// If new size is greater, then just update size
+			if (pSize > _CurrentEntry->Size) {
+				_CurrentEntry->Size = pSize;
+				return;
+			}
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
+	
+	// Create MemoryRange Entry
+	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)pBase + (uintptr_t)CPaging::GetHHDMOffset());
+	_NewMemoryRangeEntry->Size = pSize;
+	_NewMemoryRangeEntry->ListNext = NULL;
+	_NewMemoryRangeEntry->ListPrev = NULL;
+	
+	// Add Entry to the list
+	if (mMemoryISAList == NULL) {
+		mMemoryISAList = _NewMemoryRangeEntry;
+		return;
+	} else {
+		//Search List for Position to insert
+		MemoryRange_t *_CurrentEntry = mMemoryISAList;
+		
+		while (_CurrentEntry != NULL) {
+			
+			// if found, add in between
+			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
+				_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				_CurrentEntry->ListPrev = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListNext = _CurrentEntry;
+				break;
+			}
+			
+			// if Last entry, add to back of list
+			if (_CurrentEntry->ListNext == NULL)  {
+				_CurrentEntry->ListNext = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListPrev = _CurrentEntry;				
+				return;
+			}
+			
+			_CurrentEntry = _CurrentEntry->ListNext;
+		}
+		
+	}
+	
+	MergeISA();
+	
+}
+
+void CPMM::SetISAUsed(void *pBase, size_t pSize) {
+	
+}
+
+void CPMM::SetLowFree(void *pBase, size_t pSize) {
+	
+	// Ignore if above 4GB
+	if ((uintptr_t)pBase >= MEMORY_LOW_END)
+		return;
+
+	// Ignore below 1MB
+	if (((uintptr_t)pBase + (uintptr_t)pSize) < MEMORY_ISA_END)
+		return;
+	
+	// Cut Range below 1MB
+	if ((uintptr_t)pBase < MEMORY_ISA_END) {
+		pSize -= MEMORY_ISA_END - (uintptr_t)pBase;
+		pBase = (void*)MEMORY_ISA_END;
+	}
+	
+	// Cut Range above 4GB
+	if (((uintptr_t)pBase + pSize) > MEMORY_LOW_END) {
+		pSize = MEMORY_LOW_END - (uintptr_t)pBase;
+	}
+
+	//Check if Entry already exists
+	MemoryRange_t *_CurrentEntry = mMemoryLowList;
+	while (_CurrentEntry != NULL) {
+		
+		//Case: Base is the same
+		if (_CurrentEntry == (MemoryRange_t*)((uintptr_t)pBase + (uintptr_t)CPaging::GetHHDMOffset())) {
+			// If new size is greater, then just update size
+			if (pSize > _CurrentEntry->Size) {
+				_CurrentEntry->Size = pSize;
+				return;
+			}
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
+	
+	// Create MemoryRange Entry
+	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)pBase + (uintptr_t)CPaging::GetHHDMOffset());
+	_NewMemoryRangeEntry->Size = pSize;
+	_NewMemoryRangeEntry->ListNext = NULL;
+	_NewMemoryRangeEntry->ListPrev = NULL;
+	
+	// Add Entry to the list
+	if (mMemoryLowList == NULL) {
+		mMemoryLowList = _NewMemoryRangeEntry;
+		return;
+	} else {
+		//Search List for Position to insert
+		MemoryRange_t *_CurrentEntry = mMemoryLowList;
+		
+		while (_CurrentEntry != NULL) {
+			
+			// if found, add in between
+			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
+				_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				_CurrentEntry->ListPrev = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListNext = _CurrentEntry;
+				break;
+			}
+			
+			// if Last entry, add to back of list
+			if (_CurrentEntry->ListNext == NULL)  {
+				_CurrentEntry->ListNext = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListPrev = _CurrentEntry;				
+				return;
+			}
+			
+			_CurrentEntry = _CurrentEntry->ListNext;
+		}
+		
+	}
+	
+	MergeLow();
+	
+}
+
+void CPMM::SetLowUsed(void *pBase, size_t pSize) {
+	
+}
+
+void CPMM::SetHighFree(void *pBase, size_t pSize) {
+		
+	// Ignore if below 4GB
+	if (((uintptr_t)pBase + pSize) < MEMORY_LOW_END)
+		return;
+	
+	// Cut Range below 4GB
+	if ((uintptr_t)pBase < MEMORY_LOW_END) {
+		pSize -= MEMORY_LOW_END - (uintptr_t)pBase;
+		pBase = (void*)MEMORY_LOW_END;
+	}
+	
+	//Check if Entry already exists
+	MemoryRange_t *_CurrentEntry = mMemoryHighList;
+	while (_CurrentEntry != NULL) {
+		
+		//Case: Base is the same
+		if (_CurrentEntry == (MemoryRange_t*)((uintptr_t)pBase + (uintptr_t)CPaging::GetHHDMOffset())) {
+			// If new size is greater, then just update size
+			if (pSize > _CurrentEntry->Size) {
+				_CurrentEntry->Size = pSize;
+				return;
+			}
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
+	
+	// Create MemoryRange Entry
+	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)pBase + (uintptr_t)CPaging::GetHHDMOffset());
+	_NewMemoryRangeEntry->Size = pSize;
+	_NewMemoryRangeEntry->ListNext = NULL;
+	_NewMemoryRangeEntry->ListPrev = NULL;
+	
+	// Add Entry to the list
+	if (mMemoryHighList == NULL) {
+		mMemoryHighList = _NewMemoryRangeEntry;
+		return;
+	} else {
+		//Search List for Position to insert
+		MemoryRange_t *_CurrentEntry = mMemoryHighList;
+		
+		while (_CurrentEntry != NULL) {
+			
+			// if found, add in between
+			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
+				_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				_CurrentEntry->ListPrev = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListNext = _CurrentEntry;
+				break;
+			}
+			
+			// if Last entry, add to back of list
+			if (_CurrentEntry->ListNext == NULL)  {
+				_CurrentEntry->ListNext = _NewMemoryRangeEntry;
+				_NewMemoryRangeEntry->ListPrev = _CurrentEntry;				
+				return;
+			}
+			
+			_CurrentEntry = _CurrentEntry->ListNext;
+		}
+		
+	}
+	
+	MergeHigh();
+}
+
+void CPMM::SetHighUsed(void *pBase, size_t pSize) {
+	
+}
+
+void CPMM::MergeISA(void) {
+	
+}
+
+void CPMM::MergeLow(void) {
+	
+}
+
+void CPMM::MergeHigh(void) {
+	
 }
