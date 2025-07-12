@@ -30,38 +30,17 @@ ReturnValue_t CPMM::PreInit(void) {
 	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
 
 	// Set ISA Memory (below 1MB)
-	for (size_t i = 0; i < _LimineMemoryMapResponse->entry_count; ++i) {
-		limine_memmap_entry *_LimineMemoryMapEntry = _LimineMemoryMapResponse->entries[i];
+	for (size_t i = _LimineMemoryMapResponse->entry_count; i > 0 ; --i) {
+		limine_memmap_entry *_LimineMemoryMapEntry = _LimineMemoryMapResponse->entries[i-1];
 		
 		// Skip not usable memory
 		if (_LimineMemoryMapEntry->type != LIMINE_MEMMAP_USABLE)
 			continue;
 		
 		
-		// Handle ISA Memory
-		//if (_LimineMemoryMapEntry->base < MEMORY_ISA_END)
-			SetISAFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-		
-		
-		// Handle Low Memory
-		//if ((_LimineMemoryMapEntry->base < MEMORY_ISA_END) &&
-		//		((_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length) >= MEMORY_ISA_END)) {
-			SetLowFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-		//}
-		//if ((_LimineMemoryMapEntry->base < MEMORY_LOW_END) &&
-		//		((_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length) >= MEMORY_LOW_END)) {
-		//	SetLowFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-		//}
-		
-		
-		// Handle High Memory
-		//if ((_LimineMemoryMapEntry->base < MEMORY_LOW_END) &&
-		//"		((_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length) >= MEMORY_LOW_END)) {
-			SetHighFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-		//}
-		//if (_LimineMemoryMapEntry->base >= MEMORY_LOW_END) {
-		//	SetHighFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-		//}
+		SetISAFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);	
+		SetLowFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		SetHighFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
 		
 	}
 	
@@ -166,8 +145,13 @@ void CPMM::SetISAFree(void *pBase, size_t pSize) {
 			
 			// if found, add in between
 			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
-				_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
-				_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				
+				if (_CurrentEntry->ListPrev == NULL) {
+					mMemoryISAList = _NewMemoryRangeEntry;
+				} else {
+					_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
+					_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				}
 				_CurrentEntry->ListPrev = _NewMemoryRangeEntry;
 				_NewMemoryRangeEntry->ListNext = _CurrentEntry;
 				break;
@@ -248,8 +232,13 @@ void CPMM::SetLowFree(void *pBase, size_t pSize) {
 			
 			// if found, add in between
 			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
-				_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
-				_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+			
+				if (_CurrentEntry->ListPrev == NULL) {
+					mMemoryLowList = _NewMemoryRangeEntry;
+				} else {
+					_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
+					_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				}
 				_CurrentEntry->ListPrev = _NewMemoryRangeEntry;
 				_NewMemoryRangeEntry->ListNext = _CurrentEntry;
 				break;
@@ -321,8 +310,13 @@ void CPMM::SetHighFree(void *pBase, size_t pSize) {
 			
 			// if found, add in between
 			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
-				_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
-				_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				
+				if (_CurrentEntry->ListPrev == NULL) {
+					mMemoryHighList = _NewMemoryRangeEntry;
+				} else {
+					_CurrentEntry->ListPrev->ListNext = _NewMemoryRangeEntry;
+					_NewMemoryRangeEntry->ListPrev = _CurrentEntry->ListPrev;
+				}
 				_CurrentEntry->ListPrev = _NewMemoryRangeEntry;
 				_NewMemoryRangeEntry->ListNext = _CurrentEntry;
 				break;
