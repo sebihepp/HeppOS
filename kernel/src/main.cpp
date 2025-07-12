@@ -82,6 +82,15 @@ extern "C" uint64_t kmain(void) {
 #ifdef _DEBUG
 	CPMM::PrintMemoryMap();
 	
+	void *_TestAllocAddress = NULL;
+	CPMM::Alloc(&_TestAllocAddress, 4096);
+	CPMM::PrintMemoryMap();
+	
+	CLog::PrintF("Allocated Address: %p\n", _TestAllocAddress);
+
+	CPMM::Free(_TestAllocAddress, 4096);
+	CPMM::PrintMemoryMap();
+	
 #endif
 	
 	// Initialize GDT

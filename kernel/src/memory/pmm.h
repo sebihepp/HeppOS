@@ -64,5 +64,11 @@ public:
 	static void SetFree(void *pBase, size_t pSize) __attribute__ (( nothrow ));
 	static void SetUsed(void *pBase, size_t pSize) __attribute__ (( nothrow ));
 
+	static ReturnValue_t Alloc(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocISA(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocLow(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocHigh(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
+	
+	static void Free(void *pAddress, size_t pSize) __attribute__ (( nothrow ));
 	
 };

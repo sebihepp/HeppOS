@@ -775,3 +775,115 @@ void CPMM::SetUsed(void *pBase, size_t pSize) {
 	SetHighUsed(pBase, pSize);	
 }
 
+ReturnValue_t CPMM::Alloc(void **pAddress, size_t pSize) {
+	ReturnValue_t _RetVal = RETVAL_ERROR_GENERAL;
+	
+	//Try allocating High Memory
+	_RetVal = AllocHigh(pAddress, pSize);
+	if (IS_SUCCESS(_RetVal))
+		return _RetVal;
+	
+	//Try allocating Low Memory next
+	_RetVal = AllocLow(pAddress, pSize);
+	if (IS_SUCCESS(_RetVal))
+		return _RetVal;
+	
+	//Try allocating ISA Memory as last resort
+	_RetVal = AllocISA(pAddress, pSize);
+	return _RetVal;
+}
+
+ReturnValue_t CPMM::AllocISA(void **pAddress, size_t pSize) {
+	
+	//Align pSize to PAGE_SIZE
+	if (pSize & (PAGE_SIZE - 1)) {
+		pSize += PAGE_SIZE;
+		pSize &= ~(PAGE_SIZE - 1);
+	}
+	
+	if (mMemoryISAList == NULL)
+		return RETVAL_ERROR_OOM_PHYSICAL;
+	
+	MemoryRange_t *_CurrentEntry = mMemoryISAList;
+	while (_CurrentEntry != NULL) {
+		
+		//Found Big enough entry
+		if (_CurrentEntry->Size >= pSize) {
+			
+			//Allocate at end of _CurrentEntry - resulting in a resize only
+			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
+			*pAddress = (void*)((uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)CPaging::GetHHDMOffset() - pSize);
+			SetUsed(*pAddress, pSize);
+			return RETVAL_OK;
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
+	
+	return RETVAL_ERROR_OOM_PHYSICAL;
+}
+
+ReturnValue_t CPMM::AllocLow(void **pAddress, size_t pSize) {
+	
+	//Align pSize to PAGE_SIZE
+	if (pSize & (PAGE_SIZE - 1)) {
+		pSize += PAGE_SIZE;
+		pSize &= ~(PAGE_SIZE - 1);
+	}
+	
+	if (mMemoryISAList == NULL)
+		return RETVAL_ERROR_OOM_PHYSICAL;
+	
+	MemoryRange_t *_CurrentEntry = mMemoryLowList;
+	while (_CurrentEntry != NULL) {
+		
+		//Found Big enough entry
+		if (_CurrentEntry->Size >= pSize) {
+			
+			//Allocate at end of _CurrentEntry - resulting in a resize only
+			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
+			*pAddress = (void*)((uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)CPaging::GetHHDMOffset() - pSize);
+			SetUsed(*pAddress, pSize);
+			return RETVAL_OK;
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
+	
+	return RETVAL_ERROR_OOM_PHYSICAL;
+}
+
+ReturnValue_t CPMM::AllocHigh(void **pAddress, size_t pSize) {
+	
+	//Align pSize to PAGE_SIZE
+	if (pSize & (PAGE_SIZE - 1)) {
+		pSize += PAGE_SIZE;
+		pSize &= ~(PAGE_SIZE - 1);
+	}
+	
+	if (mMemoryISAList == NULL)
+		return RETVAL_ERROR_OOM_PHYSICAL;
+	
+	MemoryRange_t *_CurrentEntry = mMemoryHighList;
+	while (_CurrentEntry != NULL) {
+		
+		//Found Big enough entry
+		if (_CurrentEntry->Size >= pSize) {
+			
+			//Allocate at end of _CurrentEntry - resulting in a resize only
+			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
+			*pAddress = (void*)((uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)CPaging::GetHHDMOffset() - pSize);
+			SetUsed(*pAddress, pSize);
+			return RETVAL_OK;
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
+	
+	return RETVAL_ERROR_OOM_PHYSICAL;
+}
+
+void CPMM::Free(void *pAddress, size_t pSize) {
+	SetFree(pAddress, pSize);
+}
+
