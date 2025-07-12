@@ -81,6 +81,7 @@ extern "C" uint64_t kmain(void) {
 
 #ifdef _DEBUG
 	CPMM::PrintMemoryMap();
+	
 #endif
 	
 	// Initialize GDT

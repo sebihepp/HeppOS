@@ -61,4 +61,8 @@ public:
 	
 	static void PrintMemoryMap(void) __attribute__ (( nothrow ));
 	
+	static void SetFree(void *pBase, size_t pSize) __attribute__ (( nothrow ));
+	static void SetUsed(void *pBase, size_t pSize) __attribute__ (( nothrow ));
+
+	
 };
