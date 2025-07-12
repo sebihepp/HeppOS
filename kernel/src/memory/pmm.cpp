@@ -30,8 +30,8 @@ ReturnValue_t CPMM::PreInit(void) {
 	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
 
 	// Set ISA Memory (below 1MB)
-	for (size_t i = _LimineMemoryMapResponse->entry_count; i > 0 ; --i) {
-		limine_memmap_entry *_LimineMemoryMapEntry = _LimineMemoryMapResponse->entries[i-1];
+	for (size_t i = 0; i < _LimineMemoryMapResponse->entry_count ; ++i) {
+		limine_memmap_entry *_LimineMemoryMapEntry = _LimineMemoryMapResponse->entries[i];
 		
 		// Skip not usable memory
 		if (_LimineMemoryMapEntry->type != LIMINE_MEMMAP_USABLE)
@@ -342,13 +342,61 @@ void CPMM::SetHighUsed(void *pBase, size_t pSize) {
 }
 
 void CPMM::MergeISA(void) {
-	
+	MemoryRange_t *_CurrentEntry = mMemoryISAList;
+	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
+		
+		//Check if adjacent
+		if (((uintptr_t)_CurrentEntry + _CurrentEntry->Size) == (uintptr_t)_CurrentEntry->ListNext) {
+			
+			//Update Size
+			_CurrentEntry->Size += _CurrentEntry->ListNext->Size;
+			
+			//Remove double Entry
+			_CurrentEntry->ListNext = _CurrentEntry->ListNext->ListNext;
+			if (_CurrentEntry->ListNext != NULL)
+				_CurrentEntry->ListNext->ListPrev = _CurrentEntry;
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
 }
 
 void CPMM::MergeLow(void) {
-	
+	MemoryRange_t *_CurrentEntry = mMemoryLowList;
+	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
+		
+		//Check if adjacent
+		if (((uintptr_t)_CurrentEntry + _CurrentEntry->Size) == (uintptr_t)_CurrentEntry->ListNext) {
+			
+			//Update Size
+			_CurrentEntry->Size += _CurrentEntry->ListNext->Size;
+			
+			//Remove double Entry
+			_CurrentEntry->ListNext = _CurrentEntry->ListNext->ListNext;
+			if (_CurrentEntry->ListNext != NULL)
+				_CurrentEntry->ListNext->ListPrev = _CurrentEntry;
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}	
 }
 
 void CPMM::MergeHigh(void) {
-	
+	MemoryRange_t *_CurrentEntry = mMemoryHighList;
+	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
+		
+		//Check if adjacent
+		if (((uintptr_t)_CurrentEntry + _CurrentEntry->Size) == (uintptr_t)_CurrentEntry->ListNext) {
+			
+			//Update Size
+			_CurrentEntry->Size += _CurrentEntry->ListNext->Size;
+			
+			//Remove double Entry
+			_CurrentEntry->ListNext = _CurrentEntry->ListNext->ListNext;
+			if (_CurrentEntry->ListNext != NULL)
+				_CurrentEntry->ListNext->ListPrev = _CurrentEntry;
+		}
+		
+		_CurrentEntry = _CurrentEntry->ListNext;
+	}
 }
