@@ -56,7 +56,12 @@ const char *GetReturnValueString(const ReturnValue_t pReturnValue) {
 		case RETVAL_ERROR_PAGE_NOT_PRESENT:
 			return "ERROR_PAGE_NOT_PRESENT";
 		case RETVAL_ERROR_INVALID_PAGELEVEL:
-			return "ERROR_INVALID_PAGELEVEL";
+			return "ERROR_INVALID_PAGELEVEL";			
+		case RETVAL_ERROR_OOM_PHYSICAL:
+			return "ERROR_OOM_PHYSICAL";
+		case RETVAL_ERROR_OOM_VIRTUAL:
+			return "ERROR_OOM_VIRTUAL";
+
 		default:
 			break;
 	}
