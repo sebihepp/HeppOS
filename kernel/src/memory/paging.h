@@ -24,6 +24,8 @@
 
 #include <retval.h>
 
+#define PAGE_SIZE (4096)
+
 enum PageLevel_t {
 	PAGELEVEL_UNKNOWN = 0,
 	PAGELEVEL_PML1 = 1,
