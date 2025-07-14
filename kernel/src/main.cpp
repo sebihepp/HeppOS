@@ -79,17 +79,11 @@ extern "C" uint64_t kmain(void) {
 		return _RetVal;
 	}
 
+	CPMM::PrintMemoryMap();
+	
 #ifdef _DEBUG
-	CPMM::PrintMemoryMap();
-	
-	void *_TestAllocAddress = NULL;
-	CPMM::Alloc(&_TestAllocAddress, 4096);
-	CPMM::PrintMemoryMap();
-	
-	CLog::PrintF("Allocated Address: %p\n", _TestAllocAddress);
 
-	CPMM::Free(_TestAllocAddress, 4096);
-	CPMM::PrintMemoryMap();
+	//Testing CPMM
 	
 #endif
 	
@@ -117,13 +111,13 @@ extern "C" uint64_t kmain(void) {
 	//Debug Output
 	
 	// Print HHDM offset
-	CLog::PrintF("HHDM offset=%p\n", CPaging::GetHHDMOffset());	
+	CLog::PrintF("HHDM offset=%016p\n", CPaging::GetHHDMOffset());	
 	
 	// Print CR3 Address
-	CLog::PrintF("CR3=%p\n", CPaging::GetCR3());	
+	CLog::PrintF("CR3=%016p\n", CPaging::GetCR3());	
 	
 	// Print TSS Address
-	CLog::PrintF("TSS=%p\n", CGDT::GetTSS());
+	CLog::PrintF("TSS=%016p\n", CGDT::GetTSS());
 #endif
 	
 #ifdef _DEBUG
@@ -131,12 +125,12 @@ extern "C" uint64_t kmain(void) {
 	void *_TestVirtualAddress = (void*)gPagingMapTest;
 	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
 	void *_TestPhysicalAddress = NULL;
-	CLog::PrintF("Virtual %p", _TestVirtualAddress);
+	CLog::PrintF("Virtual %016p", _TestVirtualAddress);
 	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
 		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 	} else {
-		CLog::PrintF(" == Physical %p\n", _TestPhysicalAddress);
+		CLog::PrintF(" == Physical %016p\n", _TestPhysicalAddress);
 	}
 #endif	
 	
@@ -145,16 +139,16 @@ extern "C" uint64_t kmain(void) {
 	
 	void *_PageLevelTestVirtualAddress = (void*)gPagingMapTest;
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
-	CLog::PrintF("Virtual Address %p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
+	CLog::PrintF("Virtual Address %016p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
 
 	_PageLevelTestVirtualAddress = CPaging::GetHHDMOffset();
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
-	CLog::PrintF("Virtual Address %p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
+	CLog::PrintF("Virtual Address %016p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
 #endif	
 	
 #ifdef _DEBUG
 	//Test CPaging::MapAddress
-	CLog::PrintF("Test: Mapping gPagingMapTest(%p) to 0x7000...\n", &gPagingMapTest);
+	CLog::PrintF("Test: Mapping gPagingMapTest(%016p) to 0x7000...\n", &gPagingMapTest);
 	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
 	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
@@ -174,12 +168,12 @@ extern "C" uint64_t kmain(void) {
 		if (IS_ERROR(_RetVal)) {
 			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		} else {
-			CLog::PrintF("Virtual %p == Physical %p\n", &gPagingMapTest, _PagingMapTestPhysicalAddress);
+			CLog::PrintF("Virtual %016p == Physical %016p\n", &gPagingMapTest, _PagingMapTestPhysicalAddress);
 		} 
 	}
 	
 	// Test UnmapAddress
-	CLog::PrintF("Test: Unmapping gPagingMapTest(%p) to 0x7000...\n", &gPagingMapTest);
+	CLog::PrintF("Test: Unmapping gPagingMapTest(%016p) to 0x7000...\n", &gPagingMapTest);
 	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
 	if (IS_ERROR(_RetVal)) {
 		CLog::Print("ERROR: UnmapAddress failed!\n");

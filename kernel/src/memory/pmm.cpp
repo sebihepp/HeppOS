@@ -68,7 +68,7 @@ void CPMM::PrintMemoryMap(void) {
 		_CurrentRange = mMemoryISAList;
 		while (_CurrentRange != NULL) {
 			
-			CLog::PrintF("0x%016lX | 0x%016lX | 0x%016lX\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
+			CLog::PrintF("%016p | %016p | %016p\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
 				(uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
 				_CurrentRange->Size);
 			_CurrentRange = _CurrentRange->ListNext;
@@ -80,7 +80,7 @@ void CPMM::PrintMemoryMap(void) {
 		_CurrentRange = mMemoryLowList;
 		while (_CurrentRange != NULL) {
 			
-			CLog::PrintF("0x%016lX | 0x%016lX | 0x%016lX\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
+			CLog::PrintF("%016p | %016p | %016p\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
 				(uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
 				_CurrentRange->Size);
 			_CurrentRange = _CurrentRange->ListNext;
@@ -92,7 +92,7 @@ void CPMM::PrintMemoryMap(void) {
 		_CurrentRange = mMemoryHighList;
 		while (_CurrentRange != NULL) {
 			
-			CLog::PrintF("0x%016lX | 0x%016lX | 0x%016lX\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
+			CLog::PrintF("%016p | %016p | %016p\n", (uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset(), 
 				(uintptr_t)_CurrentRange - (uintptr_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
 				_CurrentRange->Size);
 			_CurrentRange = _CurrentRange->ListNext;
@@ -695,14 +695,19 @@ void CPMM::SetHighUsed(void *pBase, size_t pSize) {
 }
 
 void CPMM::MergeISA(void) {
+	
 	MemoryRange_t *_CurrentEntry = mMemoryISAList;
 	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
 		
-		//Check if adjacent
-		if (((uintptr_t)_CurrentEntry + _CurrentEntry->Size) == (uintptr_t)_CurrentEntry->ListNext) {
+		//Check if adjacent or overlapping
+		if ((uintptr_t)_CurrentEntry->ListNext <= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
-			//Update Size
-			_CurrentEntry->Size += _CurrentEntry->ListNext->Size;
+			//Update size only if next entry is not totally inside current entry
+			if (((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
+				((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
+			
+				_CurrentEntry->Size = ((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (uintptr_t)_CurrentEntry;
+			}
 			
 			//Remove double Entry
 			_CurrentEntry->ListNext = _CurrentEntry->ListNext->ListNext;
@@ -718,14 +723,19 @@ void CPMM::MergeISA(void) {
 }
 
 void CPMM::MergeLow(void) {
+	
 	MemoryRange_t *_CurrentEntry = mMemoryLowList;
 	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
 		
-		//Check if adjacent
-		if (((uintptr_t)_CurrentEntry + _CurrentEntry->Size) == (uintptr_t)_CurrentEntry->ListNext) {
+		//Check if adjacent or overlapping
+		if ((uintptr_t)_CurrentEntry->ListNext <= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
-			//Update Size
-			_CurrentEntry->Size += _CurrentEntry->ListNext->Size;
+			//Update size only if next entry is not totally inside current entry
+			if (((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
+				((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
+			
+				_CurrentEntry->Size = ((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (uintptr_t)_CurrentEntry;
+			}
 			
 			//Remove double Entry
 			_CurrentEntry->ListNext = _CurrentEntry->ListNext->ListNext;
@@ -744,11 +754,15 @@ void CPMM::MergeHigh(void) {
 	MemoryRange_t *_CurrentEntry = mMemoryHighList;
 	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
 		
-		//Check if adjacent
-		if (((uintptr_t)_CurrentEntry + _CurrentEntry->Size) == (uintptr_t)_CurrentEntry->ListNext) {
+		//Check if adjacent or overlapping
+		if ((uintptr_t)_CurrentEntry->ListNext <= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
-			//Update Size
-			_CurrentEntry->Size += _CurrentEntry->ListNext->Size;
+			//Update size only if next entry is not totally inside current entry
+			if (((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
+				((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
+			
+				_CurrentEntry->Size = ((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (uintptr_t)_CurrentEntry;
+			}
 			
 			//Remove double Entry
 			_CurrentEntry->ListNext = _CurrentEntry->ListNext->ListNext;
