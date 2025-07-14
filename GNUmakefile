@@ -1,12 +1,24 @@
 
 
+FLAGS_DEBUG := -D_DEBUG -g -Og
+FLAGS_RELEASE := -O2
+
 .PHONY: all
-all: FLAGS = -O2
+all: FLAGS = $(FLAGS_RELEASE)
 all: iso img
 
 .PHONY: debug
-debug: FLAGS = -D_DEBUG -g -Og
+debug: FLAGS = $(FLAGS_DEBUG)
 debug: iso img
+
+.PHONY: kernel
+kernel: FLAGS = $(FLAGS_RELEASE)
+kernel: kernel/kernel
+
+.PHONY: kernel-debug
+kernel-debug: FLAGS = $(FLAGS_DEBUG)
+kernel-debug: kernel/kernel
+
 
 export FLAGS
 
@@ -61,11 +73,3 @@ HeppOS.img: kernel/kernel
 .PHONY: kernel/kernel
 kernel/kernel:
 	cd kernel && $(MAKE)
-	
-.PHONY: flags_release
-flags_release:
-	export FLAGS = -O2
-	
-.PHONY: flags_debug
-flags_debug:
-	export FLAGS = -D_DEBUG -g
