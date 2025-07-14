@@ -188,61 +188,61 @@ void ExceptionHandler(uint64_t pInt, CPUState_t *pState) {
 	CInterrupt::mInterruptCount[pInt] += 1;
 	
 	CLog::Print("\n");
-	CLog::PrintF("ERROR - Exception 0x%02X (%d) - %s!\n", pInt, pInt, GetExceptionName(pInt));
+	CLog::PrintF("ERROR - Exception 0x%02x (%d) - %s!\n", pInt, pInt, GetExceptionName(pInt));
 	CLog::Print("\n");
 	CLog::Print("\n");
 	
 	CInterrupt::PrintErrorCode(pInt, pState->error_code);
 	
-	CLog::PrintF("RFLAGS=0x%016lX\n", pState->rflags);
+	CLog::PrintF("RFLAGS=0x%016lx\n", pState->rflags);
 	CLog::Print("\n");
 	
 	
-	CLog::PrintF("RAX=0x%016lX \tRBX=0x%016lX\n", pState->rax, pState->rbx);
-	CLog::PrintF("RCX=0x%016lX \tRDX=0x%016lX\n", pState->rcx, pState->rdx);
-	CLog::PrintF("RSI=0x%016lX \tRDI=0x%016lX\n", pState->rsi, pState->rdi);
-	CLog::PrintF("RSP=0x%016lX \tRBP=0x%016lX\n", pState->rsp, pState->rbp);
+	CLog::PrintF("RAX=0x%016lx \tRBX=0x%016lx\n", pState->rax, pState->rbx);
+	CLog::PrintF("RCX=0x%016lx \tRDX=0x%016lx\n", pState->rcx, pState->rdx);
+	CLog::PrintF("RSI=0x%016lx \tRDI=0x%016lx\n", pState->rsi, pState->rdi);
+	CLog::PrintF("RSP=0x%016lx \tRBP=0x%016lx\n", pState->rsp, pState->rbp);
 	CLog::Print("\n");
 	
-	CLog::PrintF("R8 =0x%016lX \tR9 =0x%016lX\n", pState->r8, pState->r9);
-	CLog::PrintF("R10=0x%016lX \tR11=0x%016lX\n", pState->r10, pState->r11);
-	CLog::PrintF("R12=0x%016lX \tR13=0x%016lX\n", pState->r12, pState->r13);
-	CLog::PrintF("R14=0x%016lX \tR15=0x%016lX\n", pState->r14, pState->r15);
+	CLog::PrintF("R8 =0x%016lx \tR9 =0x%016lx\n", pState->r8, pState->r9);
+	CLog::PrintF("R10=0x%016lx \tR11=0x%016lx\n", pState->r10, pState->r11);
+	CLog::PrintF("R12=0x%016lx \tR13=0x%016lx\n", pState->r12, pState->r13);
+	CLog::PrintF("R14=0x%016lx \tR15=0x%016lx\n", pState->r14, pState->r15);
 	CLog::Print("\n");
 	
 	
-	CLog::PrintF("RIP=0x%016lX\n", pState->rip);
+	CLog::PrintF("RIP=0x%016lx\n", pState->rip);
 	CLog::Print("\n");
 	
-	CLog::PrintF("CS=0x%04X \tSS=0x%04X\n", pState->cs, pState->ss);
-	CLog::PrintF("DS=0x%04X \tES=0x%04X\n", pState->ds, pState->es);
-	CLog::PrintF("FS=0x%04X \tGS=0x%04X\n", pState->fs, pState->gs);
+	CLog::PrintF("CS=0x%04x \tSS=0x%04x\n", pState->cs, pState->ss);
+	CLog::PrintF("DS=0x%04x \tES=0x%04x\n", pState->ds, pState->es);
+	CLog::PrintF("FS=0x%04x \tGS=0x%04x\n", pState->fs, pState->gs);
 	CLog::Print("\n");
 
-	CLog::PrintF("CR0=0x%016lX \tCR2=0x%016lX\n", _CR0, _CR2);
-	CLog::PrintF("CR3=0x%016lX \tCR4=0x%016lX\n", _CR3, _CR4);
+	CLog::PrintF("CR0=0x%016lx \tCR2=0x%016lx\n", _CR0, _CR2);
+	CLog::PrintF("CR3=0x%016lx \tCR4=0x%016lx\n", _CR3, _CR4);
 	CLog::Print("\n");
-	CLog::PrintF("CR8=0x%016lX\n", _CR8);
-	CLog::Print("\n");
-	
-	CLog::PrintF("EFER=0x%016lX\n", _EFER);	
+	CLog::PrintF("CR8=0x%016lx\n", _CR8);
 	CLog::Print("\n");
 	
-	CLog::PrintF("DR0=0x%016lX \tDR1=0x%016lX\n", _DR0, _DR1);
-	CLog::PrintF("DR2=0x%016lX \tDR3=0x%016lX\n", _DR2, _DR3);
-	CLog::PrintF("DR6=0x%016lX \tDR7=0x%016lX\n", _DR6, _DR7);
+	CLog::PrintF("EFER=0x%016lx\n", _EFER);	
+	CLog::Print("\n");
+	
+	CLog::PrintF("DR0=0x%016lx \tDR1=0x%016lx\n", _DR0, _DR1);
+	CLog::PrintF("DR2=0x%016lx \tDR3=0x%016lx\n", _DR2, _DR3);
+	CLog::PrintF("DR6=0x%016lx \tDR7=0x%016lx\n", _DR6, _DR7);
 	CLog::Print("\n");
 	
 	// Loop forever because of Exception
-	asm volatile ("cli;\n");
 	for (;;) {
-		asm volatile ("hlt;\n");
+		asm volatile (	"cli;\n"
+						"hlt;\n");
 	}
 }
 
 void CInterrupt::PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) {
 	
-	CLog::PrintF("Error code=0x%lX (%ld)\n", pErrorCode, pErrorCode);
+	CLog::PrintF("Error code=0x%lx (%ld)\n", pErrorCode, pErrorCode);
 	
 	CLog::Print("Meaning:\n");
 	switch (pInt) {
