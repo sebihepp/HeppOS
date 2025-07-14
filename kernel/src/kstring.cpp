@@ -444,9 +444,24 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					pDest[k++] = '0';
 					pDest[k++] = 'x';
 					kutoa((uintptr_t)va_arg(pArgs, uintptr_t), _Buffer, 16);
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+						}
+					}
 					pDest[k] = 0;
-					kstrcat(pDest, kstrlwr(_Buffer));
+					kstrcat(pDest, _Buffer);
 					k = kstrlen(pDest);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+						}						
+					}
 					
 					_Special = false;
 					_Width = 0;
