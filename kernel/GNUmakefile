@@ -13,7 +13,9 @@ CXXFLAGS := \
 
 CCFLAGS := $(FLAGS)
 
-ASFLAGS := $(FLAGS)
+ASFLAGS := \
+	-I"/usr/local/include" -I"./src" \
+	$(FLAGS)
 
 LDFLAGS := \
 	-T "./linker.ld" \
