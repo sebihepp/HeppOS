@@ -43,6 +43,8 @@ public:
 	static limine_module_response *GetModuleResponse(void) __attribute(( nothrow ));
 	static limine_kernel_address_response *GetKernelAddressResponse(void) __attribute(( nothrow ));
 	static limine_kernel_file_response *GetKernelFileResponse(void) __attribute(( nothrow ));
+	static limine_smp_response *GetSMPResponse(void) __attribute(( nothrow ));
+	
 	
 };
 

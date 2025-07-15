@@ -59,6 +59,12 @@ __attribute__((used, section(".requests"))) static volatile limine_kernel_file_r
 	.revision = 0,
 	.response = NULL
 };
+__attribute__((used, section(".requests"))) static volatile limine_smp_request SMPRequest = {
+	.id = LIMINE_SMP_REQUEST,
+	.revision = 0,
+	.response = NULL,
+	.flags = 0
+};
 __attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_REQUESTS_START_MARKER;
 __attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
 
@@ -94,6 +100,9 @@ ReturnValue_t CLimine::Init(void) {
 	if (GetPagingModeResponse() == NULL) {
 		return RETVAL_ERROR_LIMINE_NULL_POINTER;
 	}	
+	if (GetSMPResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}	
 	
 	return RETVAL_OK;
 }
@@ -126,3 +135,6 @@ limine_kernel_file_response *CLimine::GetKernelFileResponse(void) {
 	return KernelFileRequest.response;
 }
 
+limine_smp_response *CLimine::GetSMPResponse(void) {
+	return SMPRequest.response;
+}
