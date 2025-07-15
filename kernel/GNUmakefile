@@ -4,18 +4,30 @@ CC := x86_64-elf-g++
 LD := x86_64-elf-g++
 AS := x86_64-elf-g++
 
+INCLUDES := \
+	-I"./src" \
+	-I"./src/kstdlib" \
+	-I "/usr/local/include" 
+
 CXXFLAGS := \
 	-Wall -Wextra \
 	-ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit \
 	-mcmodel=kernel -mno-red-zone -mgeneral-regs-only \
-	-I"/usr/local/include" -I"./src" \
+	$(INCLUDES) \
 	$(FLAGS)
 
-CCFLAGS := $(FLAGS)
+CCFLAGS := \
+	-Wall -Wextra \
+	-ffreestanding -fno-use-cxa-atexit \
+	-mcmodel=kernel -mno-red-zone -mgeneral-regs-only \
+	$(INCLUDES) \
+	$(FLAGS)
 
 ASFLAGS := \
-	-I"/usr/local/include" -I"./src" \
+	-Wall -Wextra \
+	$(INCLUDES) \
 	$(FLAGS)
+
 
 LDFLAGS := \
 	-T "./linker.ld" \
@@ -32,8 +44,9 @@ SOURCES := \
 	src/retval.cpp \
 	src/serial.cpp \
 	src/log.cpp \
-	src/kstring.cpp \
-	src/ktype.cpp \
+	\
+	src/kstdlib/kstring.cpp \
+	src/kstdlib/ktype.cpp \
 	\
 	\
 	src/memory/paging.cpp \

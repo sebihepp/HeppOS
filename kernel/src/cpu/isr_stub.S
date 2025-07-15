@@ -15,7 +15,6 @@
     # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-
 .macro interrupt_save
 	pushq %rax
 	pushq %rbx
