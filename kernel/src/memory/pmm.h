@@ -25,32 +25,20 @@
 
 #define MEMORY_ISA_END ((uint64_t)((uint64_t)1024*1024*16))
 #define MEMORY_LOW_END ((uint64_t)((uint64_t)1024*1024*1024*4))
-
-struct MemoryRange_t {
-	
-	size_t Size;
-	MemoryRange_t *ListNext;
-	MemoryRange_t *ListPrev;
-} __attribute__ (( aligned (4096) , packed ));
+#define PMM_ISA_BITMAP_SIZE (512)
 
 class CPMM {
 private:
 	
-	static MemoryRange_t *mMemoryISAList;	//Memory below 16MB
-	static MemoryRange_t *mMemoryLowList;	//Memory between 16MB and 4GB
-	static MemoryRange_t *mMemoryHighList;	//Memory above 4GB
+	static uint32_t mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];	//Memory below 16MB
+	static void *mMemoryLowStack;			//Memory between 16MB and 4GB
+	static void *mMemoryHighStack;			//Memory above 4GB
 	
-	static void SetISAFree(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	static void SetISAUsed(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	static void SetLowFree(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	static void SetLowUsed(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	static void SetHighFree(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	static void SetHighUsed(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	
-	static void MergeISA(void) __attribute__ (( nothrow ));
-	static void MergeLow(void) __attribute__ (( nothrow ));
-	static void MergeHigh(void) __attribute__ (( nothrow ));
-	
+	static ReturnValue_t AllocLow(void **pAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocHigh(void **pAddress) __attribute__ (( nothrow ));
+	static void FreeLow(void *pAddress) __attribute__ (( nothrow ));
+	static void FreeHigh(void *pAddress) __attribute__ (( nothrow ));
+
 	
 	CPMM() = delete;
 	~CPMM() = delete;
@@ -59,16 +47,12 @@ public:
 	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
 	static ReturnValue_t Init(void) __attribute__ (( nothrow ));
 	
-	static void PrintMemoryMap(void) __attribute__ (( nothrow ));
-	
-	static void SetFree(void *pBase, size_t pSize) __attribute__ (( nothrow ));
-	static void SetUsed(void *pBase, size_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t Alloc(void **pAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocISA(void **pAddress, size_t pPageCount) __attribute__ (( nothrow ));
 
-	static ReturnValue_t Alloc(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocISA(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocLow(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocHigh(void **pAddress, size_t pSize) __attribute__ (( nothrow ));
 	
-	static void Free(void *pAddress, size_t pSize) __attribute__ (( nothrow ));
+	static void Free(void *pAddress) __attribute__ (( nothrow ));
+	static void FreeISA(void *pAddress, size_t pPageCount) __attribute__ (( nothrow ));
+
 	
 };

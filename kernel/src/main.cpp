@@ -79,7 +79,7 @@ extern "C" uint64_t kmain(void) {
 		return _RetVal;
 	}
 
-	CPMM::PrintMemoryMap();
+	//CPMM::PrintMemoryMap();
 	
 #ifdef _DEBUG
 
