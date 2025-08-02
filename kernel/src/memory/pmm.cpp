@@ -28,6 +28,10 @@ void *CPMM::mMemoryHighStack = NULL;
 
 ReturnValue_t CPMM::PreInit(void) {
 
+	for (uint64_t i = 0; i < PMM_ISA_BITMAP_SIZE; ++i) {
+		mMemoryISABitmap[i] = ~0;
+	}
+	
 	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
 
 	// Set ISA Memory (below 1MB)
@@ -59,6 +63,12 @@ ReturnValue_t CPMM::Alloc(void **pAddress) {
 	
 	//Try allocating Low Memory next
 	_RetVal = AllocLow(pAddress);
+	if (IS_SUCCESS(_RetVal))
+		return _RetVal;
+	
+	//Try ISA memory as a last resort
+	_RetVal = AllocISA(pAddress, 1);
+	
 	return _RetVal;
 }
 
@@ -95,6 +105,9 @@ ReturnValue_t CPMM::AllocHigh(void **pAddress) {
 }
 
 void CPMM::Free(void *pAddress) {
+	
+	pAddress = (void*)((uintptr_t)pAddress & ~0xFFF);
+	
 	if (((uintptr_t)pAddress) >= MEMORY_LOW_END) {
 		FreeHigh(pAddress);
 	} else {
@@ -103,6 +116,7 @@ void CPMM::Free(void *pAddress) {
 }
 
 void CPMM::FreeISA(void *pAddress, size_t pPageCount) {
+	pAddress = (void*)((uintptr_t)pAddress & ~0xFFF);
 	
 }
 

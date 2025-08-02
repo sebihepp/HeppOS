@@ -34,8 +34,7 @@ private:
 	static void *mMemoryLowStack;			//Memory between 16MB and 4GB
 	static void *mMemoryHighStack;			//Memory above 4GB
 	
-	static ReturnValue_t AllocLow(void **pAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocHigh(void **pAddress) __attribute__ (( nothrow ));
+	
 	static void FreeLow(void *pAddress) __attribute__ (( nothrow ));
 	static void FreeHigh(void *pAddress) __attribute__ (( nothrow ));
 
@@ -49,7 +48,8 @@ public:
 	
 	static ReturnValue_t Alloc(void **pAddress) __attribute__ (( nothrow ));
 	static ReturnValue_t AllocISA(void **pAddress, size_t pPageCount) __attribute__ (( nothrow ));
-
+	static ReturnValue_t AllocLow(void **pAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocHigh(void **pAddress) __attribute__ (( nothrow ));
 	
 	static void Free(void *pAddress) __attribute__ (( nothrow ));
 	static void FreeISA(void *pAddress, size_t pPageCount) __attribute__ (( nothrow ));
