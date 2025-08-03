@@ -45,6 +45,14 @@ ReturnValue_t CPMM::PreInit(void) {
 		
 	}
 	
+	void *_MemoryTest = NULL;
+	
+	ReturnValue_t _RetVal = AllocISA(&_MemoryTest, 1);
+	if (IS_ERROR(_RetVal)) {
+		return _RetVal;
+	}
+	FreeISA(_MemoryTest, 1);
+	
 	return RETVAL_OK;
 }
 
@@ -118,6 +126,7 @@ void CPMM::Free(void *pAddress) {
 }
 
 void CPMM::FreeISA(void *pAddress, size_t pPageCount) {
+	
 	pAddress = (void*)((uintptr_t)pAddress & ~0xFFF);
 	
 }
