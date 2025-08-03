@@ -74,14 +74,14 @@ ReturnValue_t CPMM::Alloc(void **pAddress) {
 
 ReturnValue_t CPMM::AllocISA(void **pAddress, size_t pSize) {
 	
-	pAddress = NULL;
+	*pAddress = NULL;
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
 ReturnValue_t CPMM::AllocLow(void **pAddress) {
 	
 	if (mMemoryLowStack == NULL) {
-		pAddress = NULL;
+		*pAddress = NULL;
 		return RETVAL_ERROR_OOM_PHYSICAL;
 	}
 	
@@ -94,7 +94,7 @@ ReturnValue_t CPMM::AllocLow(void **pAddress) {
 ReturnValue_t CPMM::AllocHigh(void **pAddress) {
 	
 	if (mMemoryHighStack == NULL) {
-		pAddress = NULL;
+		*pAddress = NULL;
 		return RETVAL_ERROR_OOM_PHYSICAL;
 	}
 	
@@ -107,11 +107,13 @@ ReturnValue_t CPMM::AllocHigh(void **pAddress) {
 void CPMM::Free(void *pAddress) {
 	
 	pAddress = (void*)((uintptr_t)pAddress & ~0xFFF);
-	
+		
 	if (((uintptr_t)pAddress) >= MEMORY_LOW_END) {
 		FreeHigh(pAddress);
-	} else {
+	} else if (((uintptr_t)pAddress) >= MEMORY_ISA_END) {
 		FreeLow(pAddress);
+	} else {
+		FreeISA(pAddress, 1);
 	}
 }
 
