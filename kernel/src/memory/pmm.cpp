@@ -24,10 +24,14 @@ uint32_t CPMM::mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];
 void *CPMM::mMemoryLowStack = NULL;
 void *CPMM::mMemoryHighStack = NULL;
 
+uint64_t CPMM::mFreeMemoryAmount = 0;
+uint64_t CPMM::mUsedMemoryAmount = 0;
+	
 #define ACCESS_PHYS_ADDR(address, type) (*((type*)((uintptr_t)address + (uintptr_t)CPaging::GetHHDMOffset())))
 
 ReturnValue_t CPMM::PreInit(void) {
 
+	// Set entire bitmap to "used"
 	for (uint64_t i = 0; i < PMM_ISA_BITMAP_SIZE; ++i) {
 		mMemoryISABitmap[i] = ~0;
 	}
@@ -80,7 +84,9 @@ ReturnValue_t CPMM::Alloc(void **pAddress) {
 	return _RetVal;
 }
 
-ReturnValue_t CPMM::AllocISA(void **pAddress, size_t pSize) {
+ReturnValue_t CPMM::AllocISA(void **pAddress, size_t pPageCount) {
+	
+	//Dont forget to adjust mFreeMemoryAmount and mUsedMemoryAmount
 	
 	*pAddress = NULL;
 	return RETVAL_ERROR_OOM_PHYSICAL;
@@ -95,6 +101,8 @@ ReturnValue_t CPMM::AllocLow(void **pAddress) {
 	
 	*pAddress = mMemoryLowStack;
 	mMemoryLowStack = ACCESS_PHYS_ADDR(mMemoryLowStack, void*);
+	mFreeMemoryAmount -= PAGE_SIZE;
+	mUsedMemoryAmount += PAGE_SIZE;
 	
 	return RETVAL_OK;
 }
@@ -108,6 +116,8 @@ ReturnValue_t CPMM::AllocHigh(void **pAddress) {
 	
 	*pAddress = mMemoryHighStack;
 	mMemoryHighStack = ACCESS_PHYS_ADDR(mMemoryHighStack, void*);
+	mFreeMemoryAmount -= PAGE_SIZE;
+	mUsedMemoryAmount += PAGE_SIZE;
 	
 	return RETVAL_OK;
 }
@@ -115,7 +125,10 @@ ReturnValue_t CPMM::AllocHigh(void **pAddress) {
 void CPMM::Free(void *pAddress) {
 	
 	pAddress = (void*)((uintptr_t)pAddress & ~0xFFF);
-		
+	
+	if (pAddress == NULL)
+		return;
+	
 	if (((uintptr_t)pAddress) >= MEMORY_LOW_END) {
 		FreeHigh(pAddress);
 	} else if (((uintptr_t)pAddress) >= MEMORY_ISA_END) {
@@ -129,6 +142,9 @@ void CPMM::FreeISA(void *pAddress, size_t pPageCount) {
 	
 	pAddress = (void*)((uintptr_t)pAddress & ~0xFFF);
 	
+	
+	mFreeMemoryAmount += PAGE_SIZE * pPageCount;
+	mUsedMemoryAmount -= PAGE_SIZE + pPageCount;
 }
 
 void CPMM::FreeLow(void *pAddress) {
@@ -141,6 +157,8 @@ void CPMM::FreeLow(void *pAddress) {
 	ACCESS_PHYS_ADDR(pAddress, void*) = mMemoryLowStack;
 	mMemoryLowStack = pAddress;
 	
+	mFreeMemoryAmount += PAGE_SIZE;
+	mUsedMemoryAmount -= PAGE_SIZE;
 }
 
 void CPMM::FreeHigh(void *pAddress) {
@@ -152,4 +170,15 @@ void CPMM::FreeHigh(void *pAddress) {
 	
 	ACCESS_PHYS_ADDR(pAddress, void*) = mMemoryHighStack;
 	mMemoryHighStack = pAddress;
+	mFreeMemoryAmount += PAGE_SIZE;
+	mUsedMemoryAmount -= PAGE_SIZE;
 }
+
+uint64_t CPMM::GetFreeMemory(void) {
+	return mFreeMemoryAmount;
+}
+
+uint64_t CPMM::GetUsedMemory(void) {
+	return mUsedMemoryAmount;
+}
+

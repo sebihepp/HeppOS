@@ -34,6 +34,8 @@ private:
 	static void *mMemoryLowStack;			//Memory between 16MB and 4GB
 	static void *mMemoryHighStack;			//Memory above 4GB
 	
+	static uint64_t mFreeMemoryAmount;
+	static uint64_t mUsedMemoryAmount;
 	
 	static void FreeLow(void *pAddress) __attribute__ (( nothrow ));
 	static void FreeHigh(void *pAddress) __attribute__ (( nothrow ));
@@ -54,5 +56,6 @@ public:
 	static void Free(void *pAddress) __attribute__ (( nothrow ));
 	static void FreeISA(void *pAddress, size_t pPageCount) __attribute__ (( nothrow ));
 
-	
+	static uint64_t GetFreeMemory(void) __attribute__ (( nothrow ));
+	static uint64_t GetUsedMemory(void) __attribute__ (( nothrow ));
 };
