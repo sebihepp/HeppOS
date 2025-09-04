@@ -24,6 +24,9 @@
 #include <stdbool.h>
 #endif
 
+typedef uintptr_t physical_address_t;
+typedef uintptr_t virtual_address_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

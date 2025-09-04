@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <ktype.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -31,14 +33,14 @@ class CPMM {
 private:
 	
 	static uint32_t mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];	//Memory below 16MB
-	static void *mMemoryLowStack;			//Memory between 16MB and 4GB
-	static void *mMemoryHighStack;			//Memory above 4GB
+	static physical_address_t mMemoryLowStack;				//Memory between 16MB and 4GB
+	static physical_address_t mMemoryHighStack;				//Memory above 4GB
 	
 	static uint64_t mFreeMemoryAmount;
 	static uint64_t mUsedMemoryAmount;
 	
-	static void FreeLow(void *pAddress) __attribute__ (( nothrow ));
-	static void FreeHigh(void *pAddress) __attribute__ (( nothrow ));
+	static void FreeLow(physical_address_t pAddress) __attribute__ (( nothrow ));
+	static void FreeHigh(physical_address_t pAddress) __attribute__ (( nothrow ));
 
 	
 	CPMM() = delete;
@@ -48,13 +50,13 @@ public:
 	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
 	static ReturnValue_t Init(void) __attribute__ (( nothrow ));
 	
-	static ReturnValue_t Alloc(void **pAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocISA(void **pAddress, size_t pPageCount) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocLow(void **pAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocHigh(void **pAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t Alloc(physical_address_t &pAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocISA(physical_address_t &pAddress, size_t pPageCount) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocLow(physical_address_t &pAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocHigh(physical_address_t &pAddress) __attribute__ (( nothrow ));
 	
-	static void Free(void *pAddress) __attribute__ (( nothrow ));
-	static void FreeISA(void *pAddress, size_t pPageCount) __attribute__ (( nothrow ));
+	static void Free(physical_address_t pAddress) __attribute__ (( nothrow ));
+	static void FreeISA(physical_address_t pAddress, size_t pPageCount) __attribute__ (( nothrow ));
 
 	static uint64_t GetFreeMemory(void) __attribute__ (( nothrow ));
 	static uint64_t GetUsedMemory(void) __attribute__ (( nothrow ));
