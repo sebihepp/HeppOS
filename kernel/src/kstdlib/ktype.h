@@ -24,8 +24,11 @@
 #include <stdbool.h>
 #endif
 
-typedef uintptr_t physical_address_t;
-typedef uintptr_t virtual_address_t;
+typedef uintptr_t PhysicalAddress_t;
+typedef uintptr_t VirtualAddress_t;
+
+#include <retval.h> //For ReturnValue_t
+
 
 #ifdef __cplusplus
 extern "C" {
