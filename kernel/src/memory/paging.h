@@ -18,11 +18,7 @@
 #ifndef HEADER_PAGING
 #define HEADER_PAGING
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#include <retval.h>
+#include <ktype.h>
 
 #define PAGE_SIZE (4096)
 
@@ -263,14 +259,14 @@ private:
 	static bool mActiveCapabilities[PAGINGCAPABILITY_COUNT];
 	
 	static bool mIsInitial;	
-	static void *mHHDMOffset;
+	static VirtualAddress_t mHHDMOffset;
 	
 public:
 
 	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
 	
-	static inline void *GetCR3(void) __attribute__ (( nothrow )) {
-		void *_CR3 = NULL;
+	static inline PhysicalAddress_t GetCR3(void) __attribute__ (( nothrow , always_inline )) {
+		PhysicalAddress_t _CR3 = (PhysicalAddress_t)NULL;
 		asm volatile (
 			"movq %%cr3, %0;\n"
 			: "=a" (_CR3)
@@ -279,7 +275,7 @@ public:
 		);
 		return _CR3;
 	}
-	static inline void InvalidateAddress(void *pAddress) __attribute__ (( nothrow )) {
+	static inline void InvalidateAddress(VirtualAddress_t pAddress) __attribute__ (( nothrow , always_inline )) {
 		asm volatile (
 			"invlpg (%0);\n"
 			:
@@ -288,25 +284,25 @@ public:
 		);	
 	}
 	
-	static inline void *GetHHDMOffset(void) __attribute__ (( nothrow )) {
+	static inline VirtualAddress_t GetHHDMOffset(void) __attribute__ (( nothrow , always_inline )) {
 		return mHHDMOffset;
 	}
 	
-	static ReturnValue_t GetPhysicalAddress(void *pVirtualAddress, void *&pPhysicalAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t GetPageLevel(void *pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
+	static ReturnValue_t GetPhysicalAddress(VirtualAddress_t pVirtualAddress, PhysicalAddress_t &pPhysicalAddress) __attribute__ (( nothrow ));
+	static ReturnValue_t GetPageLevel(VirtualAddress_t pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
 	
-	static ReturnValue_t MapAddress(void *pVirtualAddress, void *pPhysicalAddress, PageLevel_t pPageLevel, CachType_t pCacheType, 
-		bool pGlobal, bool pExecuteDisable, bool pUser) __attribute__ (( nothrow ));
-	static ReturnValue_t UnmapAddress(void *pVirtualAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
+	static ReturnValue_t MapAddress(VirtualAddress_t pVirtualAddress, PhysicalAddress_t pPhysicalAddress, PageLevel_t pPageLevel,
+		CachType_t pCacheType, bool pGlobal, bool pExecuteDisable, bool pUser) __attribute__ (( nothrow ));
+	static ReturnValue_t UnmapAddress(VirtualAddress_t pVirtualAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
 	
 	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
-	static const char *GetPageLevelString(void *pVirtualAddress) __attribute__ (( nothrow ));
+	static const char *GetPageLevelString(VirtualAddress_t pVirtualAddress) __attribute__ (( nothrow ));
 	
-	static inline bool GetCapability(PagingCapability_t pCapability) __attribute__ (( nothrow )) {
+	static inline bool GetCapability(PagingCapability_t pCapability) __attribute__ (( nothrow , always_inline )) {
 		return mCapabilities[pCapability];
 	}
 	
-	static bool GetActiveCapability(PagingCapability_t pCapability) __attribute__ (( nothrow )) {
+	static bool GetActiveCapability(PagingCapability_t pCapability) __attribute__ (( nothrow , always_inline )) {
 		return mActiveCapabilities[pCapability];
 	}
 

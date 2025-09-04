@@ -18,8 +18,7 @@
 #ifndef CPUID_HEADER
 #define CPUID_HEADER
 
-#include <stddef.h>
-#include <stdint.h>
+#include <ktype.h>
 
 struct cpuid_retval_t
 {

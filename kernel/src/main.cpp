@@ -16,17 +16,14 @@
 */
 	
 	
-#include <stddef.h>
-#include <stdint.h>
+#include <ktype.h>
 
 #include <liminestub.h>
 
-#include <retval.h>
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>
 #include <memory/paging.h>
 #include <memory/pmm.h>
-#include <cpu/pic.h>
 #include <cpu/mmio.h>
 #include <log.h>
 #include <kstring.h>
@@ -122,9 +119,9 @@ extern "C" uint64_t kmain(void) {
 	
 #ifdef _DEBUG
 	// Test GetPhysicalAddress
-	void *_TestVirtualAddress = (void*)gPagingMapTest;
-	_TestVirtualAddress = (void*)((uintptr_t)_TestVirtualAddress + 0x1234);
-	void *_TestPhysicalAddress = NULL;
+	VirtualAddress_t _TestVirtualAddress = (VirtualAddress_t)&gPagingMapTest;
+	_TestVirtualAddress = _TestVirtualAddress + 0x1234;
+	PhysicalAddress_t _TestPhysicalAddress = (PhysicalAddress_t)NULL;
 	CLog::PrintF("Virtual %016p", _TestVirtualAddress);
 	_RetVal = CPaging::GetPhysicalAddress(_TestVirtualAddress, _TestPhysicalAddress);
 	if (IS_ERROR(_RetVal)) {
@@ -137,7 +134,7 @@ extern "C" uint64_t kmain(void) {
 #ifdef _DEBUG
 	// Test CPaging::GetPageLevel
 	
-	void *_PageLevelTestVirtualAddress = (void*)gPagingMapTest;
+	VirtualAddress_t _PageLevelTestVirtualAddress = (VirtualAddress_t)gPagingMapTest;
 	_ConstTempText = CPaging::GetPageLevelString(_PageLevelTestVirtualAddress);
 	CLog::PrintF("Virtual Address %016p has page level=%s\n", _PageLevelTestVirtualAddress, _ConstTempText);
 
@@ -149,13 +146,13 @@ extern "C" uint64_t kmain(void) {
 #ifdef _DEBUG
 	//Test CPaging::MapAddress
 	CLog::PrintF("Test: Mapping gPagingMapTest(%016p) to 0x7000...\n", &gPagingMapTest);
-	void *_PagingMapTestPhysicalAddress = (void*)0x7000;
+	PhysicalAddress_t _PagingMapTestPhysicalAddress = (PhysicalAddress_t)0x7000;
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
-	_RetVal = CPaging::GetPageLevel((void*)&gPagingMapTest, _PageLevel);
+	_RetVal = CPaging::GetPageLevel((VirtualAddress_t)&gPagingMapTest, _PageLevel);
 	if (IS_ERROR(_RetVal) || (_PageLevel != PAGELEVEL_PML1)) {
 		CLog::Print("ERROR: gPagingMapTest not mapped within PML1!\n");	
 	} else {
-		_RetVal = CPaging::MapAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1, CACHETYPE_WRITEBACK, 
+		_RetVal = CPaging::MapAddress((VirtualAddress_t)&gPagingMapTest, _PagingMapTestPhysicalAddress, PAGELEVEL_PML1, CACHETYPE_WRITEBACK, 
 			true, false, false);
 		if (IS_ERROR(_RetVal)) {
 			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));		
@@ -164,7 +161,7 @@ extern "C" uint64_t kmain(void) {
 		
 		
 		// Check if mapping worked
-		_RetVal = CPaging::GetPhysicalAddress((void*)&gPagingMapTest, _PagingMapTestPhysicalAddress);
+		_RetVal = CPaging::GetPhysicalAddress((VirtualAddress_t)&gPagingMapTest, _PagingMapTestPhysicalAddress);
 		if (IS_ERROR(_RetVal)) {
 			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		} else {
@@ -174,7 +171,7 @@ extern "C" uint64_t kmain(void) {
 	
 	// Test UnmapAddress
 	CLog::PrintF("Test: Unmapping gPagingMapTest(%016p) to 0x7000...\n", &gPagingMapTest);
-	_RetVal = CPaging::UnmapAddress((void*)&gPagingMapTest, PAGELEVEL_PML1);
+	_RetVal = CPaging::UnmapAddress((VirtualAddress_t)&gPagingMapTest, PAGELEVEL_PML1);
 	if (IS_ERROR(_RetVal)) {
 		CLog::Print("ERROR: UnmapAddress failed!\n");
 		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));

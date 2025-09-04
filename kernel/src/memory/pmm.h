@@ -19,7 +19,6 @@
 
 #include <ktype.h>
 
-#include <retval.h>
 #include <memory/paging.h>
 
 #define MEMORY_ISA_END ((uint64_t)((uint64_t)1024*1024*16))
