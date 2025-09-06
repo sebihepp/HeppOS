@@ -21,8 +21,8 @@
 
 #include <memory/paging.h>
 
-#define MEMORY_ISA_END ((uint64_t)((uint64_t)1024*1024*16))
-#define MEMORY_LOW_END ((uint64_t)((uint64_t)1024*1024*1024*4))
+#define MEMORY_ISA_END ((PhysicalAddress_t)((uint64_t)1024*1024*16))
+#define MEMORY_LOW_END ((PhysicalAddress_t)((uint64_t)1024*1024*1024*4))
 #define PMM_ISA_BITMAP_SIZE (MEMORY_ISA_END / 4096 / 32)
 
 class CPMM {

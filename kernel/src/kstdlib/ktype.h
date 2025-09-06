@@ -24,10 +24,14 @@
 #include <stdbool.h>
 #endif
 
-typedef uintptr_t PhysicalAddress_t;
-typedef uintptr_t VirtualAddress_t;
+// Memory Address types
+typedef intptr_t PhysicalAddress_t;
+typedef intptr_t VirtualAddress_t;
+typedef intptr_t DeltaAddress_t;
 
-#include <retval.h> //For ReturnValue_t
+
+// Return Values
+#include <retval.h> 
 
 
 #ifdef __cplusplus
