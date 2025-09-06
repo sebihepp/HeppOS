@@ -284,7 +284,7 @@ public:
 		);	
 	}
 	
-	static inline VirtualAddress_t GetHHDMOffset(void) __attribute__ (( nothrow , always_inline )) {
+	static inline DeltaAddress_t GetHHDMOffset(void) __attribute__ (( nothrow , always_inline )) {
 		return mHHDMOffset;
 	}
 	

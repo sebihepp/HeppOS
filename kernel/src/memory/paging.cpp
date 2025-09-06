@@ -608,10 +608,10 @@ ReturnValue_t CPaging::PreInit(void) {
 			mCapabilities[PAGINGCAPABILITY_1GPAGES] = true;
 			mActiveCapabilities[PAGINGCAPABILITY_1GPAGES] = true;
 		}
-	}	
+	}
 	
 	// Save limine HHDM
-	mHHDMOffset = CLimine::GetHHDMResponse()->offset;
+	mHHDMOffset = (DeltaAddress_t)CLimine::GetHHDMResponse()->offset;
 	
 	return RETVAL_OK;
 }
