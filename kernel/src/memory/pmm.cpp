@@ -177,12 +177,3 @@ void CPMM::FreeHigh(PhysicalAddress_t pAddress) {
 	if (mUsedMemoryAmount != 0)
 		mUsedMemoryAmount -= PAGE_SIZE;
 }
-
-uint64_t CPMM::GetFreeMemory(void) {
-	return mFreeMemoryAmount;
-}
-
-uint64_t CPMM::GetUsedMemory(void) {
-	return mUsedMemoryAmount;
-}
-

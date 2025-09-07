@@ -54,6 +54,12 @@ public:
 	static void Free(PhysicalAddress_t pAddress) __attribute__ (( nothrow ));
 	static void FreeISA(PhysicalAddress_t pAddress, size_t pPageCount) __attribute__ (( nothrow ));
 
-	static uint64_t GetFreeMemory(void) __attribute__ (( nothrow ));
-	static uint64_t GetUsedMemory(void) __attribute__ (( nothrow ));
+	static inline uint64_t GetFreeMemory(void) __attribute__ (( nothrow , always_inline )) {
+		return mFreeMemoryAmount;
+	}
+	
+	static inline uint64_t GetUsedMemory(void) __attribute__ (( nothrow , always_inline )) {
+		return mUsedMemoryAmount;
+	}
+	
 };
