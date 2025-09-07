@@ -46,7 +46,12 @@ ReturnValue_t CPMM::PreInit(void) {
 		if (_LimineMemoryMapEntry->type != LIMINE_MEMMAP_USABLE)
 			continue;
 		
-		
+		for (PhysicalAddress_t _CurrentAddress = _LimineMemoryMapEntry->base;
+				_CurrentAddress < (PhysicalAddress_t)(_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length);
+				_CurrentAddress += PAGE_SIZE) 
+		{
+			CPMM::Free(_CurrentAddress);		
+		}
 	}
 	
 	PhysicalAddress_t _MemoryTest = (PhysicalAddress_t)NULL;

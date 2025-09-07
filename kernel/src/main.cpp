@@ -76,8 +76,41 @@ extern "C" uint64_t kmain(void) {
 		return _RetVal;
 	}
 
-	//CPMM::PrintMemoryMap();
+	// Print Used Memory
+	const char *_MemoryUnit = "B";
+	uint64_t _UsedMemory = CPMM::GetUsedMemory();
+	if (_UsedMemory > 4096) {
+		_UsedMemory /= 1024;
+		_MemoryUnit = "KB";
+	}
+	if (_UsedMemory > 4096) {
+		_UsedMemory /= 1024;
+		_MemoryUnit = "MB";
+	}
+	if (_UsedMemory > 4096) {
+		_UsedMemory /= 1024;
+		_MemoryUnit = "GB";
+	}
+	CLog::PrintF("Used Memory: %d%s\n", _UsedMemory, _MemoryUnit);
 	
+	// Print Free Memory
+	_MemoryUnit = "B";
+	uint64_t _FreeMemory = CPMM::GetFreeMemory();
+	if (_FreeMemory > 4096) {
+		_FreeMemory /= 1024;
+		_MemoryUnit = "KB";
+	}
+	if (_FreeMemory > 4096) {
+		_FreeMemory /= 1024;
+		_MemoryUnit = "MB";
+	}
+	if (_FreeMemory > 4096) {
+		_FreeMemory /= 1024;
+		_MemoryUnit = "GB";
+	}
+	CLog::PrintF("Free Memory: %d%s\n", _FreeMemory, _MemoryUnit);
+
+
 #ifdef _DEBUG
 
 	//Testing CPMM
