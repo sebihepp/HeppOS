@@ -38,6 +38,9 @@ private:
 	static void FreeLow(PhysicalAddress_t pAddress) __attribute__ (( nothrow ));
 	static void FreeHigh(PhysicalAddress_t pAddress) __attribute__ (( nothrow ));
 
+	static uint32_t ISACheck(uint32_t pStart, bool pFree) __attribute__ (( nothrow ));
+	static void ISAMark(uint32_t pStart, size_t pLength, bool pFree) __attribute__ (( nothrow ));
+	
 	
 	CPMM() = delete;
 	~CPMM() = delete;

@@ -79,34 +79,34 @@ extern "C" uint64_t kmain(void) {
 	// Print Used Memory
 	const char *_MemoryUnit = "B";
 	uint64_t _UsedMemory = CPMM::GetUsedMemory();
-	if (_UsedMemory > 4096) {
+	if (_UsedMemory > 100000) {
 		_UsedMemory /= 1024;
-		_MemoryUnit = "KB";
+		_MemoryUnit = "KiB";
 	}
-	if (_UsedMemory > 4096) {
+	if (_UsedMemory > 100000) {
 		_UsedMemory /= 1024;
-		_MemoryUnit = "MB";
+		_MemoryUnit = "MiB";
 	}
-	if (_UsedMemory > 4096) {
+	if (_UsedMemory > 100000) {
 		_UsedMemory /= 1024;
-		_MemoryUnit = "GB";
+		_MemoryUnit = "GiB";
 	}
 	CLog::PrintF("Used Memory: %d%s\n", _UsedMemory, _MemoryUnit);
 	
 	// Print Free Memory
 	_MemoryUnit = "B";
 	uint64_t _FreeMemory = CPMM::GetFreeMemory();
-	if (_FreeMemory > 4096) {
+	if (_FreeMemory > 100000) {
 		_FreeMemory /= 1024;
-		_MemoryUnit = "KB";
+		_MemoryUnit = "KiB";
 	}
-	if (_FreeMemory > 4096) {
+	if (_FreeMemory > 100000) {
 		_FreeMemory /= 1024;
-		_MemoryUnit = "MB";
+		_MemoryUnit = "MiB";
 	}
-	if (_FreeMemory > 4096) {
+	if (_FreeMemory > 100000) {
 		_FreeMemory /= 1024;
-		_MemoryUnit = "GB";
+		_MemoryUnit = "GiB";
 	}
 	CLog::PrintF("Free Memory: %d%s\n", _FreeMemory, _MemoryUnit);
 

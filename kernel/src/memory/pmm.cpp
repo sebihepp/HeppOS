@@ -95,12 +95,24 @@ ReturnValue_t CPMM::Alloc(PhysicalAddress_t &pAddress) {
 
 ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, size_t pPageCount) {
 	
+	uint32_t _CurrentPage = 0;
 	
-	// ToDo
-	// Implement searching, marking used and returning pPageCount continous ISA memory
-	// Dont forget to adjust mFreeMemoryAmount and mUsedMemoryAmount
-	
-	
+	while (_CurrentPage < (PMM_ISA_BITMAP_SIZE * 32)) {
+		
+		uint32_t _Amount = ISACheck(_CurrentPage, true);
+		if (_Amount == 0) {
+			++_CurrentPage;
+		} else if (_Amount < pPageCount) {
+			_CurrentPage += _Amount;
+		} else {
+			ISAMark(_CurrentPage, pPageCount, false);
+			if (mFreeMemoryAmount != 0)
+				mFreeMemoryAmount -= PAGE_SIZE * pPageCount;
+			mUsedMemoryAmount += PAGE_SIZE * pPageCount;
+			pAddress = (PhysicalAddress_t)(_CurrentPage * PAGE_SIZE);
+			return RETVAL_OK;
+		}
+	}
 	
 	pAddress = (PhysicalAddress_t)NULL;
 	return RETVAL_ERROR_OOM_PHYSICAL;
@@ -158,13 +170,11 @@ void CPMM::FreeISA(PhysicalAddress_t pAddress, size_t pPageCount) {
 	
 	pAddress = ((PhysicalAddress_t)pAddress) & ~0xFFF;
 	
-	// ToDo
-	// Implement freeing the page in mMemoryISABitmap
-	
+	ISAMark(pAddress / PAGE_SIZE, pPageCount, true);
 	
 	mFreeMemoryAmount += PAGE_SIZE * pPageCount;
 	if (mUsedMemoryAmount != 0)
-		mUsedMemoryAmount -= PAGE_SIZE + pPageCount;
+		mUsedMemoryAmount -= PAGE_SIZE * pPageCount;
 }
 
 void CPMM::FreeLow(PhysicalAddress_t pAddress) {
@@ -195,3 +205,42 @@ void CPMM::FreeHigh(PhysicalAddress_t pAddress) {
 	if (mUsedMemoryAmount != 0)
 		mUsedMemoryAmount -= PAGE_SIZE;
 }
+
+uint32_t CPMM::ISACheck(uint32_t pStart, bool pFree) {
+	
+	uint32_t _Amount = 0;
+	
+	while (true) {
+		uint32_t _Index = (pStart + _Amount) / 32;
+		uint32_t _Bit = (pStart + _Amount) % 32;
+	
+		if (_Index >= PMM_ISA_BITMAP_SIZE) {
+			return _Amount;
+		}
+		
+		if (pFree == (mMemoryISABitmap[_Index] & (1 << _Bit))) {
+			++_Amount;
+		} else {
+			return _Amount;
+		}
+	}
+	
+	return _Amount;
+}
+
+void CPMM::ISAMark(uint32_t pStart, size_t pLength, bool pFree) {
+	
+	for (uint32_t i = pStart; i < (pStart + pLength); ++i) {
+		uint32_t _Index = i / 32;
+		uint32_t _Bit = i % 32;
+		
+		if (pFree) {
+			mMemoryISABitmap[_Index] |= (1 << _Bit);
+		} else {
+			mMemoryISABitmap[_Index] &= ~(1 << _Bit);
+			
+		}
+	}	
+	
+}
+
