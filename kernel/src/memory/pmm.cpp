@@ -54,6 +54,10 @@ ReturnValue_t CPMM::PreInit(void) {
 		}
 	}
 	
+	// ToDo: 
+	// Add the Amount of non usable memory to mUsedMemoryAmount
+	mUsedMemoryAmount += 0;
+	
 	PhysicalAddress_t _MemoryTest = (PhysicalAddress_t)NULL;
 	
 	ReturnValue_t _RetVal = AllocISA(_MemoryTest, 1);
@@ -91,7 +95,12 @@ ReturnValue_t CPMM::Alloc(PhysicalAddress_t &pAddress) {
 
 ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, size_t pPageCount) {
 	
-	//Dont forget to adjust mFreeMemoryAmount and mUsedMemoryAmount
+	
+	// ToDo
+	// Implement searching, marking used and returning pPageCount continous ISA memory
+	// Dont forget to adjust mFreeMemoryAmount and mUsedMemoryAmount
+	
+	
 	
 	pAddress = (PhysicalAddress_t)NULL;
 	return RETVAL_ERROR_OOM_PHYSICAL;
@@ -148,6 +157,10 @@ void CPMM::Free(PhysicalAddress_t pAddress) {
 void CPMM::FreeISA(PhysicalAddress_t pAddress, size_t pPageCount) {
 	
 	pAddress = ((PhysicalAddress_t)pAddress) & ~0xFFF;
+	
+	// ToDo
+	// Implement freeing the page in mMemoryISABitmap
+	
 	
 	mFreeMemoryAmount += PAGE_SIZE * pPageCount;
 	if (mUsedMemoryAmount != 0)
