@@ -37,26 +37,28 @@ ReturnValue_t CPMM::PreInit(void) {
 	}
 	
 	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
-
+	uint64_t _UsedMemoryAmount = 0;
+	
 	// Set ISA Memory (below 1MB)
 	for (size_t i = 0; i < _LimineMemoryMapResponse->entry_count ; ++i) {
 		limine_memmap_entry *_LimineMemoryMapEntry = _LimineMemoryMapResponse->entries[i];
 		
 		// Skip not usable memory
-		if (_LimineMemoryMapEntry->type != LIMINE_MEMMAP_USABLE)
-			continue;
-		
-		for (PhysicalAddress_t _CurrentAddress = _LimineMemoryMapEntry->base;
-				_CurrentAddress < (PhysicalAddress_t)(_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length);
-				_CurrentAddress += PAGE_SIZE) 
-		{
-			CPMM::Free(_CurrentAddress);		
+		if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_USABLE) {
+			for (PhysicalAddress_t _CurrentAddress = _LimineMemoryMapEntry->base;
+					_CurrentAddress < (PhysicalAddress_t)(_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length);
+					_CurrentAddress += PAGE_SIZE) 
+			{
+				CPMM::Free(_CurrentAddress);		
+			}
+		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_KERNEL_AND_MODULES) {
+			//_UsedMemoryAmount += _LimineMemoryMapEntry->length;
 		}
 	}
 	
 	// ToDo: 
 	// Add the Amount of non usable memory to mUsedMemoryAmount
-	mUsedMemoryAmount += 0;
+	mUsedMemoryAmount += _UsedMemoryAmount;
 	
 	PhysicalAddress_t _MemoryTest = (PhysicalAddress_t)NULL;
 	
