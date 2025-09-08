@@ -20,60 +20,63 @@
 #include <stdarg.h>
 #include <kstring.h>
 
+#include <video/console.h>
+
 
 CSerial CLog::mSerial;
-bool CLog::mInitialized = false;
+bool CLog::mUseSerial = false;
+bool CLog::mUseConsole = false;
 
 ReturnValue_t CLog::Init(void) {
 
 	ReturnValue_t _RetVal = RETVAL_ERROR_GENERAL;
 	
+	if (IS_SUCCESS(CConsole::Init(CLimine::GetFramebufferResponse()))) {
+		mUseConsole = true;
+	}
+	
 	// Try COM1 - 0x3F8
 	_RetVal = mSerial.Init(0x3F8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
 	if (IS_SUCCESS(_RetVal)) {
-		mInitialized = true;
-		return RETVAL_OK;
-	}
-	
-	// Try COM2 - 0x2F8
-	_RetVal = mSerial.Init(0x2F8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
-	if (IS_SUCCESS(_RetVal)) {
-		mInitialized = true;
-		return RETVAL_OK;
+		mUseSerial = true;
+	} else {	
+		// Try COM2 - 0x2F8
+		_RetVal = mSerial.Init(0x2F8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
+		if (IS_SUCCESS(_RetVal)) {
+			mUseSerial = true;
+		} else {
+			// Try COM3 - 0x3E8
+			_RetVal = mSerial.Init(0x3E8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
+			if (IS_SUCCESS(_RetVal)) {
+				mUseSerial = true;
+			} else {
+				// Try COM4 - 0x2E8
+				_RetVal = mSerial.Init(0x2E8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
+				if (IS_SUCCESS(_RetVal)) {
+					mUseSerial = true;
+				}
+			}
+		}
 	}
 
-	// Try COM3 - 0x3E8
-	_RetVal = mSerial.Init(0x3E8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
-	if (IS_SUCCESS(_RetVal)) {
-		mInitialized = true;
+	if (mUseSerial ||mUseConsole)
 		return RETVAL_OK;
-	}
-	
-	// Try COM4 - 0x2E8
-	_RetVal = mSerial.Init(0x2E8, 9600, 8, SERIAL_STOPSIZE_1, SERIAL_PARITY_NONE);
-	if (IS_SUCCESS(_RetVal)) {
-		mInitialized = true;
-		return RETVAL_OK;
-	}
-	
-	mInitialized = false;
-	return _RetVal;
+	return RETVAL_ERROR_GENERAL;
 	
 }
 
 void CLog::Print(const char *pString) {
-	if (mInitialized == false)
-		return;
 	if (pString == NULL)
 		return;
+	if (mUseSerial)
+		mSerial.Send(pString);
+	if (mUseConsole)
+		CConsole::Print(pString);
 
-	mSerial.Send(pString);
 }
 
 void CLog::PrintF(const char *pString, ...) {
 	
-	if (mInitialized == false)
-		return;
 	if (pString == NULL)
 		return;
 
@@ -81,8 +84,12 @@ void CLog::PrintF(const char *pString, ...) {
 	va_start(_ap, pString);
 	
 	static char _Buffer[4096] __attribute__ (( aligned (4096) ));
+	kvsprintf(_Buffer, pString, _ap);
 	
-	mSerial.Send(kvsprintf(_Buffer, pString, _ap));
+	if (mUseSerial)
+		mSerial.Send(_Buffer);
+	if (mUseConsole)
+		CConsole::Print(_Buffer);
 	
 	va_end(_ap);
 }

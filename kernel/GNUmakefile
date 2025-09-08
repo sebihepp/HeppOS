@@ -55,7 +55,11 @@ SOURCES := \
 	src/cpu/gdt.cpp \
 	src/cpu/interrupt.cpp \
 	src/cpu/isr_stub.S \
-	src/cpu/pic.cpp
+	src/cpu/pic.cpp \
+	\
+	src/video/console.cpp \
+	src/video/stdfont.cpp \
+	
 
 OBJECTS := $(patsubst %.S, %.o, $(SOURCES))
 OBJECTS := $(patsubst %.cpp, %.o, $(OBJECTS))

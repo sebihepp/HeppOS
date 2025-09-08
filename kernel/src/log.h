@@ -29,7 +29,8 @@ class CLog {
 private:
 
 	static CSerial mSerial;
-	static bool mInitialized;
+	static bool mUseSerial;
+	static bool mUseConsole;
 	
 	CLog() = delete;
 	~CLog() = delete;
