@@ -55,6 +55,7 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		return _RetVal;
 	}
 	
@@ -64,6 +65,7 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		return _RetVal;
 	}
 	
@@ -73,6 +75,7 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		return _RetVal;
 	}
 
@@ -113,7 +116,29 @@ extern "C" uint64_t kmain(void) {
 
 #ifdef _DEBUG
 
+	CLog::Print("CPMM Test 1...");
+	
 	//Testing CPMM
+	PhysicalAddress_t _CPMMTest001 = (PhysicalAddress_t)NULL;
+	PhysicalAddress_t _CPMMTest002 = (PhysicalAddress_t)NULL;
+	
+	for (uint32_t i = 0; i < 10000; ++i) {
+		_RetVal = CPMM::AllocISA(_CPMMTest001, 1);
+		if (IS_ERROR(_RetVal)) {
+			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
+			return _RetVal;
+		}
+		_RetVal = CPMM::AllocISA(_CPMMTest002, 1);
+		if (IS_ERROR(_RetVal)) {
+			CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
+			return _RetVal;
+		}
+		
+		CPMM::FreeISA(_CPMMTest001, 1);
+		CPMM::FreeISA(_CPMMTest002, 1);
+	}
+	
+	CLog::Print("OK\n");
 	
 #endif
 	
@@ -123,6 +148,7 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		return _RetVal;
 	}
 
@@ -132,6 +158,7 @@ extern "C" uint64_t kmain(void) {
 	CLog::Print(GetReturnValueString(_RetVal));
 	CLog::Print("\n");
 	if (IS_ERROR(_RetVal)) {
+		CLog::PrintF("%s!\n", GetReturnValueString(_RetVal));
 		return _RetVal;
 	}
 	

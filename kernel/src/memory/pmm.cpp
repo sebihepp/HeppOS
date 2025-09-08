@@ -38,6 +38,7 @@ ReturnValue_t CPMM::PreInit(void) {
 	
 	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
 	uint64_t _UsedMemoryAmount = 0;
+	uint64_t _FreeMemoryAmount = 0;
 	
 	// Set ISA Memory (below 1MB)
 	for (size_t i = 0; i < _LimineMemoryMapResponse->entry_count ; ++i) {
@@ -49,7 +50,8 @@ ReturnValue_t CPMM::PreInit(void) {
 					_CurrentAddress < (PhysicalAddress_t)(_LimineMemoryMapEntry->base + _LimineMemoryMapEntry->length);
 					_CurrentAddress += PAGE_SIZE) 
 			{
-				CPMM::Free(_CurrentAddress);		
+				CPMM::Free(_CurrentAddress);
+				_FreeMemoryAmount += PAGE_SIZE;
 			}
 		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_KERNEL_AND_MODULES) {
 			//_UsedMemoryAmount += _LimineMemoryMapEntry->length;
@@ -58,7 +60,8 @@ ReturnValue_t CPMM::PreInit(void) {
 	
 	// ToDo: 
 	// Add the Amount of non usable memory to mUsedMemoryAmount
-	mUsedMemoryAmount += _UsedMemoryAmount;
+	mUsedMemoryAmount = _UsedMemoryAmount;
+	mFreeMemoryAmount = _FreeMemoryAmount;
 	
 	PhysicalAddress_t _MemoryTest = (PhysicalAddress_t)NULL;
 	
@@ -105,11 +108,10 @@ ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, size_t pPageCount) {
 		if (_Amount == 0) {
 			++_CurrentPage;
 		} else if (_Amount < pPageCount) {
-			_CurrentPage += _Amount;
+			_CurrentPage += _Amount + 1;
 		} else {
 			ISAMark(_CurrentPage, pPageCount, false);
-			if (mFreeMemoryAmount != 0)
-				mFreeMemoryAmount -= PAGE_SIZE * pPageCount;
+			mFreeMemoryAmount -= PAGE_SIZE * pPageCount;
 			mUsedMemoryAmount += PAGE_SIZE * pPageCount;
 			pAddress = (PhysicalAddress_t)(_CurrentPage * PAGE_SIZE);
 			return RETVAL_OK;
@@ -129,8 +131,7 @@ ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress) {
 	
 	pAddress = (PhysicalAddress_t)mMemoryLowStack;
 	mMemoryLowStack = ACCESS_PHYS_ADDR(mMemoryLowStack, PhysicalAddress_t);
-	if (mFreeMemoryAmount != 0)
-		mFreeMemoryAmount -= PAGE_SIZE;
+	mFreeMemoryAmount -= PAGE_SIZE;
 	mUsedMemoryAmount += PAGE_SIZE;
 	
 	return RETVAL_OK;
@@ -175,8 +176,7 @@ void CPMM::FreeISA(PhysicalAddress_t pAddress, size_t pPageCount) {
 	ISAMark(pAddress / PAGE_SIZE, pPageCount, true);
 	
 	mFreeMemoryAmount += PAGE_SIZE * pPageCount;
-	if (mUsedMemoryAmount != 0)
-		mUsedMemoryAmount -= PAGE_SIZE * pPageCount;
+	mUsedMemoryAmount -= PAGE_SIZE * pPageCount;
 }
 
 void CPMM::FreeLow(PhysicalAddress_t pAddress) {
@@ -220,7 +220,7 @@ uint32_t CPMM::ISACheck(uint32_t pStart, bool pFree) {
 			return _Amount;
 		}
 		
-		if (pFree == (mMemoryISABitmap[_Index] & (1 << _Bit))) {
+		if (not pFree == (mMemoryISABitmap[_Index] & (1 << _Bit))) {
 			++_Amount;
 		} else {
 			return _Amount;
@@ -236,10 +236,13 @@ void CPMM::ISAMark(uint32_t pStart, size_t pLength, bool pFree) {
 		uint32_t _Index = i / 32;
 		uint32_t _Bit = i % 32;
 		
+		if (_Index >= PMM_ISA_BITMAP_SIZE)
+			break;
+		
 		if (pFree) {
-			mMemoryISABitmap[_Index] |= (1 << _Bit);
-		} else {
 			mMemoryISABitmap[_Index] &= ~(1 << _Bit);
+		} else {
+			mMemoryISABitmap[_Index] |= (1 << _Bit);
 			
 		}
 	}	

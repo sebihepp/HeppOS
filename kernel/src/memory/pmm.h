@@ -28,7 +28,7 @@
 class CPMM {
 private:
 	
-	static uint32_t mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];	//Memory below 16MB
+	static uint32_t mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];	//Memory below 16MB - 1 means occupied - 0 means free
 	static PhysicalAddress_t mMemoryLowStack;				//Memory between 16MB and 4GB
 	static PhysicalAddress_t mMemoryHighStack;				//Memory above 4GB
 	
