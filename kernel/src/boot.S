@@ -21,9 +21,13 @@
 .section ".text"
 _kstart:
 	
+    
+
 	# Call global constructors
+    pushq %rdi
 	call _init
-	
+	popq %rdi
+    
 	# Call kmain
 	call kmain
 	

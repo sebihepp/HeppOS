@@ -29,14 +29,14 @@
 #include <kstring.h>
 
 
-extern "C" uint64_t kmain(void) __attribute__(( nothrow ));
+extern "C" uint64_t kmain(uint64_t pRDI) __attribute__(( nothrow ));
 
 // For Testing CPaging::MapAddress()
 volatile uint8_t gPagingMapTest[4096] __attribute__ (( aligned(4096) ));
 
 //////
 
-extern "C" uint64_t kmain(void) {
+extern "C" uint64_t kmain(uint64_t pRDI) {
 
 #ifdef _DEBUG
 	const char *_ConstTempText = NULL;
