@@ -48,6 +48,8 @@ extern "C" uint64_t kmain(uint64_t pRDI) {
 	}
 
 
+
+
 	return RETVAL_OK;
 }
 
@@ -144,7 +146,14 @@ ReturnValue_t KInit(void) {
 	
 	// Print HHDM offset
 	CLog::PrintF("HHDM offset=%016p\n", CPaging::GetHHDMOffset());	
-	
+
+	// Print Kernel Physical base
+	CLog::PrintF("Kernel physical base=%016p\n", CLimine::GetExecutableAddressResponse()->physical_base);	
+
+	// Print Kernel Virtual base
+	CLog::PrintF("Kernel virtual base=%016p\n", CLimine::GetExecutableAddressResponse()->virtual_base);	
+
+
 	// Print Framebuffer
 	CLog::PrintF("Framebuffer-Format: %dx%dx%d\nFramebuffer-Address=%016p\n", CLimine::GetFramebufferResponse()->framebuffers[0]->width, 
 		CLimine::GetFramebufferResponse()->framebuffers[0]->height, CLimine::GetFramebufferResponse()->framebuffers[0]->bpp,

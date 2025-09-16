@@ -1,6 +1,6 @@
 
 
-FLAGS_DEBUG := -D_DEBUG -g -Og
+FLAGS_DEBUG := -D_DEBUG -g -Og 
 FLAGS_RELEASE := -O2
 
 .PHONY: all

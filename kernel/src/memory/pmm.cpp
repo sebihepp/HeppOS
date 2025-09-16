@@ -53,7 +53,7 @@ ReturnValue_t CPMM::PreInit(void) {
 				CPMM::Free(_CurrentAddress);
 				_FreeMemoryAmount += PAGE_SIZE;
 			}
-		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_KERNEL_AND_MODULES) {
+		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_EXECUTABLE_AND_MODULES) {
 			//_UsedMemoryAmount += _LimineMemoryMapEntry->length;
 		}
 	}

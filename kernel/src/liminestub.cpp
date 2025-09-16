@@ -18,7 +18,7 @@
 
 #include <liminestub.h>
 
-__attribute__((used, section(".requests"))) static volatile LIMINE_BASE_REVISION(2);
+__attribute__((used, section(".requests"))) static volatile LIMINE_BASE_REVISION(3);
 __attribute__((used, section(".requests"))) static volatile limine_framebuffer_request FramebufferRequest = {
 	.id = LIMINE_FRAMEBUFFER_REQUEST,
 	.revision = 0,
@@ -49,21 +49,31 @@ __attribute__((used, section(".requests"))) static volatile limine_module_reques
 	.internal_module_count = 0,
 	.internal_modules = NULL
 };
-__attribute__((used, section(".requests"))) static volatile limine_kernel_address_request KernelAddressRequest = {
-	.id = LIMINE_KERNEL_ADDRESS_REQUEST,
-	.revision = 0,
-	.response = NULL
-};
-__attribute__((used, section(".requests"))) static volatile limine_kernel_file_request KernelFileRequest = {
-	.id = LIMINE_KERNEL_FILE_REQUEST,
-	.revision = 0,
-	.response = NULL
-};
-__attribute__((used, section(".requests"))) static volatile limine_smp_request SMPRequest = {
-	.id = LIMINE_SMP_REQUEST,
+__attribute__((used, section(".requests"))) static volatile limine_mp_request MPRequest = {
+	.id = LIMINE_MP_REQUEST,
 	.revision = 0,
 	.response = NULL,
 	.flags = 0
+};
+__attribute__((used, section(".requests"))) static volatile limine_date_at_boot_request DateAtBootRequest = {
+	.id = LIMINE_DATE_AT_BOOT_REQUEST,
+	.revision = 0,
+	.response = NULL,
+};
+__attribute__((used, section(".requests"))) static volatile limine_executable_address_request ExecutableAddressRequest = {
+	.id = LIMINE_EXECUTABLE_ADDRESS_REQUEST,
+	.revision = 0,
+	.response = NULL,
+};
+__attribute__((used, section(".requests"))) static volatile limine_rsdp_request RSDPRequest = {
+	.id = LIMINE_RSDP_REQUEST,
+	.revision = 0,
+	.response = NULL,
+};
+__attribute__((used, section(".requests"))) static volatile limine_executable_file_request ExecutableFileRequest = {
+	.id = LIMINE_EXECUTABLE_FILE_REQUEST,
+	.revision = 0,
+	.response = NULL,
 };
 __attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_REQUESTS_START_MARKER;
 __attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
@@ -85,12 +95,6 @@ ReturnValue_t CLimine::Init(void) {
 	if (GetFramebufferResponse() == NULL) {
 		return RETVAL_ERROR_LIMINE_NULL_POINTER;
 	}
-	if (GetKernelAddressResponse() == NULL) {
-		return RETVAL_ERROR_LIMINE_NULL_POINTER;
-	}
-	if (GetKernelFileResponse() == NULL) {
-		return RETVAL_ERROR_LIMINE_NULL_POINTER;
-	}
 	if (GetMemoryMapResponse() == NULL) {
 		return RETVAL_ERROR_LIMINE_NULL_POINTER;
 	}
@@ -100,7 +104,19 @@ ReturnValue_t CLimine::Init(void) {
 	if (GetPagingModeResponse() == NULL) {
 		return RETVAL_ERROR_LIMINE_NULL_POINTER;
 	}	
-	if (GetSMPResponse() == NULL) {
+	if (GetMPResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}	
+	if (GetExecutableAddressResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}	
+	if (GetExecutableFileResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}	
+	if (GetDateAtBootResponse() == NULL) {
+		return RETVAL_ERROR_LIMINE_NULL_POINTER;
+	}	
+	if (GetRSDPResponse() == NULL) {
 		return RETVAL_ERROR_LIMINE_NULL_POINTER;
 	}	
 	
@@ -127,14 +143,22 @@ limine_module_response *CLimine::GetModuleResponse(void) {
 	return ModuleRequest.response;
 }
 
-limine_kernel_address_response *CLimine::GetKernelAddressResponse(void) {
-	return KernelAddressRequest.response;
+limine_mp_response *CLimine::GetMPResponse(void) {
+	return MPRequest.response;
 }
 
-limine_kernel_file_response *CLimine::GetKernelFileResponse(void) {
-	return KernelFileRequest.response;
+limine_rsdp_response *CLimine::GetRSDPResponse(void) {
+	return RSDPRequest.response;
 }
 
-limine_smp_response *CLimine::GetSMPResponse(void) {
-	return SMPRequest.response;
+limine_executable_address_response *CLimine::GetExecutableAddressResponse(void) {
+	return ExecutableAddressRequest.response;
+}
+
+limine_executable_file_response *CLimine::GetExecutableFileResponse(void) {
+	return ExecutableFileRequest.response;
+}
+
+limine_date_at_boot_response *CLimine::GetDateAtBootResponse(void) {
+	return DateAtBootRequest.response;
 }

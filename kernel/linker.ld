@@ -4,23 +4,28 @@ ENTRY(_kstart)
 
 PHDRS
 {
-	text		PT_LOAD;
-	rodata		PT_LOAD;
-	init_array	PT_LOAD;
-	data		PT_LOAD;
-	dynamic		PT_DYNAMIC;
+	ktext		PT_LOAD;
+	krodata		PT_LOAD;
+	kdata		PT_LOAD;
+	kdynamic	PT_DYNAMIC;
+	kinterp		PT_INTERP;
+	kgot		PT_LOAD;
 }
 
 SECTIONS
 {
 
-	. = 0xFFFFFFFF80000000;
-	
+	/* Use this only with no-pie*/
+	/*. = 0xFFFFFFFF80000000;*/
+
+/**********************************************/
+	/* TEXT and RODATA */
+
 	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.text)
 		*(.text.*)
-	} :text
+	} :ktext
 	
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
@@ -40,10 +45,12 @@ SECTIONS
 		
 		*(.rodata)
 		*(.rodata.*)
-		*(.eh_frame)
-		*(.eh_frame.*)
-	} :rodata
-	
+	} :krodata
+
+
+/**********************************************/
+	/* DATA and BSS */
+
 	.data BLOCK(4K) : ALIGN(4K)
 	{
 		*(.data)
@@ -53,23 +60,77 @@ SECTIONS
 		KEEP(*(.requests))
 		KEEP(*(.requests_end_marker))
 		
-	} :data
+	} :kdata
 
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(COMMON)
 		*(.bss)
 		*(.bss.*)
-	} :data
+	} :kdata
+
+
+/**********************************************/
+	/* PT_DYNAMIC */
+
+	.dynamic BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.dynamic)
+	} :kdynamic
+
+/**********************************************/
+	/* PT_INTERP */
+
+	.interp BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.interp)
+	} :kinterp
+
+	.dynsym BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.dynsym)
+	} :kinterp
+
+	.dynstr BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.dynstr)
+	} :kinterp
+
+	.rela.dyn BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.rela.dyn)
+	} :kinterp
+	
+	.rela.plt BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.rela.plt)
+	} :kinterp
+
+
+/**********************************************/
+	/* GOT */
+
+	.got BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.got)
+	} :kgot
+
+	.got.plt BLOCK(4K) : ALIGN(4K) 
+	{
+		*(.got.plt)
+	} :kgot
+
+/**********************************************/
+	/* DISCARD */
 
 	/DISCARD/ :
 	{
+		*(.eh_frame)
+		*(.eh_frame.*)
+		*(.comment)
 		*(.note .note.*)
-		
-		*(.fini_array)
-		*(.fini_array.*)
 	}
-	
+
 }
 
 

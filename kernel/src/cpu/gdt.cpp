@@ -105,7 +105,7 @@ void CGDT::LoadGDT(void) {
 		"pushq %%rbx;\n" 			//Restore Return RSP
 		"movq %1, %%rax;\n"
 		"pushq %%rax;\n"			//Return CS
-		"movq $_ReloadCS, %%rax;\n"
+		"movabsq $_ReloadCS, %%rax;\n"
 		"pushq %%rax;\n"			//Return RIP
 		"lretq\n"
 		"_ReloadCS:;\n"

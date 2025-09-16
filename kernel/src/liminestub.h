@@ -16,16 +16,12 @@
 */
 
 
-#ifndef HEADER_LIMINE
-#define HEADER_LIMINE
+#pragma once
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include <ktype.h>
 
+#define LIMINE_API_REVISION 3
 #include <limine.h>
-
-#include <retval.h>
 
 class CLimine {
 private:
@@ -41,13 +37,12 @@ public:
 	static limine_hhdm_response *GetHHDMResponse(void) __attribute(( nothrow ));
 	static limine_paging_mode_response *GetPagingModeResponse(void) __attribute(( nothrow ));
 	static limine_module_response *GetModuleResponse(void) __attribute(( nothrow ));
-	static limine_kernel_address_response *GetKernelAddressResponse(void) __attribute(( nothrow ));
-	static limine_kernel_file_response *GetKernelFileResponse(void) __attribute(( nothrow ));
-	static limine_smp_response *GetSMPResponse(void) __attribute(( nothrow ));
-	
+	static limine_executable_address_response *GetExecutableAddressResponse(void) __attribute(( nothrow ));
+	static limine_executable_file_response *GetExecutableFileResponse(void) __attribute(( nothrow ));
+	static limine_mp_response *GetMPResponse(void) __attribute(( nothrow ));
+    static limine_rsdp_response *GetRSDPResponse(void) __attribute(( nothrow ));
+    static limine_date_at_boot_response *GetDateAtBootResponse(void) __attribute(( nothrow ));
+
 	
 };
-
-
-#endif
 
