@@ -35,6 +35,7 @@ ASFLAGS := \
 
 LDFLAGS := \
 	-T "./linker.ld" \
+	-Wl,-z,max-page-size=0x1000 \
 	-pie \
 	-mcmodel=large -mno-red-zone -mgeneral-regs-only \
 	-nostdlib -lgcc \
