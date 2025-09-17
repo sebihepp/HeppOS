@@ -2,7 +2,7 @@
 OUTPUT_FORMAT(elf64-x86-64)
 ENTRY(_kstart)
 
-PHDRS
+/*PHDRS
 {
 	ktext		PT_LOAD;
 	krodata		PT_LOAD;
@@ -10,7 +10,7 @@ PHDRS
 	kdynamic	PT_DYNAMIC;
 	kinterp		PT_INTERP;
 	kgot		PT_LOAD;
-}
+}*/
 
 SECTIONS
 {
@@ -25,7 +25,7 @@ SECTIONS
 	{
 		*(.text)
 		*(.text.*)
-	} :ktext
+	} /*:ktext*/
 	
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
@@ -45,7 +45,7 @@ SECTIONS
 		
 		*(.rodata)
 		*(.rodata.*)
-	} :krodata
+	} /*:krodata*/
 
 
 /**********************************************/
@@ -60,14 +60,14 @@ SECTIONS
 		KEEP(*(.requests))
 		KEEP(*(.requests_end_marker))
 		
-	} :kdata
+	} /*:kdata*/
 
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(COMMON)
 		*(.bss)
 		*(.bss.*)
-	} :kdata
+	} /*:kdata*/
 
 
 /**********************************************/
@@ -76,7 +76,7 @@ SECTIONS
 	.dynamic BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.dynamic)
-	} :kdynamic
+	} /*:kdynamic*/
 
 /**********************************************/
 	/* PT_INTERP */
@@ -84,27 +84,27 @@ SECTIONS
 	.interp BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.interp)
-	} :kinterp
+	} /*:kinterp*/
 
 	.dynsym BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.dynsym)
-	} :kinterp
+	} /*:kinterp*/
 
 	.dynstr BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.dynstr)
-	} :kinterp
+	} /*:kinterp*/
 
 	.rela.dyn BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.rela.dyn)
-	} :kinterp
+	} /*:kinterp*/
 	
 	.rela.plt BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.rela.plt)
-	} :kinterp
+	} /*:kinterp*/
 
 
 /**********************************************/
@@ -113,12 +113,12 @@ SECTIONS
 	.got BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.got)
-	} :kgot
+	} /*:kgot*/
 
 	.got.plt BLOCK(4K) : ALIGN(4K) 
 	{
 		*(.got.plt)
-	} :kgot
+	} /*:kgot*/
 
 /**********************************************/
 	/* DISCARD */
