@@ -414,7 +414,7 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					if (_Long) {
 						kitoa(va_arg(pArgs, int64_t), _Buffer, 10);
 					} else {
-						kitoa(va_arg(pArgs, int), _Buffer, 10);
+						kitoa(va_arg(pArgs, int32_t), _Buffer, 10);
 					}
 					_LeadingWidth = _Width - kstrlen(_Buffer);
 					if (_Buffer[0] == '-') {
@@ -472,7 +472,7 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					if (_Long) {
 						kutoa(va_arg(pArgs, uint64_t), _Buffer, 16);
 					} else {
-						kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+						kutoa(va_arg(pArgs, uint32_t), _Buffer, 16);
 					}
 					_LeadingWidth = _Width - kstrlen(_Buffer);
 					if (_LeadingZero) {
@@ -498,7 +498,7 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					if (_Long) {
 						kutoa(va_arg(pArgs, uint64_t), _Buffer, 16);
 					} else {
-						kutoa(va_arg(pArgs, unsigned int), _Buffer, 16);
+						kutoa(va_arg(pArgs, uint32_t), _Buffer, 16);
 					}
 					_LeadingWidth = _Width - kstrlen(_Buffer);
 					if (_LeadingZero) {
@@ -524,7 +524,7 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					if (_Long) {
 						kitoa(va_arg(pArgs, int64_t), _Buffer, 8);
 					} else {
-						kitoa(va_arg(pArgs, int), _Buffer, 8);
+						kitoa(va_arg(pArgs, int32_t), _Buffer, 8);
 					}
 					_LeadingWidth = _Width - kstrlen(_Buffer);
 					if (_Buffer[0] == '-') {

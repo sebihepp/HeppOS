@@ -77,13 +77,14 @@ void CLog::Print(const char *pString) {
 
 void CLog::PrintF(const char *pString, ...) {
 	
+	va_list _ap;
+	static char _Buffer[4096] __attribute__ (( aligned (4096) ));
+	
 	if (pString == NULL)
 		return;
 
-	va_list _ap;
-	va_start(_ap, pString);
-	
-	static char _Buffer[4096] __attribute__ (( aligned (4096) ));
+	va_start(_ap, pString);	
+
 	kvsprintf(_Buffer, pString, _ap);
 	
 	if (mUseSerial)

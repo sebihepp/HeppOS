@@ -80,6 +80,20 @@ ReturnValue_t KInit(void) {
 		return _RetVal;
 	}
 	
+#ifdef _DEBUG
+
+	// Print Kernel Physical base
+	CLog::PrintF("Kernel physical base=%016p\n", CLimine::GetExecutableAddressResponse()->physical_base);	
+
+	// Print Kernel Virtual base
+	CLog::PrintF("Kernel virtual base=%016p\n", CLimine::GetExecutableAddressResponse()->virtual_base);	
+
+	// Print HHDM offset
+	CLog::PrintF("HHDM offset=%016p\n", CPaging::GetHHDMOffset());	
+
+#endif 
+
+
 	// PreInitialize PhysicalMemoryManager
 	CLog::Print("PreInit CPMM...");
 	_RetVal = CPMM::PreInit();
@@ -104,7 +118,7 @@ ReturnValue_t KInit(void) {
 		_UsedMemory /= 1024;
 		_MemoryUnit = "GiB";
 	}
-	CLog::PrintF("Used Memory: %d%s\n", _UsedMemory, _MemoryUnit);
+	CLog::PrintF("Used Memory: %ld%s\n", _UsedMemory, _MemoryUnit);
 	
 	// Print Free Memory
 	_MemoryUnit = "B";
@@ -121,7 +135,7 @@ ReturnValue_t KInit(void) {
 		_FreeMemory /= 1024;
 		_MemoryUnit = "GiB";
 	}
-	CLog::PrintF("Free Memory: %d%s\n", _FreeMemory, _MemoryUnit);
+	CLog::PrintF("Free Memory: %ld%s\n", _FreeMemory, _MemoryUnit);
 	
 	// Initialize GDT
 	CLog::Print("Init CGDT...");
@@ -143,16 +157,6 @@ ReturnValue_t KInit(void) {
 	
 #ifdef _DEBUG
 	//Debug Output
-	
-	// Print HHDM offset
-	CLog::PrintF("HHDM offset=%016p\n", CPaging::GetHHDMOffset());	
-
-	// Print Kernel Physical base
-	CLog::PrintF("Kernel physical base=%016p\n", CLimine::GetExecutableAddressResponse()->physical_base);	
-
-	// Print Kernel Virtual base
-	CLog::PrintF("Kernel virtual base=%016p\n", CLimine::GetExecutableAddressResponse()->virtual_base);	
-
 
 	// Print Framebuffer
 	CLog::PrintF("Framebuffer-Format: %dx%dx%d\nFramebuffer-Address=%016p\n", CLimine::GetFramebufferResponse()->framebuffers[0]->width, 

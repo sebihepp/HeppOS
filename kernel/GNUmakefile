@@ -20,7 +20,7 @@ CXXFLAGS := \
 CCFLAGS := \
 	-Wall -Wextra \
 	-fpie \
-	-ffreestanding -fno-use-cxa-atexit \
+	-ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit \
 	-mcmodel=large -mno-red-zone -mgeneral-regs-only \
 	$(INCLUDES) \
 	$(FLAGS)
@@ -28,6 +28,7 @@ CCFLAGS := \
 ASFLAGS := \
 	-Wall -Wextra \
 	-fpie \
+	-ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit \
 	-mcmodel=large -mno-red-zone -mgeneral-regs-only \
 	$(INCLUDES) \
 	$(FLAGS)
@@ -37,6 +38,7 @@ LDFLAGS := \
 	-T "./linker.ld" \
 	-Wl,-z,max-page-size=0x1000 \
 	-pie \
+	-ffreestanding -fno-exceptions -fno-rtti -fno-use-cxa-atexit \
 	-mcmodel=large -mno-red-zone -mgeneral-regs-only \
 	-nostdlib -lgcc \
 	$(FLAGS)

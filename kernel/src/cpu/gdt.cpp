@@ -100,16 +100,16 @@ void CGDT::LoadGDT(void) {
 		//"xchgw %%bx, %%bx;\n" //Magic breakpoint in bochs for debugging
 		"lgdt %0;\n"
 		"movq %%rsp, %%rbx;\n"		//Save RSP
-		"movq %2, %%rax;\n" 			
+		"movabsq %2, %%rax;\n" 			
 		"pushq %%rax;\n"			//Return SS
 		"pushq %%rbx;\n" 			//Restore Return RSP
-		"movq %1, %%rax;\n"
+		"movabsq %1, %%rax;\n"
 		"pushq %%rax;\n"			//Return CS
 		"leaq _ReloadCS(%%rip), %%rax;\n"
 		"pushq %%rax;\n"			//Return RIP
 		"lretq\n"
 		"_ReloadCS:;\n"
-		"movq %2, %%rbx;\n"
+		"movabsq %2, %%rbx;\n"
 		"mov %%bx, %%ds;\n"
 		"mov %%bx, %%es;\n"
 		"mov %%bx, %%fs;\n"
