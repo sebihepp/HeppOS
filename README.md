@@ -6,9 +6,6 @@ It targets x86_64 and should be able to run on desktops as well as single board 
 ### General 
 - x86_64 target (64bit x86 cpus)
 - Using Limine protocol
-- Drivers must be in relocatable elf format
-- Drivers are loaded as modules
-- Drivers will run in ring 0. 
 
 ### Programming languages 
 - Assembler (only when necessary) 
@@ -27,11 +24,12 @@ initial drivers, supplied as modules.
 ### Drivers 
 - The drivers must be in relocatable elf format. 
 - Drivers will be loaded as processes in ring 0. 
+- Drivers will be passed to the kernel as limine modules.
 
 ## PREREQUISITES 
 - installed binutils (configured with --target=x86_64-elf --with-sysroot --disable-nls --disable-werror)
 - installed g++ (configured with --target=x86_64-elf --disable-nls --enable-languages=c++ --without-headers --disable-hosted-libstdcxx --enable-initfini-array)
-- installed libgcc (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=kernel')
+- installed libgcc (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=large')
 - installed limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd
 - installed MTools
 - installed GNUmake
@@ -42,4 +40,6 @@ initial drivers, supplied as modules.
 #### I cannot boot the created iso file 
 If you use the windows subsystem linux (wsl) for creating the cdrom image, you need to install the grub binaries via "sudo apt-get install grub-pc-bin" 
 #### When compiling the kernel I get errors like "relocation truncated to fit" 
-You need to use a libgcc build with **-mno-red-zone and -mcmodel=kernel** 
+You need to use a libgcc build with **-mno-red-zone and -mcmodel=large** 
+#### Bochs 2.8 triple faults after "Init CPMM..."
+I get the same error, but with Bochs 3.0 it works. (I assume a bug in bochs)
