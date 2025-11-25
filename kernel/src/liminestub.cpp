@@ -18,24 +18,24 @@
 
 #include <liminestub.h>
 
-__attribute__((used, section(".requests"))) static volatile LIMINE_BASE_REVISION(3);
+__attribute__((used, section(".requests"))) static volatile uint64_t limine_base_revision[] LIMINE_BASE_REVISION(4);
 __attribute__((used, section(".requests"))) static volatile limine_framebuffer_request FramebufferRequest = {
-	.id = LIMINE_FRAMEBUFFER_REQUEST,
+	.id = LIMINE_FRAMEBUFFER_REQUEST_ID,
 	.revision = 0,
 	.response = NULL
 };
 __attribute__((used, section(".requests"))) static volatile limine_memmap_request MemoryMapRequest = {
-	.id = LIMINE_MEMMAP_REQUEST,
+	.id = LIMINE_MEMMAP_REQUEST_ID,
 	.revision = 0,
 	.response = NULL
 };
 __attribute__((used, section(".requests"))) static volatile limine_hhdm_request HHDMRequest = {
-	.id = LIMINE_HHDM_REQUEST,
+	.id = LIMINE_HHDM_REQUEST_ID,
 	.revision = 0,
 	.response = NULL
 };
 __attribute__((used, section(".requests"))) static volatile limine_paging_mode_request PagingModeRequest = {
-	.id = LIMINE_PAGING_MODE_REQUEST,
+	.id = LIMINE_PAGING_MODE_REQUEST_ID,
 	.revision = 1,
 	.response = NULL,
 	.mode = LIMINE_PAGING_MODE_X86_64_4LVL,
@@ -43,40 +43,40 @@ __attribute__((used, section(".requests"))) static volatile limine_paging_mode_r
 	.min_mode = LIMINE_PAGING_MODE_X86_64_4LVL
 };
 __attribute__((used, section(".requests"))) static volatile limine_module_request ModuleRequest = {
-	.id = LIMINE_MODULE_REQUEST,
+	.id = LIMINE_MODULE_REQUEST_ID,
 	.revision = 0,
 	.response = NULL,
 	.internal_module_count = 0,
 	.internal_modules = NULL
 };
 __attribute__((used, section(".requests"))) static volatile limine_mp_request MPRequest = {
-	.id = LIMINE_MP_REQUEST,
+	.id = LIMINE_MP_REQUEST_ID,
 	.revision = 0,
 	.response = NULL,
 	.flags = 0
 };
 __attribute__((used, section(".requests"))) static volatile limine_date_at_boot_request DateAtBootRequest = {
-	.id = LIMINE_DATE_AT_BOOT_REQUEST,
+	.id = LIMINE_DATE_AT_BOOT_REQUEST_ID,
 	.revision = 0,
 	.response = NULL,
 };
 __attribute__((used, section(".requests"))) static volatile limine_executable_address_request ExecutableAddressRequest = {
-	.id = LIMINE_EXECUTABLE_ADDRESS_REQUEST,
+	.id = LIMINE_EXECUTABLE_ADDRESS_REQUEST_ID,
 	.revision = 0,
 	.response = NULL,
 };
 __attribute__((used, section(".requests"))) static volatile limine_rsdp_request RSDPRequest = {
-	.id = LIMINE_RSDP_REQUEST,
+	.id = LIMINE_RSDP_REQUEST_ID,
 	.revision = 0,
 	.response = NULL,
 };
 __attribute__((used, section(".requests"))) static volatile limine_executable_file_request ExecutableFileRequest = {
-	.id = LIMINE_EXECUTABLE_FILE_REQUEST,
+	.id = LIMINE_EXECUTABLE_FILE_REQUEST_ID,
 	.revision = 0,
 	.response = NULL,
 };
-__attribute__((used, section(".requests_start_marker"))) static volatile LIMINE_REQUESTS_START_MARKER;
-__attribute__((used, section(".requests_end_marker"))) static volatile LIMINE_REQUESTS_END_MARKER;
+__attribute__((used, section(".requests_start_marker"))) static volatile uint64_t limine_start_marker[] LIMINE_REQUESTS_START_MARKER;
+__attribute__((used, section(".requests_end_marker"))) static volatile uint64_t limine_end_marker[] LIMINE_REQUESTS_END_MARKER;
 
 static limine_module_response gSTDModuleResponse = {
 	.revision = 0,
@@ -87,7 +87,7 @@ static limine_module_response gSTDModuleResponse = {
 ReturnValue_t CLimine::Init(void) {
 	
 	// Check Limine Revision
-	if (LIMINE_BASE_REVISION_SUPPORTED == false) {
+	if (LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision) == false) {
 		return RETVAL_ERROR_LIMINE_REV;
 	}
 	

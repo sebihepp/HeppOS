@@ -58,7 +58,6 @@ HeppOS.img: kernel/kernel
 	dd if=/dev/zero bs=1M count=128 of=HeppOS.img
 	sgdisk HeppOS.img -n 1:2048:131071 -t 1:ef00 -c 1:EFI
 	sgdisk HeppOS.img -n 2:131072 -t 2:0700 -c 2:FAT32
-	limine bios-install HeppOS.img
 	mformat -i HeppOS.img@@1M
 	mmd -i HeppOS.img@@1M ::/EFI ::/EFI/BOOT ::/boot ::/boot/limine
 	mcopy -i HeppOS.img@@1M "/usr/local/share/limine/limine-bios.sys" ::/boot/limine

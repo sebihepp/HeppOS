@@ -27,10 +27,10 @@ initial drivers, supplied as modules.
 - Drivers will be passed to the kernel as limine modules.
 
 ## PREREQUISITES 
-- installed binutils (configured with --target=x86_64-elf --with-sysroot --disable-nls --disable-werror)
-- installed g++ (configured with --target=x86_64-elf --disable-nls --enable-languages=c++ --without-headers --disable-hosted-libstdcxx --enable-initfini-array)
-- installed libgcc (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=large')
-- installed limine build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd
+- installed binutils 2.45 (configured with --target=x86_64-elf --with-sysroot --disable-nls --disable-werror)
+- installed g++ 15.2.0 (configured with --target=x86_64-elf --disable-nls --enable-languages=c++ --without-headers --disable-hosted-libstdcxx --enable-initfini-array)
+- installed libgcc 15.2.0 (build with CFLAGS='-g -O2 -mno-red-zone -mcmodel=large')
+- installed limine 10.3.2 (build with --enable-bios-cd --enable-bios --enable-uefi-ia32 --enable-uefi-x86-64 --enable-uefi-cd)
 - installed MTools
 - installed GNUmake
 - BOCHS for testing [Optional]
