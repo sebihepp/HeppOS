@@ -149,10 +149,7 @@ char *kstrncat(char *pDest, const char *pSource, size_t pLength) {
 		_target[i] = pSource[i];
 		++i;
 	}
-	while (i < pLength) {
-		pDest[i] = 0;
-		++i;
-	}
+	_target[i] = 0;
 	return pDest;
 }
 
@@ -341,6 +338,7 @@ char *ksprintf(char *pDest, const char *pFormat, ...) {
 }
 
 char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
+
 	if (pDest == NULL)
 		return NULL;
 	if (pFormat == NULL)
@@ -429,6 +427,36 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					pDest[k] = 0;
 					kstrcat(pDest, _Buffer);
 					k = kstrlen(pDest);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'u':
+					if (_Long) {
+						kutoa(va_arg(pArgs, uint64_t), _Buffer, 10);
+					} else {
+						kutoa(va_arg(pArgs, uint32_t), _Buffer, 10);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					pDest[k] = 0;
+					kstrcat(pDest, _Buffer);
+					k = kstrlen(pDest);
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+						}
+					}
 					if (_LeadingZero == false) {
 						for (int64_t l = 0; l < _LeadingWidth; ++l) {
 							pDest[k++] = ' ';
@@ -557,7 +585,7 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 					_LeadingZero = false;
 					break;
 			}
-			
+						
 		} else {
 			
 			if (pFormat[i] == '%') {
@@ -575,9 +603,313 @@ char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) {
 	}
 	
 	pDest[k] = 0;
-	
+
 	return pDest;
+}
+
+size_t ksnprintf(char *pDest, size_t pSize, const char *pFormat, ...) {
+	if (pDest == NULL)
+		return 0;
+	if (pFormat == NULL)
+		return 0;
 	
+	va_list _ap;
+	va_start(_ap, pFormat);
+	int64_t _RetVal = kvsnprintf(pDest, pSize, pFormat, _ap);
+	va_end(_ap);
+	
+	return _RetVal;
+}
+
+#define CHECK_SNPRINTF_SIZE { \
+	if (k >= pSize) { \
+		pDest[pSize-1] = 0; \
+		return pSize; \
+	} }
+
+#define COPY_AND_CHECK_SNPRINTF_SIZE(SOURCE) { \
+	pDest[k] = 0; \
+	kstrncat(pDest, (SOURCE), pSize - k - 1); \
+	pDest[pSize-1] = 0; \
+	k = kstrlen(pDest); \
+	if ((k+1) >= pSize) { \
+		pDest[pSize-1] = 0; \
+		return pSize; \
+	} }
+
+size_t kvsnprintf(char *pDest, size_t pSize, const char *pFormat, va_list pArgs) {
+
+	if (pDest == NULL)
+		return 0;
+	if (pFormat == NULL)
+		return 0;
+		
+	static char _Buffer[128];
+	size_t i = 0;
+	size_t k = 0;
+	bool _Special = false;
+	bool _Long = false;
+	int64_t _Width = 0;
+	bool _LeadingZero = false;
+	int64_t _LeadingWidth = 0;
+	
+	while (pFormat[i] != 0) {
+		
+	// ToDo: Implement
+		if (_Special) {
+			
+			switch (pFormat[i]) {
+				case '0':
+					if (_Width == 0) {
+						_LeadingZero = true;
+					} else {
+						_Width *= 10;
+					}
+					break;
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					_Width *= 10;
+					_Width += pFormat[i] - '0';
+					break;
+				case 'l':
+					_Long = true;
+					break;
+				case '%':
+					pDest[k++] = '%';
+					CHECK_SNPRINTF_SIZE;
+
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'c':
+					pDest[k++] = va_arg(pArgs, int);
+					CHECK_SNPRINTF_SIZE;
+
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 's':
+					COPY_AND_CHECK_SNPRINTF_SIZE(va_arg(pArgs, const char*));
+
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'i':
+				case 'd':
+					if (_Long) {
+						kitoa(va_arg(pArgs, int64_t), _Buffer, 10);
+					} else {
+						kitoa(va_arg(pArgs, int32_t), _Buffer, 10);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						CHECK_SNPRINTF_SIZE;
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+							CHECK_SNPRINTF_SIZE;
+						}
+					}
+					COPY_AND_CHECK_SNPRINTF_SIZE(_Buffer);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+							CHECK_SNPRINTF_SIZE;
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'u':
+					if (_Long) {
+						kutoa(va_arg(pArgs, uint64_t), _Buffer, 10);
+					} else {
+						kutoa(va_arg(pArgs, uint32_t), _Buffer, 10);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						CHECK_SNPRINTF_SIZE;
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+							CHECK_SNPRINTF_SIZE;
+						}
+					}
+					COPY_AND_CHECK_SNPRINTF_SIZE(_Buffer);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+							CHECK_SNPRINTF_SIZE;
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'p':
+					pDest[k++] = '0';
+					pDest[k++] = 'x';
+					kutoa((uintptr_t)va_arg(pArgs, uintptr_t), _Buffer, 16);
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						CHECK_SNPRINTF_SIZE;
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+							CHECK_SNPRINTF_SIZE;
+						}
+					}
+					COPY_AND_CHECK_SNPRINTF_SIZE(_Buffer);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+							CHECK_SNPRINTF_SIZE;
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;				
+				case 'x':
+					if (_Long) {
+						kutoa(va_arg(pArgs, uint64_t), _Buffer, 16);
+					} else {
+						kutoa(va_arg(pArgs, uint32_t), _Buffer, 16);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+							CHECK_SNPRINTF_SIZE;
+						}
+					}
+					COPY_AND_CHECK_SNPRINTF_SIZE(_Buffer);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+							CHECK_SNPRINTF_SIZE;
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'X':
+					if (_Long) {
+						kutoa(va_arg(pArgs, uint64_t), _Buffer, 16);
+					} else {
+						kutoa(va_arg(pArgs, uint32_t), _Buffer, 16);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+							CHECK_SNPRINTF_SIZE;
+						}
+					}
+					COPY_AND_CHECK_SNPRINTF_SIZE(_Buffer);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+							CHECK_SNPRINTF_SIZE;
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				case 'o':
+					if (_Long) {
+						kitoa(va_arg(pArgs, int64_t), _Buffer, 8);
+					} else {
+						kitoa(va_arg(pArgs, int32_t), _Buffer, 8);
+					}
+					_LeadingWidth = _Width - kstrlen(_Buffer);
+					if (_Buffer[0] == '-') {
+						pDest[k++] = '-';
+						CHECK_SNPRINTF_SIZE;
+						kstrcpy(_Buffer, &_Buffer[1]);
+					}
+					if (_LeadingZero) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = '0';
+							CHECK_SNPRINTF_SIZE;
+						}
+					}
+					COPY_AND_CHECK_SNPRINTF_SIZE(_Buffer);
+					if (_LeadingZero == false) {
+						for (int64_t l = 0; l < _LeadingWidth; ++l) {
+							pDest[k++] = ' ';
+							CHECK_SNPRINTF_SIZE;
+						}						
+					}
+					
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+				default:
+					_Special = false;
+					_Width = 0;
+					_Long = false;
+					_LeadingZero = false;
+					break;
+			}
+			
+		} else {
+			
+			if (pFormat[i] == '%') {
+				_Special = true;
+				_Width = 0;
+				_Long = false;
+				_LeadingZero = false;
+			} else {
+				pDest[k++] = pFormat[i];
+				CHECK_SNPRINTF_SIZE;
+			}
+			
+		}
+	
+		++i;
+	}
+	
+	pDest[k] = 0;
+
+	return k;
 }
 
 
