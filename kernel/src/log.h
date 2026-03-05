@@ -24,6 +24,7 @@
 #include <retval.h>
 #include <serial.h>
 
+#define BUFFER_SIZE (4096)
 
 class CLog {
 private:

@@ -78,14 +78,14 @@ void CLog::Print(const char *pString) {
 void CLog::PrintF(const char *pString, ...) {
 	
 	va_list _ap;
-	static char _Buffer[4096] __attribute__ (( aligned (4096) ));
+	static char _Buffer[BUFFER_SIZE] __attribute__ (( aligned (4096) ));
 	
 	if (pString == NULL)
 		return;
 
 	va_start(_ap, pString);	
 
-	kvsprintf(_Buffer, pString, _ap);
+	kvsnprintf(_Buffer, BUFFER_SIZE, pString, _ap);
 	
 	if (mUseSerial)
 		mSerial.Send(_Buffer);
