@@ -42,8 +42,9 @@ private:
 	static MemoryRange_t *mMemoryLowList;	//Memory between 16MB and 4GB
 	static MemoryRange_t *mMemoryHighList;	//Memory above 4GB
 	
-	static uint64_t mFreeMemoryAmount;
-	static uint64_t mUsedMemoryAmount;
+	static size_t mFreeMemoryAmount;
+	static size_t mUsedMemoryAmount;
+	static size_t mUnusableMemoryAmount;
 
 	static void SetISAFree(PhysicalAddress_t pBase, size_t pSize) __attribute__ (( nothrow ));
 	static void SetISAUsed(PhysicalAddress_t pBase, size_t pSize) __attribute__ (( nothrow ));
@@ -76,12 +77,16 @@ public:
 	
 	static void Free(PhysicalAddress_t pAddress, PageLevel_t pSize) __attribute__ (( nothrow ));
 	
-	static inline uint64_t GetFreeMemory(void) __attribute__ (( nothrow , always_inline )) {
+	static inline size_t GetFreeMemory(void) __attribute__ (( nothrow , always_inline )) {
 		return mFreeMemoryAmount;
-	}
-	
-	static inline uint64_t GetUsedMemory(void) __attribute__ (( nothrow , always_inline )) {
+	}	
+	static inline size_t GetUsedMemory(void) __attribute__ (( nothrow , always_inline )) {
 		return mUsedMemoryAmount;
 	}
+	static inline size_t GetUnusableMemory(void) __attribute__ (( nothrow , always_inline )) {
+		return mUnusableMemoryAmount;
+	}
+
+
 
 };

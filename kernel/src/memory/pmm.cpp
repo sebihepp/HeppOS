@@ -24,16 +24,17 @@ MemoryRange_t *CPMM::mMemoryISAList = NULL;
 MemoryRange_t *CPMM::mMemoryLowList = NULL;
 MemoryRange_t *CPMM::mMemoryHighList = NULL;
 
-uint64_t CPMM::mFreeMemoryAmount = 0;
-uint64_t CPMM::mUsedMemoryAmount = 0;
+size_t CPMM::mFreeMemoryAmount = 0;
+size_t CPMM::mUsedMemoryAmount = 0;
+size_t CPMM::mUnusableMemoryAmount = 0;
 
 
 ReturnValue_t CPMM::PreInit(void) {
 
 	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
-	uint64_t _UsedMemoryAmount = 0;
-	uint64_t _FreeMemoryAmount = 0;
-
+	size_t _UsedMemoryAmount = 0;
+	size_t _FreeMemoryAmount = 0;
+	size_t _UnusableMemoryAmount = 0;
 
 
 	// Set ISA Memory (below 1MB)
@@ -48,11 +49,18 @@ ReturnValue_t CPMM::PreInit(void) {
 			_FreeMemoryAmount += _LimineMemoryMapEntry->length;
 		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_EXECUTABLE_AND_MODULES) {
 			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
+		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_ACPI_RECLAIMABLE) {
+			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
+		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) {
+			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
+		} else {
+			_UnusableMemoryAmount = _LimineMemoryMapEntry->length;
 		}
 	}
 	
 	mUsedMemoryAmount = _UsedMemoryAmount;
 	mFreeMemoryAmount = _FreeMemoryAmount;
+	mUnusableMemoryAmount = _UnusableMemoryAmount;
 
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_GENERAL;

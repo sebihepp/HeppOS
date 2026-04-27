@@ -103,18 +103,36 @@ ReturnValue_t KInit(void) {
 		return _RetVal;
 	}
 
-	// Print Used Memory
+	// Print Total Memory
 	const char *_MemoryUnit = "B";
+	uint64_t _TotalMemory = CPMM::GetUsedMemory() + CPMM::GetFreeMemory() + CPMM::GetUnusableMemory();
+	if (_TotalMemory > 10000) {
+		_TotalMemory /= 1024;
+		_MemoryUnit = "KiB";
+	}
+	if (_TotalMemory > 10000) {
+		_TotalMemory /= 1024;
+		_MemoryUnit = "MiB";
+	}
+	if (_TotalMemory > 10000) {
+		_TotalMemory /= 1024;
+		_MemoryUnit = "GiB";
+	}
+	CLog::PrintF("Total Memory: %ld%s\n", _TotalMemory, _MemoryUnit);
+
+	
+	// Print Used Memory
+	_MemoryUnit = "B";
 	uint64_t _UsedMemory = CPMM::GetUsedMemory();
-	if (_UsedMemory > 100000) {
+	if (_UsedMemory > 10000) {
 		_UsedMemory /= 1024;
 		_MemoryUnit = "KiB";
 	}
-	if (_UsedMemory > 100000) {
+	if (_UsedMemory > 10000) {
 		_UsedMemory /= 1024;
 		_MemoryUnit = "MiB";
 	}
-	if (_UsedMemory > 100000) {
+	if (_UsedMemory > 10000) {
 		_UsedMemory /= 1024;
 		_MemoryUnit = "GiB";
 	}
@@ -123,20 +141,39 @@ ReturnValue_t KInit(void) {
 	// Print Free Memory
 	_MemoryUnit = "B";
 	uint64_t _FreeMemory = CPMM::GetFreeMemory();
-	if (_FreeMemory > 100000) {
+	if (_FreeMemory > 10000) {
 		_FreeMemory /= 1024;
 		_MemoryUnit = "KiB";
 	}
-	if (_FreeMemory > 100000) {
+	if (_FreeMemory > 10000) {
 		_FreeMemory /= 1024;
 		_MemoryUnit = "MiB";
 	}
-	if (_FreeMemory > 100000) {
+	if (_FreeMemory > 10000) {
 		_FreeMemory /= 1024;
 		_MemoryUnit = "GiB";
 	}
 	CLog::PrintF("Free Memory: %ld%s\n", _FreeMemory, _MemoryUnit);
-	
+
+	// Print Unusable Memory
+	_MemoryUnit = "B";
+	uint64_t _UnusableMemory = CPMM::GetUnusableMemory();
+	if (_UnusableMemory > 10000) {
+		_UnusableMemory /= 1024;
+		_MemoryUnit = "KiB";
+	}
+	if (_UnusableMemory > 10000) {
+		_UnusableMemory /= 1024;
+		_MemoryUnit = "MiB";
+	}
+	if (_UnusableMemory > 10000) {
+		_UnusableMemory /= 1024;
+		_MemoryUnit = "GiB";
+	}
+	CLog::PrintF("Unusable Memory: %ld%s\n", _UnusableMemory, _MemoryUnit);
+
+
+
 	// Initialize GDT
 	CLog::Print("Init CGDT...");
 	_RetVal = CGDT::Init();
