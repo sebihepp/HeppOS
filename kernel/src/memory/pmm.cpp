@@ -49,8 +49,6 @@ ReturnValue_t CPMM::PreInit(void) {
 		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_EXECUTABLE_AND_MODULES) {
 			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
 		}
-		
-
 	}
 	
 	mUsedMemoryAmount = _UsedMemoryAmount;
@@ -115,18 +113,6 @@ void CPMM::PrintMemoryMap(void) {
 
 void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
 
-	//Align pBase to PAGE_SIZE
-	if (pBase & (PAGE_SIZE - 1)) {
-		pBase = pBase + PAGE_SIZE;
-		pBase = pBase & ~(PAGE_SIZE - 1);
-	}
-	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
-	
 	// Ignore if above 1MB
 	if (pBase >= MEMORY_ISA_END)
 		return;
@@ -199,18 +185,6 @@ void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
 
 void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
 
-	//Align pBase to PAGE_SIZE
-	if (pBase & (PAGE_SIZE - 1)) {
-		pBase = pBase + PAGE_SIZE;
-		pBase = pBase & ~(PAGE_SIZE - 1);
-	}
-	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
-	
 	// if there is no list we can directly return
 	if (mMemoryISAList == NULL)
 		return;
@@ -308,19 +282,7 @@ void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
 }
 
 void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
-	
-	//Align pBase to PAGE_SIZE
-	if (pBase & (PAGE_SIZE - 1)) {
-		pBase = pBase + PAGE_SIZE;
-		pBase = pBase & ~(PAGE_SIZE - 1);
-	}
-	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
-	
+		
 	// Ignore if above 4GB
 	if (pBase >= MEMORY_LOW_END)
 		return;
@@ -403,19 +365,7 @@ void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
 }
 
 void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
-	
-	//Align pBase to PAGE_SIZE
-	if (pBase & (PAGE_SIZE - 1)) {
-		pBase = pBase + PAGE_SIZE;
-		pBase = pBase & ~(PAGE_SIZE - 1);
-	}
-	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
-	
+		
 	// Ignore if above 4GB
 	if (pBase >= MEMORY_LOW_END)
 		return;
@@ -514,19 +464,7 @@ void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
 }
 
 void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
-	
-	//Align pBase to PAGE_SIZE
-	if (pBase & (PAGE_SIZE - 1)) {
-		pBase = pBase + PAGE_SIZE;
-		pBase = pBase & ~(PAGE_SIZE - 1);
-	}
-	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
-	
+		
 	// Ignore if below 4GB
 	if ((pBase + pSize) < MEMORY_LOW_END)
 		return;
@@ -600,23 +538,9 @@ void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
 
 void CPMM::SetHighUsed(PhysicalAddress_t pBase, size_t pSize) {
 	
-	//Align pBase to PAGE_SIZE
-	if (pBase & (PAGE_SIZE - 1)) {
-		pBase = pBase + PAGE_SIZE;
-		pBase = pBase & ~(PAGE_SIZE - 1);
-	}
-	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
-	
 	// Ignore if below 4GB
 	if ((pBase + pSize) < MEMORY_LOW_END)
 		return;
-	
-	
 	
 	PhysicalAddress_t _VirtualBase = pBase + CPaging::GetHHDMOffset();
 	
@@ -790,18 +714,34 @@ void CPMM::MergeHigh(void) {
 }
 
 void CPMM::SetFree(PhysicalAddress_t pBase, size_t pSize) {
+	//Round up address to PAGE_SIZE
+	if (pBase & (PAGE_SIZE-1)) {
+		pBase = (pBase & PAGE_SIZE) + PAGE_SIZE;
+	}
+
+	//Round down size to PAGE_SIZE
+	pSize &= (PAGE_SIZE-1);
+
 	SetISAFree(pBase, pSize);
 	SetLowFree(pBase, pSize);
 	SetHighFree(pBase, pSize);
 }
 
 void CPMM::SetUsed(PhysicalAddress_t pBase, size_t pSize) {
+	//Round up address to PAGE_SIZE
+	if (pBase & (PAGE_SIZE-1)) {
+		pBase = (pBase & PAGE_SIZE) + PAGE_SIZE;
+	}
+
+	//Round down size to PAGE_SIZE
+	pSize &= (PAGE_SIZE-1);
+
 	SetISAUsed(pBase, pSize);
 	SetLowUsed(pBase, pSize);
 	SetHighUsed(pBase, pSize);	
 }
 
-ReturnValue_t CPMM::Alloc(PhysicalAddress_t &pAddress, size_t pSize) {
+ReturnValue_t CPMM::Alloc(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	ReturnValue_t _RetVal = RETVAL_ERROR_GENERAL;
 	
 	//Try allocating High Memory
@@ -819,13 +759,9 @@ ReturnValue_t CPMM::Alloc(PhysicalAddress_t &pAddress, size_t pSize) {
 	return _RetVal;
 }
 
-ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, size_t pSize) {
+ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
+	size_t _Size = CPaging::GetPageLevelSize(pSize);
 	
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_OOM_PHYSICAL;
@@ -834,12 +770,12 @@ ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, size_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Found Big enough entry
-		if (_CurrentEntry->Size >= pSize) {
+		if (_CurrentEntry->Size >= _Size) {
 			
 			//Allocate at end of _CurrentEntry - resulting in a resize only
 			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
-			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - pSize);
-			SetUsed(pAddress, pSize);
+			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - _Size);
+			SetUsed(pAddress, _Size);
 			return RETVAL_OK;
 		}
 		
@@ -849,13 +785,9 @@ ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, size_t pSize) {
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
-ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, size_t pSize) {
+ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
+	size_t _Size = CPaging::GetPageLevelSize(pSize);
 	
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_OOM_PHYSICAL;
@@ -864,12 +796,12 @@ ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, size_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Found Big enough entry
-		if (_CurrentEntry->Size >= pSize) {
+		if (_CurrentEntry->Size >= _Size) {
 			
 			//Allocate at end of _CurrentEntry - resulting in a resize only
 			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
-			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - pSize);
-			SetUsed(pAddress, pSize);
+			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - _Size);
+			SetUsed(pAddress, _Size);
 			return RETVAL_OK;
 		}
 		
@@ -879,13 +811,9 @@ ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, size_t pSize) {
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
-ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, size_t pSize) {
+ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	
-	//Align pSize to PAGE_SIZE
-	if (pSize & (PAGE_SIZE - 1)) {
-		pSize += PAGE_SIZE;
-		pSize &= ~(PAGE_SIZE - 1);
-	}
+	size_t _Size = CPaging::GetPageLevelSize(pSize);
 	
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_OOM_PHYSICAL;
@@ -894,12 +822,12 @@ ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, size_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Found Big enough entry
-		if (_CurrentEntry->Size >= pSize) {
+		if (_CurrentEntry->Size >= _Size) {
 			
 			//Allocate at end of _CurrentEntry - resulting in a resize only
 			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
-			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - pSize);
-			SetUsed(pAddress, pSize);
+			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - _Size);
+			SetUsed(pAddress, _Size);
 			return RETVAL_OK;
 		}
 		
@@ -909,7 +837,8 @@ ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, size_t pSize) {
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
-void CPMM::Free(PhysicalAddress_t pAddress, size_t pSize) {
-	SetFree(pAddress, pSize);
+void CPMM::Free(PhysicalAddress_t pAddress, PageLevel_t pSize) {
+	size_t _Size = CPaging::GetPageLevelSize(pSize);
+	SetFree(pAddress, _Size);
 }
 

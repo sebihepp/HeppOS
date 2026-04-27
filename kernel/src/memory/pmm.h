@@ -69,12 +69,12 @@ public:
 	static void SetFree(PhysicalAddress_t pBase, size_t pSize) __attribute__ (( nothrow ));
 	static void SetUsed(PhysicalAddress_t pBase, size_t pSize) __attribute__ (( nothrow ));
 
-	static ReturnValue_t Alloc(PhysicalAddress_t &pAddress, size_t pSize) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocISA(PhysicalAddress_t &pAddress, size_t pSize) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocLow(PhysicalAddress_t &pAddress, size_t pSize) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocHigh(PhysicalAddress_t &pAddress, size_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t Alloc(PhysicalAddress_t &pAddress, PageLevel_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocISA(PhysicalAddress_t &pAddress, PageLevel_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocLow(PhysicalAddress_t &pAddress, PageLevel_t pSize) __attribute__ (( nothrow ));
+	static ReturnValue_t AllocHigh(PhysicalAddress_t &pAddress, PageLevel_t pSize) __attribute__ (( nothrow ));
 	
-	static void Free(PhysicalAddress_t pAddress, size_t pSize) __attribute__ (( nothrow ));
+	static void Free(PhysicalAddress_t pAddress, PageLevel_t pSize) __attribute__ (( nothrow ));
 	
 	static inline uint64_t GetFreeMemory(void) __attribute__ (( nothrow , always_inline )) {
 		return mFreeMemoryAmount;

@@ -297,7 +297,9 @@ public:
 	
 	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
 	static const char *GetPageLevelString(VirtualAddress_t pVirtualAddress) __attribute__ (( nothrow ));
-	
+	static size_t GetPageLevelSize(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
+	static size_t GetPageLevelSize(VirtualAddress_t pVirtualAddress) __attribute__ (( nothrow ));
+
 	static inline bool GetCapability(PagingCapability_t pCapability) __attribute__ (( nothrow , always_inline )) {
 		return mCapabilities[pCapability];
 	}

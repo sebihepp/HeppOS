@@ -59,10 +59,10 @@ ReturnValue_t CLog::Init(void) {
 		}
 	}
 
-	if (mUseSerial ||mUseConsole)
+	if (mUseSerial || mUseConsole)
 		return RETVAL_OK;
+
 	return RETVAL_ERROR_GENERAL;
-	
 }
 
 void CLog::Print(const char *pString) {
@@ -79,7 +79,7 @@ void CLog::PrintF(const char *pString, ...) {
 	
 	va_list _ap;
 	static char _Buffer[4096] __attribute__ (( aligned (4096) ));
-	
+		
 	if (pString == NULL)
 		return;
 

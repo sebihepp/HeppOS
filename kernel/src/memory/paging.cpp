@@ -51,6 +51,30 @@ bool CPaging::mActiveCapabilities[PAGINGCAPABILITY_COUNT];
 	
 } */
 
+size_t CPaging::GetPageLevelSize(PageLevel_t pPageLevel) {
+	switch (pPageLevel) {
+		case PAGELEVEL_PML1:
+			return (size_t)4096;					//4KiByte
+		case PAGELEVEL_PML2:
+			return (size_t)2*1024*1024;				//2MiByte
+		case PAGELEVEL_PML3:
+			return (size_t)1*1024*1024*1024;		//1GiByte
+		case PAGELEVEL_PML4:
+			return (size_t)512*1024*1024*1024;		//512Gibyte
+		case PAGELEVEL_PML5:
+			return (size_t)256*1024*1024*1024*1024;	//256TiByte
+		default:
+			break;
+	}
+	return (size_t)0;
+}
+
+size_t CPaging::GetPageLevelSize(VirtualAddress_t pVirtualAddress) {
+	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
+	GetPageLevel(pVirtualAddress, _PageLevel);
+	return GetPageLevelSize(_PageLevel);
+}
+
 const char *CPaging::GetPageLevelString(VirtualAddress_t pVirtualAddress) {
 	PageLevel_t _PageLevel = PAGELEVEL_UNKNOWN;
 	GetPageLevel(pVirtualAddress, _PageLevel);
