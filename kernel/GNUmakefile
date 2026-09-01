@@ -59,7 +59,7 @@ SOURCES := \
 	\
 	\
 	src/memory/paging.cc \
-	src/memory/pmm.cc \
+	src/memory/physical_memory_manager.cc \
 	\
 	src/cpu/gdt.cc \
 	src/cpu/interrupt.cc \

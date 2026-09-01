@@ -29,7 +29,7 @@ extern uint64_t PREINIT_ARRAY_END;
 extern uint64_t INIT_ARRAY_START;
 extern uint64_t INIT_ARRAY_END;
 
-typedef void (*Constructor_t)(void);
+typedef void (*Constructor)(void);
 
 void _init(void) __attribute(( nothrow ));
 
@@ -41,14 +41,14 @@ void _init(void) {
 	start = reinterpret_cast<uint64_t*>(&PREINIT_ARRAY_START);
 	end = reinterpret_cast<uint64_t*>(&PREINIT_ARRAY_END);
 	for (uint64_t *i = start; i < end; i++) {
-		Constructor_t func = reinterpret_cast<Constructor_t>(*i);
+		Constructor func = reinterpret_cast<Constructor>(*i);
 		(*func)();
 	}
 	
 	start = reinterpret_cast<uint64_t*>(&INIT_ARRAY_START);
 	end = reinterpret_cast<uint64_t*>(&INIT_ARRAY_END);
 	for (uint64_t *i = start; i < end; i++) {
-		Constructor_t func = reinterpret_cast<Constructor_t>(*i);
+		Constructor func = reinterpret_cast<Constructor>(*i);
 		(*func)();
 	}
 	

@@ -69,6 +69,12 @@ limine_date_at_boot_request date_at_boot_request = {
 	.response = NULL,
 };
 __attribute__((used, section(".requests"))) static volatile 
+limine_bootloader_info_request bootloader_info_request = {
+	.id = LIMINE_BOOTLOADER_INFO_REQUEST_ID ,
+	.revision = 0,
+	.response = NULL,
+};
+__attribute__((used, section(".requests"))) static volatile 
 limine_executable_address_request executable_address_request = {
 	.id = LIMINE_EXECUTABLE_ADDRESS_REQUEST_ID,
 	.revision = 0,
@@ -132,7 +138,9 @@ ReturnValue LimineStub::Init(void) {
 	if (GetRSDPResponse() == NULL) {
 		return ReturnValueErrorLimineNullPointer;
 	}	
-	
+	if (GetBootloaderInfoResponse() == NULL) {
+		return ReturnValueErrorLimineNullPointer;
+	}
 	return ReturnValueOk;
 }
 
@@ -174,4 +182,8 @@ limine_executable_file_response *LimineStub::GetExecutableFileResponse(void) {
 
 limine_date_at_boot_response *LimineStub::GetDateAtBootResponse(void) {
 	return date_at_boot_request.response;
+}
+
+limine_bootloader_info_response *LimineStub::GetBootloaderInfoResponse(void) {
+	return bootloader_info_request.response;
 }

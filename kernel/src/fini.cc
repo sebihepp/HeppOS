@@ -26,7 +26,7 @@ extern "C" {
 extern uint64_t FINI_ARRAY_START;
 extern uint64_t FINI_ARRAY_END;
 
-typedef void (*Destructor_t)(void);
+typedef void (*Destructor)(void);
 
 void _fini(void) __attribute(( nothrow ));
 
@@ -39,7 +39,7 @@ void _fini(void) {
 	end = reinterpret_cast<uint64_t*>(&FINI_ARRAY_END);
 	end--;
 	for (uint64_t *i = end; i >= start; i--) {
-		Destructor_t func = reinterpret_cast<Destructor_t>(*i);
+		Destructor func = reinterpret_cast<Destructor>(*i);
 		(*func)();
 	}
 

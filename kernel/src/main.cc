@@ -24,7 +24,7 @@
 #include <cpu/gdt.h>
 #include <cpu/interrupt.h>
 #include <memory/paging.h>
-#include <memory/pmm.h>
+#include <memory/physical_memory_manager.h>
 #include <cpu/mmio.h>
 #include <boot_log.h>
 #include <kstring.h>
@@ -61,10 +61,13 @@ ReturnValue KInit(void) {
 	// Initialize Logging
 	BootLog::Init();
 	BootLog::Print("\n\nHeppOS\n");
-	
+	BootLog::PrintF("Loaded by: %s version %s\n", 
+		LimineStub::GetBootloaderInfoResponse()->name, 
+		LimineStub::GetBootloaderInfoResponse()->version);
+
 	// First check for correct limine protocol.
 	// Everything builds up from this
-	BootLog::Print("Init CLimine...");
+	BootLog::Print("Init LimineStub...");
 	return_value = LimineStub::Init();
 	BootLog::Print(GetReturnValueString(return_value));
 	BootLog::Print("\n");
@@ -73,7 +76,7 @@ ReturnValue KInit(void) {
 	}
 	
 	// PreInitialize Paging
-	BootLog::Print("PreInit CPaging...");
+	BootLog::Print("PreInit Paging...");
 	return_value = Paging::PreInit();
 	BootLog::Print(GetReturnValueString(return_value));
 	BootLog::Print("\n");
@@ -100,8 +103,8 @@ ReturnValue KInit(void) {
 
 
 	// PreInitialize PhysicalMemoryManager
-	BootLog::Print("PreInit CPMM...");
-	return_value = CPMM::PreInit();
+	BootLog::Print("PreInit PhysicalMemoryManager...");
+	return_value = PhysicalMemoryManager::PreInit();
 	BootLog::Print(GetReturnValueString(return_value));
 	BootLog::Print("\n");
 	if (IS_ERROR(return_value)) {
@@ -110,7 +113,7 @@ ReturnValue KInit(void) {
 
 	// Print Used Memory
 	const char *memory_unit = "B";
-	uint64_t used_memory = CPMM::GetUsedMemory();
+	uint64_t used_memory = PhysicalMemoryManager::GetUsedMemory();
 	if (used_memory > 100000) {
 		used_memory /= 1024;
 		memory_unit = "KiB";
@@ -127,7 +130,7 @@ ReturnValue KInit(void) {
 	
 	// Print Free Memory
 	memory_unit = "B";
-	uint64_t free_memory = CPMM::GetFreeMemory();
+	uint64_t free_memory = PhysicalMemoryManager::GetFreeMemory();
 	if (free_memory > 100000) {
 		free_memory /= 1024;
 		memory_unit = "KiB";
@@ -143,7 +146,7 @@ ReturnValue KInit(void) {
 	BootLog::PrintF("Free Memory: %ld%s\n", free_memory, memory_unit);
 	
 	// Initialize GDT
-	BootLog::Print("Init CGDT...");
+	BootLog::Print("Init GDT...");
 	return_value = GDT::Init();
 	BootLog::Print(GetReturnValueString(return_value));
 	BootLog::Print("\n");
@@ -152,7 +155,7 @@ ReturnValue KInit(void) {
 	}
 
 	// PreInitialize IDT and Interrupts
-	BootLog::Print("Init CInterrupt...");
+	BootLog::Print("Init Interrupt...");
 	return_value = Interrupt::Init();
 	BootLog::Print(GetReturnValueString(return_value));
 	BootLog::Print("\n");

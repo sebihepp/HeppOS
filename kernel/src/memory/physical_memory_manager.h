@@ -25,7 +25,7 @@
 #define MEMORY_LOW_END ((PhysicalAddress)((uint64_t)1024*1024*1024*4))
 #define PMM_ISA_BITMAP_SIZE (MEMORY_ISA_END / 4096 / 32)
 
-class CPMM {
+class PhysicalMemoryManager {
 private:
 	
 	static uint32_t mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];	//Memory below 16MB - 1 means occupied - 0 means free
@@ -42,8 +42,8 @@ private:
 	static void ISAMark(uint32_t start, size_t length, bool free_mem) __attribute__((nothrow));
 	
 	
-	CPMM() = delete;
-	~CPMM() = delete;
+	PhysicalMemoryManager() = delete;
+	~PhysicalMemoryManager() = delete;
 public:
 
 	static ReturnValue PreInit(void) __attribute__((nothrow));
