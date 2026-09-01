@@ -25,7 +25,7 @@ extern "C" {
 
 #define FONTDATAMAX 16 * 256
 
-const volatile uint8_t gSTDFont[FONTDATAMAX] = {
+const volatile uint8_t StdFont[FONTDATAMAX] = {
 
 	/* 0 0x00 '^@' */
 	0x00, /* 00000000 */

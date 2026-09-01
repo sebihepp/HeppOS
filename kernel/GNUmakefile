@@ -46,32 +46,32 @@ LDFLAGS := \
 
 SOURCES := \
 	src/boot.S \
-	src/init.cpp \
-	src/fini.cpp \
-	src/main.cpp \
-	src/liminestub.cpp \
-	src/retval.cpp \
-	src/serial.cpp \
-	src/log.cpp \
+	src/init.cc \
+	src/fini.cc \
+	src/main.cc \
+	src/limine_stub.cc \
+	src/return_value.cc \
+	src/boot_serial.cc \
+	src/boot_log.cc \
 	\
-	src/kstdlib/kstring.cpp \
-	src/kstdlib/ktype.cpp \
+	src/kstdlib/kstring.cc \
+	src/kstdlib/ktype.cc \
 	\
 	\
-	src/memory/paging.cpp \
-	src/memory/pmm.cpp \
+	src/memory/paging.cc \
+	src/memory/pmm.cc \
 	\
-	src/cpu/gdt.cpp \
-	src/cpu/interrupt.cpp \
+	src/cpu/gdt.cc \
+	src/cpu/interrupt.cc \
 	src/cpu/isr_stub.S \
-	src/cpu/pic.cpp \
+	src/cpu/pic.cc \
 	\
-	src/video/console.cpp \
-	src/video/stdfont.cpp \
+	src/video/console.cc \
+	src/video/stdfont.cc \
 	
 
 OBJECTS := $(patsubst %.S, %.o, $(SOURCES))
-OBJECTS := $(patsubst %.cpp, %.o, $(OBJECTS))
+OBJECTS := $(patsubst %.cc, %.o, $(OBJECTS))
 OBJECTS := $(patsubst %.c, %.o, $(OBJECTS))
 
 kernel: $(OBJECTS) $(SOURCES)
@@ -85,7 +85,7 @@ clean:
 %.o:%.S
 	$(AS) $(ASFLAGS) -c -o $@ $<
 
-%.o:%.cpp
+%.o:%.cc
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 %.o:%.c

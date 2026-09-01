@@ -19,7 +19,7 @@
 #include <video/console.h>
 #include <kstring.h>
 
-extern "C" VideoFont_t gSTDFont;
+extern "C" VideoFont_t StdFont;
 
 void *CConsole::mFramebuffer = NULL;
 uint32_t CConsole::mPitch = 0;
@@ -48,14 +48,14 @@ uint32_t CConsole::mTabSize = 4;
 void (*CConsole::mSetPixel)(uint32_t x, uint32_t y, uint32_t color) = NULL;
 void (*CConsole::mFill)(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom, uint32_t color) = NULL;
 
-ReturnValue_t CConsole::Init(const limine_framebuffer_response *pLFBInfo) {
+ReturnValue CConsole::Init(const limine_framebuffer_response *lfb_info) {
 	
-	if (pLFBInfo == NULL) {
-		return RETVAL_ERROR_NO_FRAMEBUFFER;
+	if (lfb_info == NULL) {
+		return ReturnValueErrorNoFramebuffer;
 	}
-	limine_framebuffer *_LimineLFB = pLFBInfo->framebuffers[0];
+	limine_framebuffer *_LimineLFB = lfb_info->framebuffers[0];
 	if (_LimineLFB == NULL) {
-		return RETVAL_ERROR_NO_FRAMEBUFFER;
+		return ReturnValueErrorNoFramebuffer;
 	}
 	
 	mFramebuffer = static_cast<void*>(_LimineLFB->address);
@@ -85,10 +85,10 @@ ReturnValue_t CConsole::Init(const limine_framebuffer_response *pLFBInfo) {
 		default:
 			mSetPixel = NULL;
 			mFill = NULL;
-			return RETVAL_ERROR_VIDEOMODE;
+			return ReturnValueErrorUnsupportedVideoMode;
 	}
 		
-	return RETVAL_OK;
+	return ReturnValueOk;
 }
 	
 uint32_t CConsole::GetWidth(void) {
@@ -123,7 +123,7 @@ void CConsole::PrintChar(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= mHeight)
 				continue;
 				
-			if (gSTDFont.a[c].a[row] & (0x80 >> col)) {				
+			if (StdFont.a[c].a[row] & (0x80 >> col)) {				
 				mSetPixel(_x, _y, fg_color);
 			} else {
 				mSetPixel(_x, _y, bg_color);
@@ -148,8 +148,8 @@ void CConsole::PrintCharAlpha(const uint8_t c, uint32_t x, uint32_t y,
 			if (_y >= mHeight)
 				continue;
 				
-			if (gSTDFont.a[c].a[row] & (0x80 >> col)) {				
-				SetPixel(_x, _y, fg_color);
+			if (StdFont.a[c].a[row] & (0x80 >> col)) {				
+				mSetPixel(_x, _y, fg_color);
 			}
 		}
 	}
@@ -170,10 +170,10 @@ void CConsole::PrintTitle(void) {
 void CConsole::Clear(void) {	
 	
 	// Clear all
-	Fill(0, 0, mCursorMaxX, mCursorMaxY, mBGColor);
+	mFill(0, 0, mCursorMaxX, mCursorMaxY, mBGColor);
 	
 	// Background for Title
-	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
+	mFill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -195,7 +195,7 @@ void CConsole::SetTitleFGColor(uint32_t color) {
 	mTitleFGColor = color;
 	
 	// Background for Title
-	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
+	mFill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
@@ -205,36 +205,36 @@ void CConsole::SetTitleBGColor(uint32_t color) {
 	mTitleBGColor = color;
 	
 	// Background for Title
-	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
+	mFill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
 }
 
-void CConsole::SetTitleText(const char *pText) {
-	mTitle = pText;
+void CConsole::SetTitleText(const char *text) {
+	mTitle = text;
 	
 	// Background for Title
-	Fill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
+	mFill(0, 0, mCursorMaxX, mTitleHeight, mTitleBGColor);
 	
 	// Draw Title
 	PrintTitle();
 }
 
-void CConsole::Print(const char *pText) {
+void CConsole::Print(const char *text) {
 	size_t i = 0;
 	
-	while (pText[i] != 0) {
+	while (text[i] != 0) {
 		
-		if (pText[i] == '\n') {
+		if (text[i] == '\n') {
 			mCursorX = 0;
 			mCursorY += 1;
-		} else if (pText[i] == '\r') {
+		} else if (text[i] == '\r') {
 			mCursorX = 0;
-		} else if (pText[i] == '\t') {
+		} else if (text[i] == '\t') {
 			mCursorX = (mCursorX + mTabSize) & ~(mTabSize - 1);
 		} else {
-			PrintChar(pText[i], mCursorX, mCursorY, mFGColor, mBGColor);
+			PrintChar(text[i], mCursorX, mCursorY, mFGColor, mBGColor);
 			mCursorX += 1;
 		}
 
@@ -252,11 +252,11 @@ void CConsole::Print(const char *pText) {
 	
 }
 
-void CConsole::ScrollDown(const uint32_t pLines) {
+void CConsole::ScrollDown(const uint32_t lines) {
 	
-	if (pLines == 0)
+	if (lines == 0)
 		return;
-	if (pLines >= (mCursorMaxY - mTitleHeight)) {
+	if (lines >= (mCursorMaxY - mTitleHeight)) {
 		Clear();
 		return;
 	}
@@ -266,19 +266,19 @@ void CConsole::ScrollDown(const uint32_t pLines) {
 	size_t _Size = GetFramebufferSize();
 	
 	
-	_SrcAddress += mPitch * (pLines + mTitleHeight) * mCursorHeight;
+	_SrcAddress += mPitch * (lines + mTitleHeight) * mCursorHeight;
 	_DestAddress += mPitch * mTitleHeight * mCursorHeight;
 	_Size -= (_SrcAddress - reinterpret_cast<uintptr_t>(GetFramebufferAddress()));		
 
 	
 	memmove(reinterpret_cast<void*>(_DestAddress), reinterpret_cast<void*>(_SrcAddress), _Size);
 	
-	Fill(0, mCursorMaxY - pLines, mCursorMaxX + 1, mCursorMaxY + 1, mBGColor);
+	mFill(0, mCursorMaxY - lines, mCursorMaxX + 1, mCursorMaxY + 1, mBGColor);
 	
-	if (pLines >= mCursorY) {
+	if (lines >= mCursorY) {
 			mCursorY = 1;
 	} else {
-		mCursorY -= pLines;
+		mCursorY -= lines;
 	}
 	
 }
@@ -394,7 +394,7 @@ uint32_t CConsole::GetTabSize(void) {
 	return mTabSize;
 }
 
-void CConsole::SetTabSize(uint32_t pTabSize) {
-	mTabSize = pTabSize;
+void CConsole::SetTabSize(uint32_t tab_size) {
+	mTabSize = tab_size;
 }
 

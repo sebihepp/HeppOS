@@ -15,93 +15,90 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_IO
-#define HEADER_IO
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 
-inline uint8_t inb(uint16_t pPort) __attribute__(( nothrow, always_inline ));
-inline uint8_t inb(uint16_t pPort)
+inline uint8_t inb(uint16_t port) __attribute__(( nothrow, always_inline ));
+inline uint8_t inb(uint16_t port)
 {
-	uint8_t _value = 0;
+	uint8_t value = 0;
 	asm volatile (
 		"mov %1, %%dx;\n"
 		"inb %%dx, %%al;\n"
-		: "=a" (_value)
-		: "m" (pPort)
+		: "=a" (value)
+		: "m" (port)
 		: "dx"
 	);
-	return _value;
+	return value;
 }
 
-inline uint16_t inw(uint16_t pPort) __attribute__(( nothrow, always_inline ));
-inline uint16_t inw(uint16_t pPort)
+inline uint16_t inw(uint16_t port) __attribute__(( nothrow, always_inline ));
+inline uint16_t inw(uint16_t port)
 {
-	uint16_t _value = 0;
+	uint16_t value = 0;
 	asm volatile (
 		"mov %1, %%dx;\n"
 		"inw %%dx, %%ax;\n"
-		: "=a" (_value)
-		: "m" (pPort)
+		: "=a" (value)
+		: "m" (port)
 		: "dx"
 	);
-	return _value;
+	return value;
 }
 
-inline uint32_t inl(uint16_t pPort) __attribute__(( nothrow, always_inline ));
-inline uint32_t inl(uint16_t pPort)
+inline uint32_t inl(uint16_t port) __attribute__(( nothrow, always_inline ));
+inline uint32_t inl(uint16_t port)
 {
-	uint32_t _value = 0;
+	uint32_t value = 0;
 	asm volatile (
 		"mov %1, %%dx;\n"
 		"inl %%dx, %%eax;\n"
-		: "=a" (_value)
-		: "m" (pPort)
+		: "=a" (value)
+		: "m" (port)
 		: "dx"
 	);
-	return _value;	
+	return value;	
 }
 
 
-inline void outb(uint16_t pPort, uint8_t pValue) __attribute__(( nothrow, always_inline ));
-inline void outb(uint16_t pPort, uint8_t pValue)
+inline void outb(uint16_t port, uint8_t value) __attribute__(( nothrow, always_inline ));
+inline void outb(uint16_t port, uint8_t value)
 {
 	asm volatile (
 		"mov %0, %%al;\n"
 		"mov %1, %%dx;\n"
 		"outb %%al, %%dx;\n"
 		:
-		: "m" (pValue), "m" (pPort)
+		: "m" (value), "m" (port)
 		: "al", "dx"
 	);
 }
 
-inline void outw(uint16_t pPort, uint16_t pValue) __attribute__(( nothrow, always_inline ));
-inline void outw(uint16_t pPort, uint16_t pValue)
+inline void outw(uint16_t port, uint16_t value) __attribute__(( nothrow, always_inline ));
+inline void outw(uint16_t port, uint16_t value)
 {
 	asm volatile (
 		"mov %0, %%ax;\n"
 		"mov %1, %%dx;\n"
 		"outw %%ax, %%dx;\n"
 		:
-		: "m" (pValue), "m" (pPort)
+		: "m" (value), "m" (port)
 		: "ax", "dx"
 	);
 }
 
-inline void outl(uint16_t pPort, uint32_t pValue) __attribute__(( nothrow, always_inline ));
-inline void outl(uint16_t pPort, uint32_t pValue)
+inline void outl(uint16_t port, uint32_t value) __attribute__(( nothrow, always_inline ));
+inline void outl(uint16_t port, uint32_t value)
 {
 	asm volatile (
 		"mov %0, %%eax;\n"
 		"mov %1, %%dx;\n"
 		"outl %%eax, %%dx;\n"
 		:
-		: "m" (pValue), "m" (pPort)
+		: "m" (value), "m" (port)
 		: "eax", "dx"
 	);
 }
-
-#endif
 

@@ -21,47 +21,51 @@
 
 #include <memory/paging.h>
 
-#define MEMORY_ISA_END ((PhysicalAddress_t)((uint64_t)1024*1024*16))
-#define MEMORY_LOW_END ((PhysicalAddress_t)((uint64_t)1024*1024*1024*4))
+#define MEMORY_ISA_END ((PhysicalAddress)((uint64_t)1024*1024*16))
+#define MEMORY_LOW_END ((PhysicalAddress)((uint64_t)1024*1024*1024*4))
 #define PMM_ISA_BITMAP_SIZE (MEMORY_ISA_END / 4096 / 32)
 
 class CPMM {
 private:
 	
 	static uint32_t mMemoryISABitmap[PMM_ISA_BITMAP_SIZE];	//Memory below 16MB - 1 means occupied - 0 means free
-	static PhysicalAddress_t mMemoryLowStack;				//Memory between 16MB and 4GB
-	static PhysicalAddress_t mMemoryHighStack;				//Memory above 4GB
+	static PhysicalAddress mMemoryLowStack;				//Memory between 16MB and 4GB
+	static PhysicalAddress mMemoryHighStack;				//Memory above 4GB
 	
 	static uint64_t mFreeMemoryAmount;
 	static uint64_t mUsedMemoryAmount;
 	
-	static void FreeLow(PhysicalAddress_t pAddress) __attribute__ (( nothrow ));
-	static void FreeHigh(PhysicalAddress_t pAddress) __attribute__ (( nothrow ));
+	static void FreeLow(PhysicalAddress address) __attribute__((nothrow));
+	static void FreeHigh(PhysicalAddress address) __attribute__((nothrow));
 
-	static uint32_t ISACheck(uint32_t pStart, bool pFree) __attribute__ (( nothrow ));
-	static void ISAMark(uint32_t pStart, size_t pLength, bool pFree) __attribute__ (( nothrow ));
+	static uint32_t ISACheck(uint32_t start, bool free_mem) __attribute__((nothrow));
+	static void ISAMark(uint32_t start, size_t length, bool free_mem) __attribute__((nothrow));
 	
 	
 	CPMM() = delete;
 	~CPMM() = delete;
 public:
 
-	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
-	static ReturnValue_t Init(void) __attribute__ (( nothrow ));
+	static ReturnValue PreInit(void) __attribute__((nothrow));
+	static ReturnValue Init(void) __attribute__((nothrow));
 	
-	static ReturnValue_t Alloc(PhysicalAddress_t &pAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocISA(PhysicalAddress_t &pAddress, size_t pPageCount) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocLow(PhysicalAddress_t &pAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t AllocHigh(PhysicalAddress_t &pAddress) __attribute__ (( nothrow ));
+	static ReturnValue Alloc(PhysicalAddress &address) __attribute__((nothrow));
+	static ReturnValue AllocISA(PhysicalAddress &address,
+	                              size_t page_count) __attribute__((nothrow));
+	static ReturnValue AllocLow(PhysicalAddress &address) __attribute__((nothrow));
+	static ReturnValue AllocHigh(PhysicalAddress &address) __attribute__((nothrow));
 	
-	static void Free(PhysicalAddress_t pAddress) __attribute__ (( nothrow ));
-	static void FreeISA(PhysicalAddress_t pAddress, size_t pPageCount) __attribute__ (( nothrow ));
+	static void Free(PhysicalAddress address) __attribute__((nothrow));
+	static void FreeISA(PhysicalAddress address,
+	                    size_t page_count) __attribute__((nothrow));
 
-	static inline uint64_t GetFreeMemory(void) __attribute__ (( nothrow , always_inline )) {
+	static inline uint64_t GetFreeMemory(void)
+	    __attribute__((nothrow, always_inline)) {
 		return mFreeMemoryAmount;
 	}
 	
-	static inline uint64_t GetUsedMemory(void) __attribute__ (( nothrow , always_inline )) {
+	static inline uint64_t GetUsedMemory(void)
+	    __attribute__((nothrow, always_inline)) {
 		return mUsedMemoryAmount;
 	}
 	

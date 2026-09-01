@@ -26,51 +26,73 @@
 extern "C" {
 #endif 
 
-size_t kstrlen(const char *pString) __attribute__ (( nothrow , const ));
-size_t kstrnlen(const char *pString, size_t pLength) __attribute__ (( nothrow , const ));
+size_t kstrlen(const char *string) __attribute__((nothrow, const));
+size_t kstrnlen(const char *string, size_t length) 
+    __attribute__((nothrow, const));
 
-char *kstrcpy(char *pDest, const char *pSource) __attribute__ (( nothrow ));
-char *kstrncpy(char *pDest, const char *pSource, size_t pLength) __attribute__ (( nothrow ));
+char *kstrcpy(char *dest, const char *source) __attribute__((nothrow));
+char *kstrncpy(char *dest, const char *source, size_t length) 
+    __attribute__((nothrow));
 
-int32_t kstrcmp(const char *pString1, const char *pString2) __attribute__ (( nothrow , const ));
-int32_t kstrncmp(const char *pString1, const char *pString2, size_t pLength) __attribute__ (( nothrow , const ));
+int32_t kstrcmp(const char *string1, const char *string2) 
+    __attribute__((nothrow, const));
+int32_t kstrncmp(const char *string1, const char *string2, size_t length) 
+    __attribute__((nothrow, const));
 
-int32_t kstricmp(const char *pString1, const char *pString2) __attribute__ (( nothrow , const ));
-int32_t kstrnicmp(const char *pString1, const char *pString2, size_t pLength) __attribute__ (( nothrow , const ));
+int32_t kstricmp(const char *string1, const char *string2) 
+    __attribute__((nothrow, const));
+int32_t kstrnicmp(const char *string1, const char *string2,
+    size_t length) __attribute__((nothrow, const));
 
-char *kstrcat(char *pDest, const char *pSource) __attribute__ (( nothrow ));
-char *kstrncat(char *pDest, const char *pSource, size_t pLength) __attribute__ (( nothrow ));
+char *kstrcat(char *dest, const char *source) __attribute__((nothrow));
+char *kstrncat(char *dest, const char *source,
+               size_t length) __attribute__((nothrow));
 
-char *kstrchr(const char *pSource, char pChar) __attribute__ (( nothrow , const ));
-char *kstrrchr(const char *pSource, char pChar) __attribute__ (( nothrow , const ));
+char *kstrchr(const char *source, char character) 
+    __attribute__((nothrow, const));
+char *kstrrchr(const char *source, char character) 
+    __attribute__((nothrow, const));
 
-char *kstrpbrk(const char *pSource, const char *pDelimiter) __attribute__ (( nothrow , const ));
-size_t kstrspn(const char *pSource, const char *pDelimiter) __attribute__ (( nothrow , const ));
-size_t kstrcspn(const char *pSource, const char *pDelimiter) __attribute__ (( nothrow , const ));
-char *kstrstr(const char *pString, const char *pSubString) __attribute__ (( nothrow , const ));
+char *kstrpbrk(const char *source,
+               const char *delimiter) __attribute__((nothrow, const));
+size_t kstrspn(const char *source,
+               const char *delimiter) __attribute__((nothrow, const));
+size_t kstrcspn(const char *source,
+                const char *delimiter) __attribute__((nothrow, const));
+char *kstrstr(const char *string,
+              const char *substring) __attribute__((nothrow, const));
 
-char *kstrrev(char *pString) __attribute__ (( nothrow ));
-char *kstrnrev(char *pString, size_t pLength) __attribute__ (( nothrow ));
+char *kstrrev(char *string) __attribute__((nothrow));
+char *kstrnrev(char *string, size_t length) __attribute__((nothrow));
 
-char *kstrupr(char *pString) __attribute__ (( nothrow ));
-char *kstrlwr(char *pString) __attribute__ (( nothrow ));
+char *kstrupr(char *string) __attribute__((nothrow));
+char *kstrlwr(char *string) __attribute__((nothrow));
 
-char* kitoa(int64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
-char* kutoa(uint64_t pNumber, char *pString, uint32_t pBase) __attribute__ (( nothrow ));
+char* kitoa(int64_t number, char *string,
+            uint32_t base) __attribute__((nothrow));
+char* kutoa(uint64_t number, char *string,
+            uint32_t base) __attribute__((nothrow));
 
-char *ksprintf(char *pDest, const char *pFormat, ...) __attribute__ (( nothrow ));
-char *kvsprintf(char *pDest, const char *pFormat, va_list pArgs) __attribute__ (( nothrow ));
-size_t ksnprintf(char *pDest, size_t pSize, const char *pFormat, ...) __attribute__ (( nothrow ));
-size_t kvsnprintf(char *pDest, size_t pSize, const char *pFormat, va_list pArgs) __attribute__ (( nothrow ));
+char *ksprintf(char *dest, const char *format, ...) __attribute__((nothrow));
+char *kvsprintf(char *dest, const char *format,
+                va_list args) __attribute__((nothrow));
+size_t ksnprintf(char *dest, size_t size, const char *format, ...)
+    __attribute__((nothrow));
+size_t kvsnprintf(char *dest, size_t size, const char *format,
+                  va_list args) __attribute__((nothrow));
 
 
-void *memchr(const void *pSource, int pValue, size_t pSize) __attribute__(( nothrow ));
-int32_t memcmp(const void* pData1, const void* pData2, size_t pLength) __attribute__(( nothrow ));
-void* memcpy(void *pDest, const void *pSource, size_t pLength) __attribute__(( nothrow ));
-void* memmove(void *pDest, const void *pSource, size_t pLength) __attribute__(( nothrow ));
-void* memset(void *pDest, int pValue, size_t pLength) __attribute__(( nothrow ));
+void *memchr(const void *source, int value, size_t size) 
+    __attribute__(( nothrow ));
+int32_t memcmp(const void* data1, const void* data2, size_t length) 
+    __attribute__(( nothrow ));
+void* memcpy(void *dest, const void *source, size_t length) 
+    __attribute__(( nothrow ));
+void* memmove(void *dest, const void *source, size_t length) 
+    __attribute__(( nothrow ));
+void* memset(void *dest, int value, size_t length) 
+    __attribute__(( nothrow ));
 
 #ifdef __cplusplus
 }
 #endif
-
