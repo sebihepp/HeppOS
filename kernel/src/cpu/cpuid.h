@@ -15,12 +15,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CPUID_HEADER
-#define CPUID_HEADER
+#pragma once
 
 #include <ktype.h>
 
-struct cpuid_retval_t
+struct CPUIdRetVal
 {
 	uint32_t eax;
 	uint32_t ebx;
@@ -28,16 +27,16 @@ struct cpuid_retval_t
 	uint32_t edx;
 } __attribute__((packed));
 
-static inline void cpuid(const uint32_t pCode, cpuid_retval_t &pRetval)  __attribute__ (( nothrow, always_inline ));
-static inline void cpuid(const uint32_t pCode, cpuid_retval_t &pRetval)
+static inline void cpuid(const uint32_t code, CPUIdRetVal &retval)
+    __attribute__((nothrow, always_inline));
+static inline void cpuid(const uint32_t code, CPUIdRetVal &retval)
 {
 	asm volatile 
 	(
 		"cpuid" :
-		"=a" (pRetval.eax), "=b" (pRetval.ebx), "=c" (pRetval.ecx), "=d" (pRetval.edx) :
-		"a" (pCode) :
+        "=a" (retval.eax), "=b" (retval.ebx), "=c" (retval.ecx), "=d" (retval.edx) :
+		"a" (code) :
 	);	
 }
 
-#endif
 

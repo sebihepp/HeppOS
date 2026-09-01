@@ -1,3 +1,5 @@
+Code only, no explanations.
+
 # Copilot Instructions for Google C++ Style Guide
 
 You are assisting with a C++ project that follows the Google C++ Style Guide.

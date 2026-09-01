@@ -15,16 +15,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GDT_HEADER
-#define GDT_HEADER
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 #include <limine.h>
-
-#include <retval.h>
+#include <return_value.h>
 
 #define GDT_ENTRY_SIZE				0x8
 #define GDT_SYSTEM_ENTRY_SIZE		0x10
@@ -66,12 +64,12 @@
 
 
 
-struct GDTD_t {
+struct GDTDescriptor {
 	uint16_t limit;
 	uint64_t base;
 }__attribute__(( packed, aligned (8) ));
 
-struct GDTEntry_t {
+struct GDTEntry {
 	uint16_t limit_l;
 	uint16_t base_l;
 	uint8_t base_m;
@@ -81,7 +79,7 @@ struct GDTEntry_t {
 	uint8_t base_h;
 }__attribute__(( packed, aligned (8) ));
 
-struct GDTSystemEntry_t {
+struct GDTSystemEntry {
 	uint16_t limit_l;
 	uint16_t base_l;
 	uint8_t base_m;
@@ -93,44 +91,42 @@ struct GDTSystemEntry_t {
 	uint32_t reserved;
 }__attribute__(( packed, aligned (8) ));
 
-struct TSS_t {
+struct TSS {
 	uint32_t reserved0;
-	uint64_t RSP0;
-	uint64_t RSP1;
-	uint64_t RSP2;
+	uint64_t rsp0;
+	uint64_t rsp1;
+	uint64_t rsp2;
 	uint64_t reserved1;
-	uint64_t IST1;
-	uint64_t IST2;
-	uint64_t IST3;
-	uint64_t IST4;
-	uint64_t IST5;
-	uint64_t IST6;
-	uint64_t IST7;
+	uint64_t ist1;
+	uint64_t ist2;
+	uint64_t ist3;
+	uint64_t ist4;
+	uint64_t ist5;
+	uint64_t ist6;
+	uint64_t ist7;
 	uint64_t reserved2;
 	uint16_t reserved3;
-	uint16_t IOPB_offset;
+	uint16_t iopb_offset;
 }__attribute__(( packed ));
 
 
-class CGDT {
+class GDT {
 private:
-	CGDT() = delete;
-	~CGDT() = delete;
+	GDT() = delete;
+	~GDT() = delete;
 	
-	static GDTD_t mGlobalDescriptorTableDescriptor;
-	static GDTEntry_t mGlobalDescriptorTable[GDT_TOTAL_COUNT];
-	static TSS_t mTaskStateSegment;
+	static GDTDescriptor gdtd_;
+	static GDTEntry gdt_[GDT_TOTAL_COUNT];
+	static TSS tss_;
 	
 public:	
-	static ReturnValue_t Init(void) __attribute__(( nothrow ));
+	static ReturnValue Init(void) __attribute__(( nothrow ));
 	
-	static void LoadGDT(void) __attribute__(( nothrow ));
-	static void LoadTSS(void) __attribute__(( nothrow ));
+	static void LoadGlobalDescriptorTable(void) __attribute__(( nothrow ));
+	static void LoadTaskStateSegment(void) __attribute__(( nothrow ));
 	
-	static TSS_t *GetTSS(void) __attribute__(( const, nothrow ));
+	static TSS *GetTaskStateSegment(void) __attribute__(( const, nothrow ));
 	
-	static uint16_t GetSelector(uint64_t pSelector) __attribute__(( const, nothrow ));
+	static uint16_t GetSelector(uint64_t selector) __attribute__(( const, nothrow ));
 };
-
-#endif
 

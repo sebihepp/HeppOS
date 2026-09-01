@@ -15,14 +15,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PIC_HEADER
-#define PIC_HEADER
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <retval.h>
+#include <return_value.h>
 #include <cpu/interrupt.h>
 
 
@@ -49,37 +48,35 @@
 #define PIC_ICW4_SFNM				(0x10)
 
 
-class CPIC {
+class PIC {
 private:
-	CPIC() = delete;
-	~CPIC() = delete;
+	PIC() = delete;
+	~PIC() = delete;
 	
-	static uint8_t mOffset;
-	static uint64_t mSpuriousCount;
-	static uint16_t mMask;
+	static uint8_t offset_;
+	static uint64_t spurious_count_;
+	static uint16_t mask_;
 	
 public:
-	static ReturnValue_t Init(uint8_t pOffset) __attribute__(( nothrow )) ;
+	static ReturnValue Init(uint8_t offset) __attribute__(( nothrow )) ;
 	
-	static void SendEOI(uint8_t pInt) __attribute__(( nothrow )) ;
+	static void SendEOI(uint8_t interrupt) __attribute__(( nothrow )) ;
 	
-	static void Mask(uint8_t pIRQ) __attribute__(( nothrow )) ;
-	static void Unmask(uint8_t pIRQ) __attribute__(( nothrow )) ;
+	static void Mask(uint8_t irq) __attribute__(( nothrow )) ;
+	static void Unmask(uint8_t irq) __attribute__(( nothrow )) ;
 	
 	static void MaskAll(void) __attribute__(( nothrow )) ;
 	static void UnmaskAll(void) __attribute__(( nothrow )) ;
 	
-	static void SetMask(uint16_t pMask) __attribute__(( nothrow )) ;
+	static void SetMask(uint16_t mask) __attribute__(( nothrow )) ;
 	static uint16_t GetMask(void) __attribute__(( nothrow )) ;
 	static void RestoreMask(void) __attribute__(( nothrow )) ;
 	
-	static bool CheckSpurious(uint8_t pInt) __attribute__(( nothrow )) ;
+	static bool CheckSpurious(uint8_t interrupt) __attribute__(( nothrow )) ;
 	static uint8_t GetOffset(void) __attribute__(( nothrow )) ;
 	static uint8_t GetIntLineCount(void) __attribute__(( nothrow )) ;
 	
 	static uint64_t GetSpuriousCount(void) __attribute__(( nothrow )) ;
 	
 };
-
-#endif
 

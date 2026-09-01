@@ -15,8 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef MSR_HEADER
-#define MSR_HEADER
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -24,32 +23,35 @@
 #define MSR_PAT (0x277)
 #define MSR_EFER (0xC0000080)
 
-inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh) __attribute__(( nothrow, always_inline ));
-inline void ReadMSR(uint32_t pMSR, uint32_t *pLow, uint32_t *pHigh)
+inline void ReadMSR(uint32_t msr, uint32_t *low, uint32_t *high) 
+	__attribute__(( nothrow, always_inline ));
+inline void ReadMSR(uint32_t msr, uint32_t *low, uint32_t *high)
 {
 	asm volatile 
 	(
 		"mov %2, %%ecx;\n"
 		"rdmsr;\n"
-		: "=a" (*pLow), "=d" (*pHigh)
-		: "m" (pMSR)
+		: "=a" (*low), "=d" (*high)
+		: "m" (msr)
 		: "ecx"
 	);
 
 }
 
-inline void ReadMSR(uint32_t pMSR, uint64_t *pData) __attribute__(( nothrow, always_inline ));
-inline void ReadMSR(uint32_t pMSR, uint64_t *pData)
+inline void ReadMSR(uint32_t msr, uint64_t *data) 
+	__attribute__(( nothrow, always_inline ));
+inline void ReadMSR(uint32_t msr, uint64_t *data)
 {
-	uint32_t _Low = 0;
-	uint32_t _High = 0;
-	ReadMSR(pMSR, &_Low, &_High);
-	*pData = static_cast<uint64_t>(_Low);
-	*pData |= static_cast<uint64_t>(_High) << 32;
+	uint32_t low = 0;
+	uint32_t high = 0;
+	ReadMSR(msr, &low, &high);
+	*data = static_cast<uint64_t>(low);
+	*data |= static_cast<uint64_t>(high) << 32;
 }
 
-inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh) __attribute__(( nothrow, always_inline ));
-inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
+inline void WriteMSR(uint32_t msr, uint32_t low, uint32_t high) 
+	__attribute__(( nothrow, always_inline ));
+inline void WriteMSR(uint32_t msr, uint32_t low, uint32_t high)
 {
 	asm volatile 
 	(
@@ -58,19 +60,18 @@ inline void WriteMSR(uint32_t pMSR, uint32_t pLow, uint32_t pHigh)
 		"mov %2, %%ecx;\n"
 		"wrmsr;\n"
 		:
-		: "m" (pLow), "m" (pHigh), "m" (pMSR)
+		: "m" (low), "m" (high), "m" (msr)
 		: "eax", "ecx", "edx"
 	);	
 }
 
-inline void WriteMSR(uint32_t pMSR, uint64_t *pData) __attribute__(( nothrow, always_inline ));
-inline void WriteMSR(uint32_t pMSR, uint64_t *pData)
+inline void WriteMSR(uint32_t msr, uint64_t *data) 
+	__attribute__(( nothrow, always_inline ));
+inline void WriteMSR(uint32_t msr, uint64_t *data)
 {
-	uint32_t _Low = *pData & 0xFFFFFFFF;
-	uint32_t _High = (*pData >> 32) & 0xFFFFFFFF;
-	WriteMSR(pMSR, _Low, _High);
+	uint32_t low = *data & 0xFFFFFFFF;
+	uint32_t high = (*data >> 32) & 0xFFFFFFFF;
+	WriteMSR(msr, low, high);
 }
 
-
-#endif
 
