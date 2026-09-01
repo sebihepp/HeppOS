@@ -15,70 +15,52 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <memory/pmm.h>
-#include <liminestub.h>
+#include <memory/pmm_list.h>
+#include <limine_stub.h>
 #include <memory/paging.h>
-#include <log.h>
+#include <boot_log.h>
 
 MemoryRange_t *CPMM::mMemoryISAList = NULL;
 MemoryRange_t *CPMM::mMemoryLowList = NULL;
 MemoryRange_t *CPMM::mMemoryHighList = NULL;
 
-size_t CPMM::mFreeMemoryAmount = 0;
-size_t CPMM::mUsedMemoryAmount = 0;
-size_t CPMM::mUnusableMemoryAmount = 0;
 
+ReturnValue CPMM::PreInit(void) {
 
-ReturnValue_t CPMM::PreInit(void) {
-
-	limine_memmap_response *_LimineMemoryMapResponse = CLimine::GetMemoryMapResponse();
-	size_t _UsedMemoryAmount = 0;
-	size_t _FreeMemoryAmount = 0;
-	size_t _UnusableMemoryAmount = 0;
-
+	limine_memmap_response *_LimineMemoryMapResponse = LimineStub::GetMemoryMapResponse();
 
 	// Set ISA Memory (below 1MB)
 	for (size_t i = 0; i < _LimineMemoryMapResponse->entry_count ; ++i) {
 		limine_memmap_entry *_LimineMemoryMapEntry = _LimineMemoryMapResponse->entries[i];
 		
 		// Skip not usable memory
-		if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_USABLE) {
-			SetISAFree((PhysicalAddress_t)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);	
-			SetLowFree((PhysicalAddress_t)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-			SetHighFree((PhysicalAddress_t)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
-			_FreeMemoryAmount += _LimineMemoryMapEntry->length;
-		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_EXECUTABLE_AND_MODULES) {
-			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
-		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_ACPI_RECLAIMABLE) {
-			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
-		} else if (_LimineMemoryMapEntry->type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) {
-			_UsedMemoryAmount += _LimineMemoryMapEntry->length;
-		} else {
-			_UnusableMemoryAmount = _LimineMemoryMapEntry->length;
-		}
+		if (_LimineMemoryMapEntry->type != LIMINE_MEMMAP_USABLE)
+			continue;
+		
+		
+		SetISAFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);	
+		SetLowFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		SetHighFree((void*)_LimineMemoryMapEntry->base, _LimineMemoryMapEntry->length);
+		
 	}
 	
-	mUsedMemoryAmount = _UsedMemoryAmount;
-	mFreeMemoryAmount = _FreeMemoryAmount;
-	mUnusableMemoryAmount = _UnusableMemoryAmount;
-
 	if (mMemoryISAList == NULL)
-		return RETVAL_ERROR_GENERAL;
+		return RetValErrorGeneral;
 	
-	return RETVAL_OK;
+	return RetValOk;
 }
 
-ReturnValue_t CPMM::Init(void) {
+ReturnValue CPMM::Init(void) {
 	
-	return RETVAL_ERROR_GENERAL;
+	return RetValErrorGeneral;
 }
 
 
 void CPMM::PrintMemoryMap(void) {
 	
-	CLog::Print("MemoryMap:\n");
-	CLog::Print("Start              | End                | Size              \n");
-	CLog::Print("------------------------------------------------------------\n");
+	BootLog::Print("MemoryMap:\n");
+	BootLog::Print("Start              | End                | Size              \n");
+	BootLog::Print("------------------------------------------------------------\n");
 	
 	MemoryRange_t *_CurrentRange = NULL;
 	
@@ -86,8 +68,8 @@ void CPMM::PrintMemoryMap(void) {
 		_CurrentRange = mMemoryISAList;
 		while (_CurrentRange != NULL) {
 			
-			CLog::PrintF("%016p | %016p | %016p\n", (PhysicalAddress_t)_CurrentRange - (PhysicalAddress_t)CPaging::GetHHDMOffset(), 
-				(PhysicalAddress_t)_CurrentRange - (PhysicalAddress_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
+			BootLog::PrintF("%016p | %016p | %016p\n", (uintptr_t)_CurrentRange - (uintptr_t)Paging::GetHHDMOffset(), 
+				(uintptr_t)_CurrentRange - (uintptr_t)Paging::GetHHDMOffset() + _CurrentRange->Size - 1,
 				_CurrentRange->Size);
 			_CurrentRange = _CurrentRange->ListNext;
 			
@@ -98,8 +80,8 @@ void CPMM::PrintMemoryMap(void) {
 		_CurrentRange = mMemoryLowList;
 		while (_CurrentRange != NULL) {
 			
-			CLog::PrintF("%016p | %016p | %016p\n", (PhysicalAddress_t)_CurrentRange - (PhysicalAddress_t)CPaging::GetHHDMOffset(), 
-				(PhysicalAddress_t)_CurrentRange - (PhysicalAddress_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
+			BootLog::PrintF("%016p | %016p | %016p\n", (uintptr_t)_CurrentRange - (uintptr_t)Paging::GetHHDMOffset(), 
+				(uintptr_t)_CurrentRange - (uintptr_t)Paging::GetHHDMOffset() + _CurrentRange->Size - 1,
 				_CurrentRange->Size);
 			_CurrentRange = _CurrentRange->ListNext;
 			
@@ -110,8 +92,8 @@ void CPMM::PrintMemoryMap(void) {
 		_CurrentRange = mMemoryHighList;
 		while (_CurrentRange != NULL) {
 			
-			CLog::PrintF("%016p | %016p | %016p\n", (PhysicalAddress_t)_CurrentRange - (PhysicalAddress_t)CPaging::GetHHDMOffset(), 
-				(PhysicalAddress_t)_CurrentRange - (PhysicalAddress_t)CPaging::GetHHDMOffset() + _CurrentRange->Size - 1,
+			BootLog::PrintF("%016p | %016p | %016p\n", (uintptr_t)_CurrentRange - (uintptr_t)Paging::GetHHDMOffset(), 
+				(uintptr_t)_CurrentRange - (uintptr_t)Paging::GetHHDMOffset() + _CurrentRange->Size - 1,
 				_CurrentRange->Size);
 			_CurrentRange = _CurrentRange->ListNext;
 			
@@ -119,15 +101,27 @@ void CPMM::PrintMemoryMap(void) {
 	}
 }
 
-void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
+void CPMM::SetISAFree(void *base, size_t size) {
 
+	//Align base to PAGE_SIZE
+	if ((uintptr_t)base & (PAGE_SIZE - 1)) {
+		base = (void*)((uintptr_t)base + PAGE_SIZE);
+		base = (void*)((uintptr_t)base & ~(PAGE_SIZE - 1));
+	}
+	
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
+	
 	// Ignore if above 1MB
-	if (pBase >= MEMORY_ISA_END)
+	if ((uintptr_t)base >= MEMORY_ISA_END)
 		return;
 	
 	// Cut Range above 1MB
-	if ((pBase + pSize) > MEMORY_ISA_END) {
-		pSize = MEMORY_ISA_END - pBase;
+	if (((uintptr_t)base + size) > MEMORY_ISA_END) {
+		size = MEMORY_ISA_END - (uintptr_t)base;
 	}
 
 	//Check if Entry already exists
@@ -135,10 +129,10 @@ void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Case: Base is the same
-		if (_CurrentEntry == (MemoryRange_t*)(pBase + CPaging::GetHHDMOffset())) {
+		if (_CurrentEntry == (MemoryRange_t*)((uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset())) {
 			// If new size is greater, then just update size
-			if (pSize > _CurrentEntry->Size) {
-				_CurrentEntry->Size = pSize;
+			if (size > _CurrentEntry->Size) {
+				_CurrentEntry->Size = size;
 				return;
 			}
 		}
@@ -147,8 +141,8 @@ void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
 	}
 	
 	// Create MemoryRange Entry
-	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + CPaging::GetHHDMOffset());
-	_NewMemoryRangeEntry->Size = pSize;
+	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset());
+	_NewMemoryRangeEntry->Size = size;
 	_NewMemoryRangeEntry->ListNext = NULL;
 	_NewMemoryRangeEntry->ListPrev = NULL;
 	
@@ -163,7 +157,7 @@ void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
 		while (_CurrentEntry != NULL) {
 			
 			// if found, add in between
-			if ((PhysicalAddress_t)_CurrentEntry > (PhysicalAddress_t)_NewMemoryRangeEntry) {
+			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
 				
 				if (_CurrentEntry->ListPrev == NULL) {
 					mMemoryISAList = _NewMemoryRangeEntry;
@@ -191,25 +185,37 @@ void CPMM::SetISAFree(PhysicalAddress_t pBase, size_t pSize) {
 	
 }
 
-void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
+void CPMM::SetISAUsed(void *base, size_t size) {
 
+	//Align base to PAGE_SIZE
+	if ((uintptr_t)base & (PAGE_SIZE - 1)) {
+		base = (void*)((uintptr_t)base + PAGE_SIZE);
+		base = (void*)((uintptr_t)base & ~(PAGE_SIZE - 1));
+	}
+	
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
+	
 	// if there is no list we can directly return
 	if (mMemoryISAList == NULL)
 		return;
 
 	// Ignore if above 1MB
-	if ((uintptr_t)pBase >= MEMORY_ISA_END)
+	if ((uintptr_t)base >= MEMORY_ISA_END)
 		return;
 	
-	PhysicalAddress_t _VirtualBase = pBase + CPaging::GetHHDMOffset();
+	uintptr_t _VirtualBase = (uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset();
 	
 	// Loop over each Range
 	MemoryRange_t *_CurrentEntry = mMemoryISAList;
 	while (_CurrentEntry != NULL) {
 		
 		// Case: entire entry can be deleted
-		if ((_VirtualBase <= (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) >= (PhysicalAddress_t)(_CurrentEntry + _CurrentEntry->Size))) {
+		if ((_VirtualBase <= (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase + size) >= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 			
 			if (_CurrentEntry->ListPrev == NULL) {
 				mMemoryISAList = _CurrentEntry->ListNext;
@@ -224,13 +230,13 @@ void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
 			}
 		
 		// Case: start of entry can be deleted
-		} else if ((_VirtualBase <= (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) > (PhysicalAddress_t)_CurrentEntry) &&
-			((PhysicalAddress_t)(_VirtualBase + pSize) < (PhysicalAddress_t)(((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)))) {
+		} else if ((_VirtualBase <= (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase + size) > ((uintptr_t)_CurrentEntry)) &&
+			((_VirtualBase + size) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 		
 			// Create MemoryRange Entry
-			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + pSize + CPaging::GetHHDMOffset());
-			_NewMemoryRangeEntry->Size = (PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - (PhysicalAddress_t)_NewMemoryRangeEntry;
+			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + size + (uintptr_t)Paging::GetHHDMOffset());
+			_NewMemoryRangeEntry->Size = (uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)_NewMemoryRangeEntry;
 			_NewMemoryRangeEntry->ListNext = NULL;
 			_NewMemoryRangeEntry->ListPrev = NULL;
 			
@@ -251,22 +257,22 @@ void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
 			}
 		
 		// Case: end of entry can be deleted
-		} else if ((_VirtualBase > (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) &&
-			((PhysicalAddress_t)(_VirtualBase + pSize) >= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase > (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) &&
+			((_VirtualBase + size) >= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 	
 			//Only adjust size
-			_CurrentEntry->Size = _VirtualBase - (PhysicalAddress_t)_CurrentEntry;
+			_CurrentEntry->Size = _VirtualBase - (uintptr_t)_CurrentEntry;
 			
 			
 		// Case: CurrentEntry needs to be split
-		} else if ((_VirtualBase > (PhysicalAddress_t)_CurrentEntry) && 
-			(_VirtualBase < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase > (uintptr_t)_CurrentEntry) && 
+			(_VirtualBase < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) && 
+			((_VirtualBase + size) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 			
 			//Create new Entry for the range at the end
-			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + pSize + CPaging::GetHHDMOffset());
-			_NewMemoryRangeEntry->Size = (PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - (PhysicalAddress_t)_NewMemoryRangeEntry;
+			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + size + (uintptr_t)Paging::GetHHDMOffset());
+			_NewMemoryRangeEntry->Size = (uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)_NewMemoryRangeEntry;
 			_NewMemoryRangeEntry->ListNext = NULL;
 			_NewMemoryRangeEntry->ListPrev = NULL;
 			
@@ -280,7 +286,7 @@ void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
 			_NewMemoryRangeEntry->ListPrev = _CurrentEntry;
 			
 			//adjust size
-			_CurrentEntry->Size = _VirtualBase - (PhysicalAddress_t)_CurrentEntry;
+			_CurrentEntry->Size = _VirtualBase - (uintptr_t)_CurrentEntry;
 		}
 
 		
@@ -289,25 +295,37 @@ void CPMM::SetISAUsed(PhysicalAddress_t pBase, size_t pSize) {
 	
 }
 
-void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
-		
+void CPMM::SetLowFree(void *base, size_t size) {
+	
+	//Align base to PAGE_SIZE
+	if ((uintptr_t)base & (PAGE_SIZE - 1)) {
+		base = (void*)((uintptr_t)base + PAGE_SIZE);
+		base = (void*)((uintptr_t)base & ~(PAGE_SIZE - 1));
+	}
+	
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
+	
 	// Ignore if above 4GB
-	if (pBase >= MEMORY_LOW_END)
+	if ((uintptr_t)base >= MEMORY_LOW_END)
 		return;
 
 	// Ignore below 1MB
-	if ((pBase + pSize) < MEMORY_ISA_END)
+	if (((uintptr_t)base + (uintptr_t)size) < MEMORY_ISA_END)
 		return;
 	
 	// Cut Range below 1MB
-	if (pBase < MEMORY_ISA_END) {
-		pSize -= MEMORY_ISA_END - pBase;
-		pBase = (PhysicalAddress_t)MEMORY_ISA_END;
+	if ((uintptr_t)base < MEMORY_ISA_END) {
+		size -= MEMORY_ISA_END - (uintptr_t)base;
+		base = (void*)MEMORY_ISA_END;
 	}
 	
 	// Cut Range above 4GB
-	if ((pBase + pSize) > MEMORY_LOW_END) {
-		pSize = MEMORY_LOW_END - pBase;
+	if (((uintptr_t)base + size) > MEMORY_LOW_END) {
+		size = MEMORY_LOW_END - (uintptr_t)base;
 	}
 
 	//Check if Entry already exists
@@ -315,10 +333,10 @@ void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Case: Base is the same
-		if (_CurrentEntry == (MemoryRange_t*)(pBase + CPaging::GetHHDMOffset())) {
+		if (_CurrentEntry == (MemoryRange_t*)((uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset())) {
 			// If new size is greater, then just update size
-			if (pSize > _CurrentEntry->Size) {
-				_CurrentEntry->Size = pSize;
+			if (size > _CurrentEntry->Size) {
+				_CurrentEntry->Size = size;
 				return;
 			}
 		}
@@ -327,8 +345,8 @@ void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
 	}
 	
 	// Create MemoryRange Entry
-	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + CPaging::GetHHDMOffset());
-	_NewMemoryRangeEntry->Size = pSize;
+	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset());
+	_NewMemoryRangeEntry->Size = size;
 	_NewMemoryRangeEntry->ListNext = NULL;
 	_NewMemoryRangeEntry->ListPrev = NULL;
 	
@@ -343,7 +361,7 @@ void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
 		while (_CurrentEntry != NULL) {
 			
 			// if found, add in between
-			if ((PhysicalAddress_t)_CurrentEntry > (PhysicalAddress_t)_NewMemoryRangeEntry) {
+			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
 			
 				if (_CurrentEntry->ListPrev == NULL) {
 					mMemoryLowList = _NewMemoryRangeEntry;
@@ -372,26 +390,38 @@ void CPMM::SetLowFree(PhysicalAddress_t pBase, size_t pSize) {
 	
 }
 
-void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
-		
+void CPMM::SetLowUsed(void *base, size_t size) {
+	
+	//Align base to PAGE_SIZE
+	if ((uintptr_t)base & (PAGE_SIZE - 1)) {
+		base = (void*)((uintptr_t)base + PAGE_SIZE);
+		base = (void*)((uintptr_t)base & ~(PAGE_SIZE - 1));
+	}
+	
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
+	
 	// Ignore if above 4GB
-	if (pBase >= MEMORY_LOW_END)
+	if ((uintptr_t)base >= MEMORY_LOW_END)
 		return;
 
 	// Ignore below 1MB
-	if ((pBase + pSize) < MEMORY_ISA_END)
+	if (((uintptr_t)base + (uintptr_t)size) < MEMORY_ISA_END)
 		return;
 	
 	
-	PhysicalAddress_t _VirtualBase = pBase + CPaging::GetHHDMOffset();
+	uintptr_t _VirtualBase = (uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset();
 	
 	// Loop over each Range
 	MemoryRange_t *_CurrentEntry = mMemoryLowList;
 	while (_CurrentEntry != NULL) {
 		
 		// Case: entire entry can be deleted
-		if ((_VirtualBase <= (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) >= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		if ((_VirtualBase <= (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase + size) >= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 			
 			if (_CurrentEntry->ListPrev == NULL) {
 				mMemoryLowList = _CurrentEntry->ListNext;
@@ -406,13 +436,13 @@ void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
 			}
 		
 		// Case: start of entry can be deleted
-		} else if ((_VirtualBase <= (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) > (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry)) &&
-			((PhysicalAddress_t)(_VirtualBase + pSize) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase <= (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase + size) > ((uintptr_t)_CurrentEntry)) &&
+			((_VirtualBase + size) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 		
 			// Create MemoryRange Entry
-			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + pSize + CPaging::GetHHDMOffset());
-			_NewMemoryRangeEntry->Size = (PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - (PhysicalAddress_t)_NewMemoryRangeEntry;
+			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + size + (uintptr_t)Paging::GetHHDMOffset());
+			_NewMemoryRangeEntry->Size = (uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)_NewMemoryRangeEntry;
 			_NewMemoryRangeEntry->ListNext = NULL;
 			_NewMemoryRangeEntry->ListPrev = NULL;
 			
@@ -433,22 +463,22 @@ void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
 			}
 		
 		// Case: end of entry can be deleted
-		} else if ((_VirtualBase > (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) &&
-			((PhysicalAddress_t)(_VirtualBase + pSize) >= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase > (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) &&
+			((_VirtualBase + size) >= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 	
 			//Only adjust size
-			_CurrentEntry->Size = _VirtualBase - (PhysicalAddress_t)_CurrentEntry;
+			_CurrentEntry->Size = _VirtualBase - (uintptr_t)_CurrentEntry;
 			
 			
 		// Case: CurrentEntry needs to be split
-		} else if ((_VirtualBase > (PhysicalAddress_t)_CurrentEntry) && 
-			(_VirtualBase < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase > (uintptr_t)_CurrentEntry) && 
+			(_VirtualBase < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) && 
+			((_VirtualBase + size) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 			
 			//Create new Entry for the range at the end
-			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + pSize + CPaging::GetHHDMOffset());
-			_NewMemoryRangeEntry->Size = (PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - (PhysicalAddress_t)_NewMemoryRangeEntry;
+			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + size + (uintptr_t)Paging::GetHHDMOffset());
+			_NewMemoryRangeEntry->Size = (uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)_NewMemoryRangeEntry;
 			_NewMemoryRangeEntry->ListNext = NULL;
 			_NewMemoryRangeEntry->ListPrev = NULL;
 			
@@ -462,7 +492,7 @@ void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
 			_NewMemoryRangeEntry->ListPrev = _CurrentEntry;
 			
 			//adjust size
-			_CurrentEntry->Size = _VirtualBase - (PhysicalAddress_t)_CurrentEntry;
+			_CurrentEntry->Size = _VirtualBase - (uintptr_t)_CurrentEntry;
 		}
 
 		
@@ -471,16 +501,28 @@ void CPMM::SetLowUsed(PhysicalAddress_t pBase, size_t pSize) {
 	
 }
 
-void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
-		
+void CPMM::SetHighFree(void *base, size_t size) {
+	
+	//Align base to PAGE_SIZE
+	if ((uintptr_t)base & (PAGE_SIZE - 1)) {
+		base = (void*)((uintptr_t)base + PAGE_SIZE);
+		base = (void*)((uintptr_t)base & ~(PAGE_SIZE - 1));
+	}
+	
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
+	
 	// Ignore if below 4GB
-	if ((pBase + pSize) < MEMORY_LOW_END)
+	if (((uintptr_t)base + size) < MEMORY_LOW_END)
 		return;
 	
 	// Cut Range below 4GB
-	if (pBase < MEMORY_LOW_END) {
-		pSize -= MEMORY_LOW_END - pBase;
-		pBase = (PhysicalAddress_t)MEMORY_LOW_END;
+	if ((uintptr_t)base < MEMORY_LOW_END) {
+		size -= MEMORY_LOW_END - (uintptr_t)base;
+		base = (void*)MEMORY_LOW_END;
 	}
 	
 	//Check if Entry already exists
@@ -488,10 +530,10 @@ void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Case: Base is the same
-		if (_CurrentEntry == (MemoryRange_t*)(pBase + CPaging::GetHHDMOffset())) {
+		if (_CurrentEntry == (MemoryRange_t*)((uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset())) {
 			// If new size is greater, then just update size
-			if (pSize > _CurrentEntry->Size) {
-				_CurrentEntry->Size = pSize;
+			if (size > _CurrentEntry->Size) {
+				_CurrentEntry->Size = size;
 				return;
 			}
 		}
@@ -500,8 +542,8 @@ void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
 	}
 	
 	// Create MemoryRange Entry
-	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + CPaging::GetHHDMOffset());
-	_NewMemoryRangeEntry->Size = pSize;
+	MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset());
+	_NewMemoryRangeEntry->Size = size;
 	_NewMemoryRangeEntry->ListNext = NULL;
 	_NewMemoryRangeEntry->ListPrev = NULL;
 	
@@ -516,7 +558,7 @@ void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
 		while (_CurrentEntry != NULL) {
 			
 			// if found, add in between
-			if ((PhysicalAddress_t)_CurrentEntry > (PhysicalAddress_t)_NewMemoryRangeEntry) {
+			if ((uintptr_t)_CurrentEntry > (uintptr_t)_NewMemoryRangeEntry) {
 				
 				if (_CurrentEntry->ListPrev == NULL) {
 					mMemoryHighList = _NewMemoryRangeEntry;
@@ -544,21 +586,35 @@ void CPMM::SetHighFree(PhysicalAddress_t pBase, size_t pSize) {
 	MergeHigh();
 }
 
-void CPMM::SetHighUsed(PhysicalAddress_t pBase, size_t pSize) {
+void CPMM::SetHighUsed(void *base, size_t size) {
+	
+	//Align base to PAGE_SIZE
+	if ((uintptr_t)base & (PAGE_SIZE - 1)) {
+		base = (void*)((uintptr_t)base + PAGE_SIZE);
+		base = (void*)((uintptr_t)base & ~(PAGE_SIZE - 1));
+	}
+	
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
 	
 	// Ignore if below 4GB
-	if ((pBase + pSize) < MEMORY_LOW_END)
+	if (((uintptr_t)base + size) < MEMORY_LOW_END)
 		return;
 	
-	PhysicalAddress_t _VirtualBase = pBase + CPaging::GetHHDMOffset();
+	
+	
+	uintptr_t _VirtualBase = (uintptr_t)base + (uintptr_t)Paging::GetHHDMOffset();
 	
 	// Loop over each Range
 	MemoryRange_t *_CurrentEntry = mMemoryHighList;
 	while (_CurrentEntry != NULL) {
 		
 		// Case: entire entry can be deleted
-		if ((_VirtualBase <= (PhysicalAddress_t)_CurrentEntry) && 
-			((_VirtualBase + pSize) >= ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		if ((_VirtualBase <= (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase + size) >= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 			
 			if (_CurrentEntry->ListPrev == NULL) {
 				mMemoryHighList = _CurrentEntry->ListNext;
@@ -573,13 +629,13 @@ void CPMM::SetHighUsed(PhysicalAddress_t pBase, size_t pSize) {
 			}
 		
 		// Case: start of entry can be deleted
-		} else if ((_VirtualBase <= (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) > (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry)) &&
-			((PhysicalAddress_t)(_VirtualBase + pSize) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase <= (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase + size) > ((uintptr_t)_CurrentEntry)) &&
+			((_VirtualBase + size) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 		
 			// Create MemoryRange Entry
-			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + pSize + CPaging::GetHHDMOffset());
-			_NewMemoryRangeEntry->Size = (PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - (PhysicalAddress_t)_NewMemoryRangeEntry;
+			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + size + (uintptr_t)Paging::GetHHDMOffset());
+			_NewMemoryRangeEntry->Size = (uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)_NewMemoryRangeEntry;
 			_NewMemoryRangeEntry->ListNext = NULL;
 			_NewMemoryRangeEntry->ListPrev = NULL;
 			
@@ -600,22 +656,22 @@ void CPMM::SetHighUsed(PhysicalAddress_t pBase, size_t pSize) {
 			}
 		
 		// Case: end of entry can be deleted
-		} else if ((_VirtualBase > (PhysicalAddress_t)_CurrentEntry) && 
-			((PhysicalAddress_t)(_VirtualBase) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) &&
-			((PhysicalAddress_t)(_VirtualBase + pSize) >= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase > (uintptr_t)_CurrentEntry) && 
+			((_VirtualBase) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) &&
+			((_VirtualBase + size) >= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 	
 			//Only adjust size
-			_CurrentEntry->Size = _VirtualBase - (PhysicalAddress_t)_CurrentEntry;
+			_CurrentEntry->Size = _VirtualBase - (uintptr_t)_CurrentEntry;
 			
 			
 		// Case: CurrentEntry needs to be split
-		} else if ((_VirtualBase > (PhysicalAddress_t)_CurrentEntry) && 
-			(_VirtualBase < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) && 
-			((PhysicalAddress_t)(_VirtualBase + pSize) < (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size))) {
+		} else if ((_VirtualBase > (uintptr_t)_CurrentEntry) && 
+			(_VirtualBase < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) && 
+			((_VirtualBase + size) < ((uintptr_t)_CurrentEntry + _CurrentEntry->Size))) {
 			
 			//Create new Entry for the range at the end
-			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)(pBase + pSize + CPaging::GetHHDMOffset());
-			_NewMemoryRangeEntry->Size = (PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - (PhysicalAddress_t)_NewMemoryRangeEntry;
+			MemoryRange_t *_NewMemoryRangeEntry = (MemoryRange_t*)((uintptr_t)base + size + (uintptr_t)Paging::GetHHDMOffset());
+			_NewMemoryRangeEntry->Size = (uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)_NewMemoryRangeEntry;
 			_NewMemoryRangeEntry->ListNext = NULL;
 			_NewMemoryRangeEntry->ListPrev = NULL;
 			
@@ -629,7 +685,7 @@ void CPMM::SetHighUsed(PhysicalAddress_t pBase, size_t pSize) {
 			_NewMemoryRangeEntry->ListPrev = _CurrentEntry;
 			
 			//adjust size
-			_CurrentEntry->Size = _VirtualBase - (PhysicalAddress_t)_CurrentEntry;
+			_CurrentEntry->Size = _VirtualBase - (uintptr_t)_CurrentEntry;
 		}
 
 		
@@ -644,13 +700,13 @@ void CPMM::MergeISA(void) {
 	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
 		
 		//Check if adjacent or overlapping
-		if ((PhysicalAddress_t)_CurrentEntry->ListNext <= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) {
+		if ((uintptr_t)_CurrentEntry->ListNext <= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
 			//Update size only if next entry is not totally inside current entry
-			if ((PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
-				(PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) {
+			if (((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
+				((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
-				_CurrentEntry->Size = ((PhysicalAddress_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (PhysicalAddress_t)_CurrentEntry;
+				_CurrentEntry->Size = ((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (uintptr_t)_CurrentEntry;
 			}
 			
 			//Remove double Entry
@@ -672,13 +728,13 @@ void CPMM::MergeLow(void) {
 	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
 		
 		//Check if adjacent or overlapping
-		if ((PhysicalAddress_t)_CurrentEntry->ListNext <= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) {
+		if ((uintptr_t)_CurrentEntry->ListNext <= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
 			//Update size only if next entry is not totally inside current entry
-			if ((PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
-				(PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) {
+			if (((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
+				((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
-				_CurrentEntry->Size = ((PhysicalAddress_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (PhysicalAddress_t)_CurrentEntry;
+				_CurrentEntry->Size = ((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (uintptr_t)_CurrentEntry;
 			}
 			
 			//Remove double Entry
@@ -699,13 +755,13 @@ void CPMM::MergeHigh(void) {
 	while ((_CurrentEntry != NULL) && (_CurrentEntry->ListNext != NULL)) {
 		
 		//Check if adjacent or overlapping
-		if ((PhysicalAddress_t)_CurrentEntry->ListNext <= (PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) {
+		if ((uintptr_t)_CurrentEntry->ListNext <= ((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
 			//Update size only if next entry is not totally inside current entry
-			if ((PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
-				(PhysicalAddress_t)((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size)) {
+			if (((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) >
+				((uintptr_t)_CurrentEntry + _CurrentEntry->Size)) {
 			
-				_CurrentEntry->Size = ((PhysicalAddress_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (PhysicalAddress_t)_CurrentEntry;
+				_CurrentEntry->Size = ((uintptr_t)_CurrentEntry->ListNext + _CurrentEntry->ListNext->Size) - (uintptr_t)_CurrentEntry;
 			}
 			
 			//Remove double Entry
@@ -721,55 +777,43 @@ void CPMM::MergeHigh(void) {
 	}
 }
 
-void CPMM::SetFree(PhysicalAddress_t pBase, size_t pSize) {
-	//Round up address to PAGE_SIZE
-	if (pBase & (PAGE_SIZE-1)) {
-		pBase = (pBase & PAGE_SIZE) + PAGE_SIZE;
-	}
-
-	//Round down size to PAGE_SIZE
-	pSize &= (PAGE_SIZE-1);
-
-	SetISAFree(pBase, pSize);
-	SetLowFree(pBase, pSize);
-	SetHighFree(pBase, pSize);
+void CPMM::SetFree(void *base, size_t size) {
+	SetISAFree(base, size);
+	SetLowFree(base, size);
+	SetHighFree(base, size);
 }
 
-void CPMM::SetUsed(PhysicalAddress_t pBase, size_t pSize) {
-	//Round up address to PAGE_SIZE
-	if (pBase & (PAGE_SIZE-1)) {
-		pBase = (pBase & PAGE_SIZE) + PAGE_SIZE;
-	}
-
-	//Round down size to PAGE_SIZE
-	pSize &= (PAGE_SIZE-1);
-
-	SetISAUsed(pBase, pSize);
-	SetLowUsed(pBase, pSize);
-	SetHighUsed(pBase, pSize);	
+void CPMM::SetUsed(void *base, size_t size) {
+	SetISAUsed(base, size);
+	SetLowUsed(base, size);
+	SetHighUsed(base, size);	
 }
 
-ReturnValue_t CPMM::Alloc(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
-	ReturnValue_t _RetVal = RETVAL_ERROR_GENERAL;
+ReturnValue CPMM::Alloc(void **address, size_t size) {
+	ReturnValue RetVal = RetValErrorGeneral;
 	
 	//Try allocating High Memory
-	_RetVal = AllocHigh(pAddress, pSize);
-	if (IS_SUCCESS(_RetVal))
-		return _RetVal;
+	RetVal = AllocHigh(address, size);
+	if (IS_SUCCESS(RetVal))
+		return RetVal;
 	
 	//Try allocating Low Memory next
-	_RetVal = AllocLow(pAddress, pSize);
-	if (IS_SUCCESS(_RetVal))
-		return _RetVal;
+	RetVal = AllocLow(address, size);
+	if (IS_SUCCESS(RetVal))
+		return RetVal;
 	
 	//Try allocating ISA Memory as last resort
-	_RetVal = AllocISA(pAddress, pSize);
-	return _RetVal;
+	RetVal = AllocISA(address, size);
+	return RetVal;
 }
 
-ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
+ReturnValue CPMM::AllocISA(void **address, size_t size) {
 	
-	size_t _Size = CPaging::GetPageLevelSize(pSize);
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
 	
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_OOM_PHYSICAL;
@@ -778,12 +822,12 @@ ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Found Big enough entry
-		if (_CurrentEntry->Size >= _Size) {
+		if (_CurrentEntry->Size >= size) {
 			
 			//Allocate at end of _CurrentEntry - resulting in a resize only
 			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
-			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - _Size);
-			SetUsed(pAddress, _Size);
+			*address = (void*)((uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)CPaging::GetHHDMOffset() - size);
+			SetUsed(*address, size);
 			return RETVAL_OK;
 		}
 		
@@ -793,9 +837,13 @@ ReturnValue_t CPMM::AllocISA(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
-ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
+ReturnValue CPMM::AllocLow(void **address, size_t size) {
 	
-	size_t _Size = CPaging::GetPageLevelSize(pSize);
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
 	
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_OOM_PHYSICAL;
@@ -804,12 +852,12 @@ ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Found Big enough entry
-		if (_CurrentEntry->Size >= _Size) {
+		if (_CurrentEntry->Size >= size) {
 			
 			//Allocate at end of _CurrentEntry - resulting in a resize only
 			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
-			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - _Size);
-			SetUsed(pAddress, _Size);
+			*address = (void*)((uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)CPaging::GetHHDMOffset() - size);
+			SetUsed(*address, size);
 			return RETVAL_OK;
 		}
 		
@@ -819,9 +867,13 @@ ReturnValue_t CPMM::AllocLow(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
-ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
+ReturnValue CPMM::AllocHigh(void **address, size_t size) {
 	
-	size_t _Size = CPaging::GetPageLevelSize(pSize);
+	//Align size to PAGE_SIZE
+	if (size & (PAGE_SIZE - 1)) {
+		size += PAGE_SIZE;
+		size &= ~(PAGE_SIZE - 1);
+	}
 	
 	if (mMemoryISAList == NULL)
 		return RETVAL_ERROR_OOM_PHYSICAL;
@@ -830,12 +882,12 @@ ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	while (_CurrentEntry != NULL) {
 		
 		//Found Big enough entry
-		if (_CurrentEntry->Size >= _Size) {
+		if (_CurrentEntry->Size >= size) {
 			
 			//Allocate at end of _CurrentEntry - resulting in a resize only
 			//If allocated at the start the entire Entry as well as Next and Prev would have to be updated
-			pAddress = ((PhysicalAddress_t)_CurrentEntry + _CurrentEntry->Size - CPaging::GetHHDMOffset() - _Size);
-			SetUsed(pAddress, _Size);
+			*address = (void*)((uintptr_t)_CurrentEntry + _CurrentEntry->Size - (uintptr_t)CPaging::GetHHDMOffset() - size);
+			SetUsed(*address, size);
 			return RETVAL_OK;
 		}
 		
@@ -845,8 +897,7 @@ ReturnValue_t CPMM::AllocHigh(PhysicalAddress_t &pAddress, PageLevel_t pSize) {
 	return RETVAL_ERROR_OOM_PHYSICAL;
 }
 
-void CPMM::Free(PhysicalAddress_t pAddress, PageLevel_t pSize) {
-	size_t _Size = CPaging::GetPageLevelSize(pSize);
-	SetFree(pAddress, _Size);
+void CPMM::Free(void *address, size_t size) {
+	SetFree(address, size);
 }
 

@@ -24,7 +24,8 @@ _kstart:
     # Save RDI
     pushq %rdi
 
-	# Call global constructors if rdi == 0 (zero) - meaning bootstrap cpu in limine
+	# Call global constructors if rdi == 0 (zero) - meaning bootstrap
+    # cpu in limine
     test %rdi, %rdi
     jnz ignore_constructors
 	call _init
@@ -41,8 +42,9 @@ ignore_constructors:
     #Restore rdi
     popq %rdi
 
-	# Not necessary to call destructors, as the OS is dying if it reaches this point
-    # call global destructors if rdi == 0 (zero) - meaning bootstrap cpu in limine
+	# Not necessary to call destructors, as the OS is dying if it reaches 
+    # this point call global destructors if rdi == 0 (zero) - meaning
+    # bootstrap cpu in limine
     test %rdi, %rdi
     jnz ignore_destructors
 	call _fini

@@ -25,33 +25,33 @@
 #endif
 
 // Memory Address types
-typedef intptr_t PhysicalAddress_t;
-typedef intptr_t VirtualAddress_t;
-typedef intptr_t DeltaAddress_t;
+typedef intptr_t PhysicalAddress;
+typedef intptr_t VirtualAddress;
+typedef intptr_t DeltaAddress;
 
 
 // Return Values
-#include <retval.h> 
+#include <return_value.h> 
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-bool kisalnum(char pChar) __attribute__ (( nothrow , const ));
-bool kisalpha(char pChar) __attribute__ (( nothrow , const ));
-bool kislower(char pChar) __attribute__ (( nothrow , const ));
-bool kisupper(char pChar) __attribute__ (( nothrow , const ));
-bool kisdigit(char pChar) __attribute__ (( nothrow , const ));
-bool kisxdigit(char pChar) __attribute__ (( nothrow , const ));
-bool kiscntrl(char pChar) __attribute__ (( nothrow , const ));
-bool kisgraph(char pChar) __attribute__ (( nothrow , const ));
-bool kisspace(char pChar) __attribute__ (( nothrow , const ));
-bool kisblank(char pChar) __attribute__ (( nothrow , const ));
-bool kisprint(char pChar) __attribute__ (( nothrow , const ));
-bool kispunct(char pChar) __attribute__ (( nothrow , const ));
-char ktolower(char pChar) __attribute__ (( nothrow , const ));
-char ktoupper(char pChar) __attribute__ (( nothrow , const ));
+bool kisalnum(char character) __attribute__((nothrow, const));
+bool kisalpha(char character) __attribute__((nothrow, const));
+bool kislower(char character) __attribute__((nothrow, const));
+bool kisupper(char character) __attribute__((nothrow, const));
+bool kisdigit(char character) __attribute__((nothrow, const));
+bool kisxdigit(char character) __attribute__((nothrow, const));
+bool kiscntrl(char character) __attribute__((nothrow, const));
+bool kisgraph(char character) __attribute__((nothrow, const));
+bool kisspace(char character) __attribute__((nothrow, const));
+bool kisblank(char character) __attribute__((nothrow, const));
+bool kisprint(char character) __attribute__((nothrow, const));
+bool kispunct(char character) __attribute__((nothrow, const));
+char ktolower(char character) __attribute__((nothrow, const));
+char ktoupper(char character) __attribute__((nothrow, const));
 
 #ifdef __cplusplus
 }

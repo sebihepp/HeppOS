@@ -15,300 +15,306 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PAGING
-#define HEADER_PAGING
+#pragma once
 
 #include <ktype.h>
 
 #define PAGE_SIZE (4096)
 
-enum PageLevel_t {
-	PAGELEVEL_UNKNOWN = 0,
-	PAGELEVEL_PML1 = 1,
-	PAGELEVEL_PML2 = 2,
-	PAGELEVEL_PML3 = 3,
-	PAGELEVEL_PML4 = 4,
-	PAGELEVEL_PML5 = 5,
+enum PageLevel {
+	PageLevelUnknown = 0,
+	PageLevelPML1 = 1,
+	PageLevelPML2 = 2,
+	PageLevelPML3 = 3,
+	PageLevelPML4 = 4,
+	PageLevelPML5 = 5,
 };
 
-enum CachType_t {
-	CACHETYPE_WRITEBACK = 0,
-	CACHETYPE_WRITETHROUGH = 1,
-	CACHETYPE_UNCACHED = 2,
-	CACHETYPE_UNCACHABLE = 3,
-	CACHETYPE_WRITEPROTECT = 4,
-	CACHETYPE_WRITECOMBINING = 5,
+enum CacheType {
+	CacheTypeWriteBack = 0,
+	CacheTypeWriteThrough = 1,
+	CacheTypeUncached = 2,
+	CacheTypeUncachable = 3,
+	CacheTypeWriteProtect = 4,
+	CacheTypeWriteCombining = 5,
 };
 
-enum PagingCapability_t {
-	PAGINGCAPABILITY_1GPAGES = 0,
-	PAGINGCAPABILITY_PML5,
-	PAGINGCAPABILITY_COUNT,
+enum PagingCapability {
+	PagingCapability1GPages = 0,
+	PagingCapabilityPML5,
+	PagingCapabilityCount,
 };
 
 //////
 
-struct PML5Entry_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t Address:40;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML5Entry {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t address:40;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML5Entry_256T_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t PAT:1;
-	uint64_t Reserved2:35;
-	uint64_t Address:4;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML5Entry_256T {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t pat:1;
+	uint64_t reserved2:35;
+	uint64_t address:4;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML5_t {
+struct PML5 {
 	union {
-		PML5Entry_t Entry[512];
-		PML5Entry_256T_t Entry256T[512];
+		PML5Entry entry[512];
+		PML5Entry_256T entry_256t[512];
 	} __attribute__(( packed ));
 } __attribute__ (( packed, aligned(1024) ));
 
 //////
 
-struct PML4Entry_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t Address:40;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML4Entry {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t address:40;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML4Entry_512G_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t PAT:1;
-	uint64_t Reserved2:26;
-	uint64_t Address:13;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML4Entry_512G {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t pat:1;
+	uint64_t reserved2:26;
+	uint64_t address:13;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML4_t {
+struct PML4 {
 	union {
-		PML4Entry_t Entry[512];
-		PML4Entry_512G_t Entry512G[512];
+		PML4Entry entry[512];
+		PML4Entry_512G entry_512g[512];
 	} __attribute__(( packed ));
 } __attribute__ (( packed, aligned(1024) ));
 
 //////
 
-struct PML3Entry_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t Address:40;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML3Entry {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t address:40;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML3Entry_1G_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t PAT:1;
-	uint64_t Reserved2:17;
-	uint64_t Address:22;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML3Entry_1G {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t pat:1;
+	uint64_t reserved2:17;
+	uint64_t address:22;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML3_t {
+struct PML3 {
 	union {
-		PML3Entry_t Entry[512];
-		PML3Entry_1G_t Entry1G[512];
+		PML3Entry entry[512];
+		PML3Entry_1G entry_1g[512];
 	} __attribute__(( packed ));
 } __attribute__ (( packed, aligned(1024) ));
 
 //////
 
-struct PML2Entry_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t Address:40;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML2Entry {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t address:40;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML2Entry_2M_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PageSize:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t PAT:1;
-	uint64_t Reserved2:8;
-	uint64_t Address:31;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML2Entry_2M {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t page_size:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t pat:1;
+	uint64_t reserved2:8;
+	uint64_t address:31;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML2_t {
+struct PML2 {
 	union {
-		PML2Entry_t Entry[512];
-		PML2Entry_2M_t Entry2M[512];
+		PML2Entry entry[512];
+		PML2Entry_2M entry_2m[512];
 	} __attribute__(( packed ));
 } __attribute__ (( packed, aligned(1024) ));
 
 //////
 
-struct PML1Entry_t {
-	uint64_t Present:1;
-	uint64_t ReadWrite:1;
-	uint64_t NotSupervisor:1;
-	uint64_t WriteThrough:1;
-	uint64_t CacheDisable:1;
-	uint64_t Accessed:1;
-	uint64_t Dirty:1;
-	uint64_t PAT:1;
-	uint64_t Global:1;
-	uint64_t Available1:2;
-	uint64_t Reserved1:1;
-	uint64_t Address:40;
-	uint64_t Available2:11;
-	uint64_t ExecuteDisable:1;
+struct PML1Entry {
+	uint64_t present:1;
+	uint64_t read_write:1;
+	uint64_t not_supervisor:1;
+	uint64_t write_through:1;
+	uint64_t cache_disable:1;
+	uint64_t accessed:1;
+	uint64_t dirty:1;
+	uint64_t pat:1;
+	uint64_t global:1;
+	uint64_t available1:2;
+	uint64_t reserved1:1;
+	uint64_t address:40;
+	uint64_t available2:11;
+	uint64_t execute_disable:1;
 } __attribute__ (( packed, aligned(8) ));
 
-struct PML1_t {
-	PML1Entry_t Entry[512];
+struct PML1 {
+	PML1Entry entry[512];
 } __attribute__ (( packed, aligned(1024) ));
 
-class CPaging {
+class Paging {
 private:
-	CPaging();
-	~CPaging();
+	Paging();
+	~Paging();
 
 
-	static bool mCapabilities[PAGINGCAPABILITY_COUNT];
-	static bool mActiveCapabilities[PAGINGCAPABILITY_COUNT];
+	static bool capabilities_[PagingCapabilityCount];
+	static bool active_capabilities_[PagingCapabilityCount];
 	
-	static bool mIsInitial;	
-	static VirtualAddress_t mHHDMOffset;
+	static bool is_initial_;	
+	static VirtualAddress hhdm_offset_;
 	
 public:
 
-	static ReturnValue_t PreInit(void) __attribute__ (( nothrow ));
+	static ReturnValue PreInit(void) __attribute__((nothrow));
 	
-	static inline PhysicalAddress_t GetCR3(void) __attribute__ (( nothrow , always_inline )) {
-		PhysicalAddress_t _CR3 = (PhysicalAddress_t)NULL;
+	static inline PhysicalAddress GetCR3(void)
+	    __attribute__((nothrow, always_inline)) {
+		PhysicalAddress cr3 = (PhysicalAddress)NULL;
 		asm volatile (
 			"movq %%cr3, %0;\n"
-			: "=a" (_CR3)
-			: 
+			: "=a" (cr3)
+			:
 			:
 		);
-		return _CR3;
+		return cr3;
 	}
-	static inline void InvalidateAddress(VirtualAddress_t pAddress) __attribute__ (( nothrow , always_inline )) {
+	static inline void InvalidateAddress(VirtualAddress virtual_address)
+	    __attribute__((nothrow, always_inline)) {
 		asm volatile (
 			"invlpg (%0);\n"
 			:
-			: "r" (pAddress)
+			: "r" (virtual_address)
 			: "memory"
 		);	
 	}
 	
-	static inline DeltaAddress_t GetHHDMOffset(void) __attribute__ (( nothrow , always_inline )) {
-		return mHHDMOffset;
+	static inline DeltaAddress GetHHDMOffset(void)
+	    __attribute__((nothrow, always_inline)) {
+		return hhdm_offset_;
 	}
 	
-	static ReturnValue_t GetPhysicalAddress(VirtualAddress_t pVirtualAddress, PhysicalAddress_t &pPhysicalAddress) __attribute__ (( nothrow ));
-	static ReturnValue_t GetPageLevel(VirtualAddress_t pVirtualAddress, PageLevel_t &pPageLevel) __attribute__ (( nothrow ));
+	static ReturnValue GetPhysicalAddress(VirtualAddress virtual_address,
+	    PhysicalAddress &physical_address) __attribute__((nothrow));
+	static ReturnValue GetPageLevel(VirtualAddress virtual_address,
+	    PageLevel &page_level) __attribute__((nothrow));
 	
-	static ReturnValue_t MapAddress(VirtualAddress_t pVirtualAddress, PhysicalAddress_t pPhysicalAddress, PageLevel_t pPageLevel,
-		CachType_t pCacheType, bool pGlobal, bool pExecuteDisable, bool pUser) __attribute__ (( nothrow ));
-	static ReturnValue_t UnmapAddress(VirtualAddress_t pVirtualAddress, PageLevel_t pPageLevel) __attribute__ (( nothrow ));
+	static ReturnValue MapAddress(VirtualAddress virtual_address,
+	    PhysicalAddress physical_address, PageLevel page_level,
+	    CacheType cache_type, bool global, bool execute_disable,
+	    bool user) __attribute__((nothrow));
+	static ReturnValue UnmapAddress(VirtualAddress virtual_address,
+	    PageLevel page_level) __attribute__((nothrow));
 	
-	static const char *GetPageLevelString(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
-	static const char *GetPageLevelString(VirtualAddress_t pVirtualAddress) __attribute__ (( nothrow ));
-	static size_t GetPageLevelSize(PageLevel_t pPageLevel) __attribute__ (( const, nothrow ));
-	static size_t GetPageLevelSize(VirtualAddress_t pVirtualAddress) __attribute__ (( nothrow ));
-
-	static inline bool GetCapability(PagingCapability_t pCapability) __attribute__ (( nothrow , always_inline )) {
-		return mCapabilities[pCapability];
+	static const char *GetPageLevelString(PageLevel page_level)
+	    __attribute__((const, nothrow));
+	static const char *GetPageLevelString(VirtualAddress virtual_address)
+	    __attribute__((nothrow));
+	
+	static inline bool GetCapability(PagingCapability capability)
+	    __attribute__((nothrow, always_inline)) {
+		return capabilities_[capability];
 	}
 	
-	static bool GetActiveCapability(PagingCapability_t pCapability) __attribute__ (( nothrow , always_inline )) {
-		return mActiveCapabilities[pCapability];
+	static bool GetActiveCapability(PagingCapability capability)
+	    __attribute__((nothrow, always_inline)) {
+		return active_capabilities_[capability];
 	}
 
 };
-
-
-#endif

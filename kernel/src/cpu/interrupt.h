@@ -15,14 +15,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_INTERRUPT
-#define HEADER_INTERRUPT
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <retval.h>
+#include <return_value.h>
 
 #define INTERRUPT_MAX_COUNT (256)
 #define INTERRUPT_MAX_HANDLER (4)
@@ -41,7 +40,7 @@
 #define INTERRUPT_PIC_OFFSET	(0x20)
 
 
-struct IDTEntry_t {
+struct IDTEntry {
 	uint64_t offset_l:16;
 	uint64_t segment:16;
 	uint64_t ist:3;
@@ -55,12 +54,12 @@ struct IDTEntry_t {
 	uint64_t reserved1:32;
 } __attribute__(( packed, aligned(8) )); 
 
-struct IDTD_t {
+struct IDTD {
 	uint16_t size;
 	uint64_t offset;
 } __attribute__(( packed ));
 
-struct CPUState_t {
+struct CPUState {
 	
 	uint64_t gs;
 	uint64_t fs;
@@ -96,52 +95,59 @@ struct CPUState_t {
 
 
 
-typedef void (*ISRHandler_t)(uint64_t pInt, CPUState_t *pState);
+typedef void (*ISRHandler)(uint64_t interrupt, CPUState *state);
 
-extern "C" void ISRHandler(uint64_t pInt, CPUState_t *pState);
+extern "C" void StdISRHandler(uint64_t interrupt, CPUState *state);
 
-void ExceptionHandler(uint64_t pInt, CPUState_t *pState);
-const char *GetExceptionName(uint64_t pInt) __attribute__ (( nothrow, const ));
+void ExceptionHandler(uint64_t interrupt, CPUState *state);
+const char *GetExceptionName(uint64_t interrupt) 
+	__attribute__((nothrow, const));
 
 
-class CInterrupt {
+class Interrupt {
 private:
-	CInterrupt() = delete;
-	~CInterrupt() = delete;
+	Interrupt() = delete;
+	~Interrupt() = delete;
 
-	static ISRHandler_t mISRHandler[INTERRUPT_MAX_COUNT][INTERRUPT_MAX_HANDLER];
+	static ISRHandler isr_handler_[INTERRUPT_MAX_COUNT][INTERRUPT_MAX_HANDLER];
 	
-	static IDTEntry_t mIDT[INTERRUPT_MAX_COUNT];
-	static IDTD_t mIDTD;
+	static IDTEntry idt_[INTERRUPT_MAX_COUNT];
+	static IDTD idtd_;
 	
-	static uint64_t mInterruptCount[INTERRUPT_MAX_COUNT];
+	static uint64_t interrupt_count_[INTERRUPT_MAX_COUNT];
 	
-	static void SetIDTEntry(uint8_t pIndex, void *pAddress, uint8_t pType) __attribute__(( nothrow ));
+	static void SetIDTEntry(uint8_t index, void *address, uint8_t type) 
+		__attribute__(( nothrow ));
 	
-	friend void ISRHandler(uint64_t pInt, CPUState_t *pState) __attribute__(( nothrow ));
-	friend void ExceptionHandler(uint64_t pInt, CPUState_t *pState) __attribute__(( nothrow ));
+	friend void StdISRHandler(uint64_t interrupt, CPUState *state) 
+		__attribute__(( nothrow ));
+	friend void ExceptionHandler(uint64_t interrupt, CPUState *state) 
+		__attribute__(( nothrow ));
 	
-	static void PrintErrorCode(uint64_t pInt, uint64_t pErrorCode) __attribute__(( nothrow ));
+	static void PrintErrorCode(uint64_t interrupt, uint64_t error_code) 
+		__attribute__(( nothrow ));
 	
 	static void LoadIDT(void) __attribute__(( nothrow ));
 		
 public:
-	static ReturnValue_t Init(void) __attribute__(( nothrow ));
+	static ReturnValue Init(void) __attribute__(( nothrow ));
 	
-	static inline void EnableInterrupts(void) __attribute__(( nothrow, always_inline )) {
+	static inline void EnableInterrupts(void) 
+		__attribute__(( nothrow, always_inline )) {
 		asm volatile ("sti;\n");
 	}
 	
-	static inline void DisableInterrupts(void) __attribute__(( nothrow, always_inline )) {
+	static inline void DisableInterrupts(void) 
+		__attribute__(( nothrow, always_inline )) {
 		asm volatile ("cli;\n");
 	}
 	
-	static void RegisterHandler(uint8_t pIndex, ISRHandler_t pHandler) __attribute__(( nothrow ));	
-	static void UnregisterHandler(uint8_t pIndex, ISRHandler_t pHandler) __attribute__(( nothrow ));
-	
-	static uint64_t GetInterruptCount(uint8_t pInt) __attribute__(( nothrow ));
+	static void RegisterHandler(uint8_t interrupt, ISRHandler handler) 
+		__attribute__(( nothrow ));	
+	static void UnregisterHandler(uint8_t interrupt, ISRHandler handler) 
+		__attribute__(( nothrow ));
+	static uint64_t GetInterruptCount(uint8_t interrupt) 
+		__attribute__(( nothrow ));
 	
 };
-
-#endif
 

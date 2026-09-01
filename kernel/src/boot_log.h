@@ -15,33 +15,32 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_LOG
-#define HEADER_LOG
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <retval.h>
-#include <serial.h>
+#include <return_value.h>
+#include <boot_serial.h>
 
+#define BUFFER_SIZE (4096)
 
-class CLog {
+class BootLog {
 private:
 
-	static CSerial mSerial;
-	static bool mUseSerial;
-	static bool mUseConsole;
+	static BootSerial serial_;
+	static bool use_serial_;
+	static bool use_console_;
 	
-	CLog() = delete;
-	~CLog() = delete;
+	BootLog() = delete;
+	~BootLog() = delete;
 
 public:
 	
-	static ReturnValue_t Init(void) __attribute__ (( nothrow ));
+	static ReturnValue Init(void) __attribute__((nothrow));
 	
-	static void Print(const char *pString) __attribute__ (( nothrow ));
-	static void PrintF(const char *pString, ...) __attribute__ (( nothrow ));
+	static void Print(const char *string) __attribute__((nothrow));
+	static void PrintF(const char *string, ...) __attribute__((nothrow));
 	
 };
 
-#endif

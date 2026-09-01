@@ -15,48 +15,51 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MMIO
-#define HEADER_MMIO
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 
-inline uint8_t mmio_inb(void *pAddress) __attribute__(( nothrow, always_inline ));
-inline uint8_t mmio_inb(void *pAddress)
+inline uint8_t mmio_inb(void *address) 
+    __attribute__(( nothrow, always_inline ));
+inline uint8_t mmio_inb(void *address)
 {
-	return *reinterpret_cast<volatile uint8_t*>(pAddress);
+	return *reinterpret_cast<volatile uint8_t*>(address);
 }
 
-inline uint16_t mmio_inw(void *pAddress) __attribute__(( nothrow, always_inline ));
-inline uint16_t mmio_inw(void *pAddress)
+inline uint16_t mmio_inw(void *address) 
+    __attribute__(( nothrow, always_inline ));
+inline uint16_t mmio_inw(void *address)
 {
-	return *reinterpret_cast<volatile uint16_t*>(pAddress);
+	return *reinterpret_cast<volatile uint16_t*>(address);
 }
 
-inline uint32_t mmio_inl(void *pAddress) __attribute__(( nothrow, always_inline ));
-inline uint32_t mmio_inl(void *pAddress)
+inline uint32_t mmio_inl(void *address) 
+    __attribute__(( nothrow, always_inline ));
+inline uint32_t mmio_inl(void *address)
 {
-	return *reinterpret_cast<volatile uint32_t*>(pAddress);
+	return *reinterpret_cast<volatile uint32_t*>(address);
 }
 
 
-inline void mmio_outb(void *pAddress, uint8_t pValue) __attribute__(( nothrow, always_inline ));
-inline void mmio_outb(void *pAddress, uint8_t pValue)
+inline void mmio_outb(void *address, uint8_t value) 
+    __attribute__(( nothrow, always_inline ));
+inline void mmio_outb(void *address, uint8_t value)
 {
-	*reinterpret_cast<volatile uint8_t*>(pAddress) = pValue;
+	*reinterpret_cast<volatile uint8_t*>(address) = value;
 }
 
-inline void mmio_outw(void *pAddress, uint16_t pValue) __attribute__(( nothrow, always_inline ));
-inline void mmio_outw(void *pAddress, uint16_t pValue)
+inline void mmio_outw(void *address, uint16_t value) 
+    __attribute__(( nothrow, always_inline ));
+inline void mmio_outw(void *address, uint16_t value)
 {
-	*reinterpret_cast<volatile uint16_t*>(pAddress) = pValue;
+	*reinterpret_cast<volatile uint16_t*>(address) = value;
 }
 
-inline void mmio_outl(void *pAddress, uint32_t pValue) __attribute__(( nothrow, always_inline ));
-inline void mmio_outl(void *pAddress, uint32_t pValue)
+inline void mmio_outl(void *address, uint32_t value) 
+    __attribute__(( nothrow, always_inline ));
+inline void mmio_outl(void *address, uint32_t value)
 {
-	*reinterpret_cast<volatile uint32_t*>(pAddress) = pValue;
+	*reinterpret_cast<volatile uint32_t*>(address) = value;
 }
-
-#endif
 

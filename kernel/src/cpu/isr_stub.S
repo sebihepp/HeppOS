@@ -88,7 +88,7 @@ isr_wrapper_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call ISRHandler
+	call StdISRHandler
 	
 	interrupt_restore
 	
@@ -110,7 +110,7 @@ exception_wrapper_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call ISRHandler
+	call StdISRHandler
 	
 	interrupt_restore
 	
@@ -131,7 +131,7 @@ exception_wrapper_error_\number :
 	movq %rsp, %rsi
 	
 	cld
-	call ISRHandler
+	call StdISRHandler
 	
 	interrupt_restore
 	
@@ -190,9 +190,9 @@ exception_wrapper_stub 31
 
 .section ".data"
 
-.global gISRHandlerAddressTable
+.global isr_handler_address_table
 
-gISRHandlerAddressTable:
+isr_handler_address_table:
 	.quad exception_wrapper_0 
 	.quad exception_wrapper_1 
 	.quad exception_wrapper_2
